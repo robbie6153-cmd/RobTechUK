@@ -22,12 +22,10 @@ body {
 
 /* BUTTON CONTAINER (SITS ON THE MIDDLE BAR) */
 .menu {
-  position: absolute;
-  bottom: 5%;            /* move down into that middle strip */
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
+  justify-content: center;
   gap: 20px;
+  margin-top: 20px; /* controls distance from image */
 }
 
 .menu-btn {
@@ -59,4 +57,7 @@ body {
   background: linear-gradient(145deg, #00e676, #00c853);
   transform: scale(1.08);
   box-shadow: 0 6px 15px rgba(0, 255, 100, 0.6);
+}
+body {
+  text-align: center;
 }
