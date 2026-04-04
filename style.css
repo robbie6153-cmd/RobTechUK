@@ -23,7 +23,7 @@ body {
 /* BUTTON CONTAINER (SITS ON THE MIDDLE BAR) */
 .menu {
   position: absolute;
-  top: 70%;              /* move down into that middle strip */
+  bottom: 20%;            /* move down into that middle strip */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
