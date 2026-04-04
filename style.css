@@ -5,6 +5,7 @@ body {
   font-family: Arial, sans-serif;
 }
 
+/* MAIN CONTAINER */
 .home-container {
   position: relative;
   width: 100%;
@@ -12,38 +13,39 @@ body {
   margin: 0 auto;
 }
 
+/* IMAGE */
 .home-container img {
   width: 100%;
   height: auto;
   display: block;
 }
 
-.link {
+/* BUTTON CONTAINER (SITS ON THE MIDDLE BAR) */
+.menu {
   position: absolute;
-  display: block;
-  z-index: 10;
-  cursor: pointer;
+  top: 48%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* BUTTON STYLE */
+.menu-btn {
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  border: 2px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(4px);
   transition: 0.2s;
 }
 
-/* ABOUT BUTTON - left side of middle bar */
-.about {
-  top: 48%;
-  left: 10%;
-  width: 35%;
-  height: 8%;
-}
-
-/* OUR GAMES BUTTON - right side of middle bar */
-.games {
-  top: 48%;
-  left: 55%;
-  width: 35%;
-  height: 8%;
-}
-
-/* optional for testing */
-.link:hover {
-  outline: 2px solid rgba(255,255,255,0.3);
-  transform: scale(1.02);
+/* HOVER EFFECT */
+.menu-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.05);
 }
