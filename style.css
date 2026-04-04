@@ -61,3 +61,43 @@ body {
 body {
   text-align: center;
 }
+.about-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+  color: white;
+}
+
+.about-container h1 {
+  font-size: 32px;
+  margin-bottom: 25px;
+}
+
+.about-container p {
+  font-size: 20px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* CONTACT SECTION */
+.contact-section {
+  margin-top: 60px; /* pushes it down */
+  font-size: 18px;
+}
+
+/* EMAIL LINK STYLE */
+.contact-section a {
+  color: #00ff88;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.contact-section a:hover {
+  text-decoration: underline;
+}
+.contact-section {
+  margin-top: 60px;
+  padding-top: 20px;
+  border-top: 1px solid #333;
+}
