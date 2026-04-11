@@ -131,3 +131,8 @@ body {
 .back-button:hover {
   opacity: 0.8;
 }
+.bottom-home {
+  display: block;
+  text-align: center;
+  margin: 40px auto;
+}
