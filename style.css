@@ -117,3 +117,17 @@ body {
 .contact-section a:hover {
   text-decoration: underline;
 }
+.back-button {
+  display: inline-block;
+  margin: 10px 0 20px;
+  padding: 8px 16px;
+  background: #111;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.back-button:hover {
+  opacity: 0.8;
+}
