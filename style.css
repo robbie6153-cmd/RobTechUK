@@ -138,12 +138,9 @@ body {
 }
 
 .button-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 20px;
+  max-width: 450px;
+  margin: 0 auto;
 }
-
 .home-button {
   width: 200px;
 }
