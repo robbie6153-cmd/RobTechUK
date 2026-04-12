@@ -306,4 +306,15 @@ body {
   .contact-section {
     font-size: 18px;
   }
+.external-link {
+  display: inline-block;
+  margin-top: 40px;
+  font-size: 20px;
+  color: #00ff88;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.external-link:hover {
+  text-decoration: underline;
 }
