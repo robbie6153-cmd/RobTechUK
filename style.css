@@ -281,15 +281,10 @@ body {
 
 @media (max-width: 600px) {
   .menu-btn {
-    min-height: 65px;
+    height: 42px;
+    min-height: 42px;
     font-size: 15px;
-  }
-}
-
-  .menu-btn {
-    min-height: 80px;
-    font-size: 18px;
-    border-radius: 16px;
+    border-radius: 10px;
   }
 
   .about-container h1,
@@ -306,6 +301,7 @@ body {
   .contact-section {
     font-size: 18px;
   }
+}
 .external-link {
   display: inline-block;
   margin-top: 40px;
