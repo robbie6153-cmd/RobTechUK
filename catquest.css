@@ -47,9 +47,9 @@ body {
 
 #gameCanvas {
   width: 100%;
-  max-width: 600px;
-  height: auto;
-  background: #ffff;
+  max-width: 760px;
+  aspect-ratio: 1 / 1;
+  background: #ffffff;
   border: 3px solid #00ff88;
   box-shadow: 0 0 18px rgba(0, 255, 120, 0.35);
   display: block;
@@ -57,40 +57,3 @@ body {
   touch-action: none;
 }
 
-.mobile-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.middle-controls {
-  display: flex;
-  gap: 10px;
-}
-
-.control-btn {
-  width: 62px;
-  height: 62px;
-  border: 2px solid #00ff88;
-  border-radius: 12px;
-  background: linear-gradient(145deg, #00c853, #009624);
-  color: white;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.message {
-  margin-top: 18px;
-  font-size: 18px;
-  font-weight: bold;
-  min-height: 28px;
-  color: #00ff88;
-}
-
-@media (min-width: 801px) {
-  .mobile-controls {
-    display: none;
-  }
-}

@@ -238,22 +238,85 @@ function updateDogs(dt) {
 }
 
 function drawMaze() {
+  // Clear background (white)
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Draw paths (subtle grid feel)
+  ctx.fillStyle = "#f5f5f5";
+
   for (let row = 0; row < ROWS; row++) {
     for (let col = 0; col < COLS; col++) {
-      const x = col * TILE_SIZE;
-      const y = row * TILE_SIZE;
-
-      if (maze[row][col] === WALL) {
-        ctx.fillStyle = "#0b6b0b";
-        ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-        ctx.strokeStyle = "#095709";
-        ctx.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
-      } else {
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+      if (maze[row][col] !== WALL) {
+        ctx.fillRect(
+          col * TILE_SIZE,
+          row * TILE_SIZE,
+          TILE_SIZE,
+          TILE_SIZE
+        );
       }
     }
   }
+
+  // Draw walls as rounded bumpers (Pac-Man style)
+  ctx.strokeStyle = "#1976d2"; // blue walls
+  ctx.lineWidth = 10;
+  ctx.lineCap = "round";
+
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLS; col++) {
+      if (maze[row][col] === WALL) {
+        const x = col * TILE_SIZE + TILE_SIZE / 2;
+        const y = row * TILE_SIZE + TILE_SIZE / 2;
+
+        const neighbors = {
+          up: maze[row - 1]?.[col] === WALL,
+          down: maze[row + 1]?.[col] === WALL,
+          left: maze[row]?.[col - 1] === WALL,
+          right: maze[row]?.[col + 1] === WALL
+        };
+
+        ctx.beginPath();
+
+        if (neighbors.up) {
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, y - TILE_SIZE / 2);
+        }
+
+        if (neighbors.down) {
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, y + TILE_SIZE / 2);
+        }
+
+        if (neighbors.left) {
+          ctx.moveTo(x, y);
+          ctx.lineTo(x - TILE_SIZE / 2, y);
+        }
+
+        if (neighbors.right) {
+          ctx.moveTo(x, y);
+          ctx.lineTo(x + TILE_SIZE / 2, y);
+        }
+
+        ctx.stroke();
+      }
+    }
+  }
+
+  // Start tile
+  const startPos = tileCenter(startTile.row, startTile.col);
+  ctx.fillStyle = "#4fc3f7";
+  ctx.beginPath();
+  ctx.arc(startPos.x, startPos.y, 14, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Exit tile
+  const exitPos = tileCenter(exitTile.row, exitTile.col);
+  ctx.fillStyle = "#ff7043";
+  ctx.beginPath();
+  ctx.arc(exitPos.x, exitPos.y, 14, 0, Math.PI * 2);
+  ctx.fill();
+}
 
   const startPos = tileCenter(startTile.row, startTile.col);
   const exitPos = tileCenter(exitTile.row, exitTile.col);
@@ -407,11 +470,33 @@ function bindControls() {
     if (e.key === "ArrowRight") setCatDirection("right");
   });
 
-  document.querySelectorAll(".control-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      setCatDirection(btn.dataset.dir);
-    });
-  });
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  canvas.addEventListener("touchstart", (e) => {
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+  }, { passive: true });
+
+  canvas.addEventListener("touchend", (e) => {
+    const touch = e.changedTouches[0];
+    const dx = touch.clientX - touchStartX;
+    const dy = touch.clientY - touchStartY;
+
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+
+    if (Math.max(absX, absY) < 20) return;
+
+    if (absX > absY) {
+      if (dx > 0) setCatDirection("right");
+      else setCatDirection("left");
+    } else {
+      if (dy > 0) setCatDirection("down");
+      else setCatDirection("up");
+    }
+  }, { passive: true });
 }
 
 function initGame() {
