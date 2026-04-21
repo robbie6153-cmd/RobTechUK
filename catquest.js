@@ -244,16 +244,26 @@ function drawMaze() {
       const y = row * TILE_SIZE;
 
       if (maze[row][col] === WALL) {
-       ctx.fillStyle = "#0a5c0a";
+        ctx.fillStyle = "#0b6b0b";
         ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-        ctx.strokeStyle = "#004d00";
+        ctx.strokeStyle = "#095709";
         ctx.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
       } else {
-        ctx.fillStyle = "#ffff";
+        ctx.fillStyle = "#ffffff";
         ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
       }
     }
   }
+
+  const startPos = tileCenter(startTile.row, startTile.col);
+  const exitPos = tileCenter(exitTile.row, exitTile.col);
+
+  ctx.fillStyle = "#2196f3";
+  ctx.fillRect(startPos.x - 16, startPos.y - 16, 32, 32);
+
+  ctx.fillStyle = "#ff9800";
+  ctx.fillRect(exitPos.x - 16, exitPos.y - 16, 32, 32);
+}
 
   const startPos = tileCenter(startTile.row, startTile.col);
   const exitPos = tileCenter(exitTile.row, exitTile.col);
