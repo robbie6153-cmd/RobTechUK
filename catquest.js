@@ -249,7 +249,7 @@ function drawMaze() {
         ctx.strokeStyle = "#004d00";
         ctx.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
       } else {
-        ctx.fillStyle = "#111";
+        ctx.fillStyle = "#ffff";
         ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
       }
     }
