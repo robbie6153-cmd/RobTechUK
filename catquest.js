@@ -244,9 +244,9 @@ function drawMaze() {
       const y = row * TILE_SIZE;
 
       if (maze[row][col] === WALL) {
-        ctx.fillStyle = "#1f7a1f";
+       ctx.fillStyle = "#0a5c0a";
         ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-        ctx.strokeStyle = "#00ff88";
+        ctx.strokeStyle = "#004d00";
         ctx.strokeRect(x, y, TILE_SIZE, TILE_SIZE);
       } else {
         ctx.fillStyle = "#111";
@@ -258,7 +258,7 @@ function drawMaze() {
   const startPos = tileCenter(startTile.row, startTile.col);
   const exitPos = tileCenter(exitTile.row, exitTile.col);
 
-  ctx.fillStyle = "#1e88ff";
+ ctx.fillStyle = "#2196f3";
   ctx.fillRect(startPos.x - 16, startPos.y - 16, 32, 32);
 
   ctx.fillStyle = "#ff9800";
