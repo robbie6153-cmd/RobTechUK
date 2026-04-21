@@ -50,7 +50,7 @@ let exitTile = { row: 13, col: 13 };
 const cat = {
   x: 0,
   y: 0,
-  size: 38,
+  size: 48,
   speed: 140,
   dirX: 0,
   dirY: 0
@@ -334,7 +334,7 @@ function drawTreats() {
 
 function drawCat() {
   if (catImg.complete && catImg.naturalWidth > 0) {
-    ctx.drawImage(catImg, cat.x - 20, cat.y - 20, 40, 40);
+    ctx.drawImage(catImg, cat.x - 24, cat.y - 24, 48, 48);
   } else {
     ctx.fillStyle = "#111";
     ctx.beginPath();
