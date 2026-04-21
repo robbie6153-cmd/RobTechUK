@@ -50,7 +50,7 @@ let exitTile = { row: 13, col: 13 };
 const cat = {
   x: 0,
   y: 0,
-  size: 34,
+  size: 30,
   speed: 140,
   dirX: 0,
   dirY: 0
@@ -334,11 +334,27 @@ function drawTreats() {
 
 function drawCat() {
   if (catImg.complete && catImg.naturalWidth > 0) {
-    ctx.drawImage(catImg, cat.x - 22, cat.y - 22, 44, 44);
+    const drawSize = 76; // size on the maze
+    const cropX = catImg.naturalWidth * 0.08;
+    const cropY = catImg.naturalHeight * 0.18;
+    const cropW = catImg.naturalWidth * 0.72;
+    const cropH = catImg.naturalHeight * 0.62;
+
+    ctx.drawImage(
+      catImg,
+      cropX,
+      cropY,
+      cropW,
+      cropH,
+      cat.x - drawSize / 2,
+      cat.y - drawSize / 2,
+      drawSize,
+      drawSize
+    );
   } else {
     ctx.fillStyle = "#111";
     ctx.beginPath();
-    ctx.arc(cat.x, cat.y, 14, 0, Math.PI * 2);
+    ctx.arc(cat.x, cat.y, 16, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.fillStyle = "#fff";
