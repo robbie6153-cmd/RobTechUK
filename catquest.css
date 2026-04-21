@@ -1,0 +1,96 @@
+body {
+  margin: 0;
+  background: #000;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.game-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+  box-sizing: border-box;
+}
+
+.back-button {
+  display: inline-block;
+  margin: 10px 0 20px;
+  padding: 10px 18px;
+  background: linear-gradient(145deg, #00c853, #009624);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  border: 2px solid #00ff88;
+  box-shadow: 0 4px 10px rgba(0, 255, 100, 0.35);
+}
+
+.hud {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 10px 0 16px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.instructions,
+.controls-note {
+  max-width: 620px;
+  margin: 0 auto 14px;
+  line-height: 1.5;
+  font-size: 16px;
+}
+
+#gameCanvas {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  background: #111;
+  border: 3px solid #00ff88;
+  box-shadow: 0 0 18px rgba(0, 255, 120, 0.35);
+  display: block;
+  margin: 0 auto 16px;
+  touch-action: none;
+}
+
+.mobile-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.middle-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.control-btn {
+  width: 62px;
+  height: 62px;
+  border: 2px solid #00ff88;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #00c853, #009624);
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.message {
+  margin-top: 18px;
+  font-size: 18px;
+  font-weight: bold;
+  min-height: 28px;
+  color: #00ff88;
+}
+
+@media (min-width: 801px) {
+  .mobile-controls {
+    display: none;
+  }
+}
