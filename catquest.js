@@ -222,7 +222,11 @@ function updateDogs(dt) {
     const nearCenterX = Math.abs((dog.x % TILE_SIZE) - TILE_SIZE / 2) < 6;
     const nearCenterY = Math.abs((dog.y % TILE_SIZE) - TILE_SIZE / 2) < 6;
 
-    if (dog.changeTimer <= 0 || (dog.dirX === 0 && dog.dirY === 0) || (nearCenterX && nearCenterY)) {
+    if (
+      dog.changeTimer <= 0 ||
+      (dog.dirX === 0 && dog.dirY === 0) ||
+      (nearCenterX && nearCenterY)
+    ) {
       const options = validDirectionsForDog(dog);
 
       if (options.length > 0) {
@@ -238,13 +242,10 @@ function updateDogs(dt) {
 }
 
 function drawMaze() {
-  // Clear background (white)
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // Draw paths (subtle grid feel)
-  ctx.fillStyle = "#f5f5f5";
-
+  ctx.fillStyle = "#f8f8f8";
   for (let row = 0; row < ROWS; row++) {
     for (let col = 0; col < COLS; col++) {
       if (maze[row][col] !== WALL) {
@@ -258,9 +259,8 @@ function drawMaze() {
     }
   }
 
-  // Draw walls as rounded bumpers (Pac-Man style)
-  ctx.strokeStyle = "#1976d2"; // blue walls
-  ctx.lineWidth = 10;
+  ctx.strokeStyle = "#1e5eff";
+  ctx.lineWidth = 8;
   ctx.lineCap = "round";
 
   for (let row = 0; row < ROWS; row++) {
@@ -269,31 +269,29 @@ function drawMaze() {
         const x = col * TILE_SIZE + TILE_SIZE / 2;
         const y = row * TILE_SIZE + TILE_SIZE / 2;
 
-        const neighbors = {
-          up: maze[row - 1]?.[col] === WALL,
-          down: maze[row + 1]?.[col] === WALL,
-          left: maze[row]?.[col - 1] === WALL,
-          right: maze[row]?.[col + 1] === WALL
-        };
+        const up = row > 0 && maze[row - 1][col] === WALL;
+        const down = row < ROWS - 1 && maze[row + 1][col] === WALL;
+        const left = col > 0 && maze[row][col - 1] === WALL;
+        const right = col < COLS - 1 && maze[row][col + 1] === WALL;
 
         ctx.beginPath();
 
-        if (neighbors.up) {
+        if (up) {
           ctx.moveTo(x, y);
           ctx.lineTo(x, y - TILE_SIZE / 2);
         }
 
-        if (neighbors.down) {
+        if (down) {
           ctx.moveTo(x, y);
           ctx.lineTo(x, y + TILE_SIZE / 2);
         }
 
-        if (neighbors.left) {
+        if (left) {
           ctx.moveTo(x, y);
           ctx.lineTo(x - TILE_SIZE / 2, y);
         }
 
-        if (neighbors.right) {
+        if (right) {
           ctx.moveTo(x, y);
           ctx.lineTo(x + TILE_SIZE / 2, y);
         }
@@ -303,39 +301,18 @@ function drawMaze() {
     }
   }
 
-  // Start tile
   const startPos = tileCenter(startTile.row, startTile.col);
+  const exitPos = tileCenter(exitTile.row, exitTile.col);
+
   ctx.fillStyle = "#4fc3f7";
   ctx.beginPath();
   ctx.arc(startPos.x, startPos.y, 14, 0, Math.PI * 2);
   ctx.fill();
 
-  // Exit tile
-  const exitPos = tileCenter(exitTile.row, exitTile.col);
   ctx.fillStyle = "#ff7043";
   ctx.beginPath();
   ctx.arc(exitPos.x, exitPos.y, 14, 0, Math.PI * 2);
   ctx.fill();
-}
-
-  const startPos = tileCenter(startTile.row, startTile.col);
-  const exitPos = tileCenter(exitTile.row, exitTile.col);
-
-  ctx.fillStyle = "#2196f3";
-  ctx.fillRect(startPos.x - 16, startPos.y - 16, 32, 32);
-
-  ctx.fillStyle = "#ff9800";
-  ctx.fillRect(exitPos.x - 16, exitPos.y - 16, 32, 32);
-}
-
-  const startPos = tileCenter(startTile.row, startTile.col);
-  const exitPos = tileCenter(exitTile.row, exitTile.col);
-
- ctx.fillStyle = "#2196f3";
-  ctx.fillRect(startPos.x - 16, startPos.y - 16, 32, 32);
-
-  ctx.fillStyle = "#ff9800";
-  ctx.fillRect(exitPos.x - 16, exitPos.y - 16, 32, 32);
 }
 
 function drawTreats() {
@@ -357,7 +334,7 @@ function drawTreats() {
 
 function drawCat() {
   if (catImg.complete && catImg.naturalWidth > 0) {
-   ctx.drawImage(catImg, cat.x - 20, cat.y - 20, 40, 40);
+    ctx.drawImage(catImg, cat.x - 20, cat.y - 20, 40, 40);
   } else {
     ctx.fillStyle = "#111";
     ctx.beginPath();
@@ -473,30 +450,38 @@ function bindControls() {
   let touchStartX = 0;
   let touchStartY = 0;
 
-  canvas.addEventListener("touchstart", (e) => {
-    const touch = e.touches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-  }, { passive: true });
+  canvas.addEventListener(
+    "touchstart",
+    (e) => {
+      const touch = e.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    },
+    { passive: true }
+  );
 
-  canvas.addEventListener("touchend", (e) => {
-    const touch = e.changedTouches[0];
-    const dx = touch.clientX - touchStartX;
-    const dy = touch.clientY - touchStartY;
+  canvas.addEventListener(
+    "touchend",
+    (e) => {
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
 
-    const absX = Math.abs(dx);
-    const absY = Math.abs(dy);
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
 
-    if (Math.max(absX, absY) < 20) return;
+      if (Math.max(absX, absY) < 20) return;
 
-    if (absX > absY) {
-      if (dx > 0) setCatDirection("right");
-      else setCatDirection("left");
-    } else {
-      if (dy > 0) setCatDirection("down");
-      else setCatDirection("up");
-    }
-  }, { passive: true });
+      if (absX > absY) {
+        if (dx > 0) setCatDirection("right");
+        else setCatDirection("left");
+      } else {
+        if (dy > 0) setCatDirection("down");
+        else setCatDirection("up");
+      }
+    },
+    { passive: true }
+  );
 }
 
 function initGame() {
