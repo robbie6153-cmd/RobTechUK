@@ -200,40 +200,31 @@ window.addEventListener("load", () => {
   }
 
   function moveEntity(entity, dt) {
-    const newX = entity.x + entity.dirX * entity.speed * dt;
-    const newY = entity.y + entity.dirY * entity.speed * dt;
+  const newX = entity.x + entity.dirX * entity.speed * dt;
+  const newY = entity.y + entity.dirY * entity.speed * dt;
 
-    const currentTile = pixelToTile(entity.x, entity.y);
-
-    if (entity.dirX !== 0) {
-      const nextTile = pixelToTile(newX, entity.y);
-
-      if (nextTile.row === currentTile.row && nextTile.col === currentTile.col) {
-        entity.x = newX;
-      } else if (isWalkable(nextTile.row, nextTile.col)) {
-        entity.x = newX;
-      } else {
-        entity.dirX = 0;
-        snapToTileCenter(entity);
-      }
+  if (entity.dirX !== 0) {
+    const nextTile = pixelToTile(newX, entity.y);
+    if (isWalkable(nextTile.row, nextTile.col)) {
+      entity.x = newX;
+    } else {
+      entity.dirX = 0;
+      snapToTileCenter(entity);
     }
-
-    if (entity.dirY !== 0) {
-      const nextTile = pixelToTile(entity.x, newY);
-
-      if (nextTile.row === currentTile.row && nextTile.col === currentTile.col) {
-        entity.y = newY;
-      } else if (isWalkable(nextTile.row, nextTile.col)) {
-        entity.y = newY;
-      } else {
-        entity.dirY = 0;
-        snapToTileCenter(entity);
-      }
-    }
-
-    updateFacing(entity);
   }
 
+  if (entity.dirY !== 0) {
+    const nextTile = pixelToTile(entity.x, newY);
+    if (isWalkable(nextTile.row, nextTile.col)) {
+      entity.y = newY;
+    } else {
+      entity.dirY = 0;
+      snapToTileCenter(entity);
+    }
+  }
+
+  updateFacing(entity);
+}
   function chooseDirectionToward(dog, targetRow, targetCol) {
     const tile = pixelToTile(dog.x, dog.y);
     let options = getNeighbors(tile.row, tile.col);
@@ -290,43 +281,101 @@ window.addEventListener("load", () => {
   }
 
   function updateDogs(dt) {
-    dogs.forEach(dog => {
-      if (atTileCenter(dog, 6) || (dog.dirX === 0 && dog.dirY === 0)) {
-        snapToTileCenter(dog);
+  dogs.forEach(dog => {
+    const dogTile = pixelToTile(dog.x, dog.y);
 
-        const dogTile = pixelToTile(dog.x, dog.y);
-        const catTile = pixelToTile(cat.x, cat.y);
+    if (atTileCenter(dog, 8) || (dog.dirX === 0 && dog.dirY === 0)) {
+      snapToTileCenter(dog);
 
-        if (dog.type === "guard") {
-          chooseDirectionToward(dog, startTile.row, startTile.col);
-        } else if (dog.type === "chase") {
-          if (Math.hypot(dog.x - cat.x, dog.y - cat.y) < TILE_SIZE * 1.5) {
-            chooseDirectionAway(dog, cat.x, cat.y);
-          } else {
-            chooseDirectionToward(dog, catTile.row, catTile.col);
-          }
-        } else if (dog.type === "patrol") {
-          const corners = [
-            { row: 1, col: 1 },
-            { row: 1, col: COLS - 2 },
-            { row: ROWS - 2, col: COLS - 2 },
-            { row: ROWS - 2, col: 1 }
-          ].filter(c => isWalkable(c.row, c.col));
+      let options = getNeighbors(dogTile.row, dogTile.col);
 
-          let target = corners[dog.patrolIndex] || corners[0];
+      if (options.length === 0) return;
 
-          if (dogTile.row === target.row && dogTile.col === target.col) {
-            dog.patrolIndex = (dog.patrolIndex + 1) % corners.length;
-            target = corners[dog.patrolIndex];
-          }
+      const reverseX = -dog.dirX;
+      const reverseY = -dog.dirY;
 
-          chooseDirectionToward(dog, target.row, target.col);
-        }
+      const nonReverse = options.filter(
+        o => !(o.dx === reverseX && o.dy === reverseY)
+      );
+
+      if (nonReverse.length > 0) {
+        options = nonReverse;
       }
 
-      moveEntity(dog, dt);
-    });
-  }
+      let choice = options[0];
+
+      if (dog.type === "guard") {
+        let bestScore = Infinity;
+        options.forEach(o => {
+          const score =
+            Math.abs(o.row - startTile.row) +
+            Math.abs(o.col - startTile.col);
+          if (score < bestScore) {
+            bestScore = score;
+            choice = o;
+          }
+        });
+      } else if (dog.type === "chase") {
+        const catTile = pixelToTile(cat.x, cat.y);
+        const tooClose = Math.hypot(dog.x - cat.x, dog.y - cat.y) < TILE_SIZE * 1.5;
+
+        if (tooClose) {
+          let bestScore = -Infinity;
+          options.forEach(o => {
+            const center = tileCenter(o.row, o.col);
+            const score = Math.hypot(center.x - cat.x, center.y - cat.y);
+            if (score > bestScore) {
+              bestScore = score;
+              choice = o;
+            }
+          });
+        } else {
+          let bestScore = Infinity;
+          options.forEach(o => {
+            const score =
+              Math.abs(o.row - catTile.row) +
+              Math.abs(o.col - catTile.col);
+            if (score < bestScore) {
+              bestScore = score;
+              choice = o;
+            }
+          });
+        }
+      } else if (dog.type === "patrol") {
+        const corners = [
+          { row: 1, col: 1 },
+          { row: 1, col: COLS - 2 },
+          { row: ROWS - 2, col: COLS - 2 },
+          { row: ROWS - 2, col: 1 }
+        ].filter(c => isWalkable(c.row, c.col));
+
+        let target = corners[dog.patrolIndex] || corners[0];
+
+        if (dogTile.row === target.row && dogTile.col === target.col) {
+          dog.patrolIndex = (dog.patrolIndex + 1) % corners.length;
+          target = corners[dog.patrolIndex];
+        }
+
+        let bestScore = Infinity;
+        options.forEach(o => {
+          const score =
+            Math.abs(o.row - target.row) +
+            Math.abs(o.col - target.col);
+          if (score < bestScore) {
+            bestScore = score;
+            choice = o;
+          }
+        });
+      }
+
+      dog.dirX = choice.dx;
+      dog.dirY = choice.dy;
+      updateFacing(dog);
+    }
+
+    moveEntity(dog, dt);
+  });
+}
 
   function collectTreats() {
     const tile = pixelToTile(cat.x, cat.y);
