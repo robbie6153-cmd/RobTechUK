@@ -89,7 +89,7 @@ window.addEventListener("load", () => {
   }
 
   function cloneMaze() {
-    return mazeTemplate.map(r => r.split(""));
+    return mazeTemplate.map(row => row.split(""));
   }
 
   function tileCenter(row, col) {
@@ -289,98 +289,42 @@ window.addEventListener("load", () => {
     updateFacing(dog);
   }
 
-function updateDogs(dt) {
-  dogs.forEach(dog => {
-    if (atTileCenter(dog, 6) || (dog.dirX === 0 && dog.dirY === 0)) {
-      snapToTileCenter(dog);
+  function updateDogs(dt) {
+    dogs.forEach(dog => {
+      if (atTileCenter(dog, 6) || (dog.dirX === 0 && dog.dirY === 0)) {
+        snapToTileCenter(dog);
 
-      const dogTile = pixelToTile(dog.x, dog.y);
-      const catTile = pixelToTile(cat.x, cat.y);
-      let options = getNeighbors(dogTile.row, dogTile.col);
+        const dogTile = pixelToTile(dog.x, dog.y);
+        const catTile = pixelToTile(cat.x, cat.y);
 
-      if (options.length === 0) return;
-
-      const reverseX = -dog.dirX;
-      const reverseY = -dog.dirY;
-
-      const nonReverse = options.filter(
-        o => !(o.dx === reverseX && o.dy === reverseY)
-      );
-      if (nonReverse.length > 0) {
-        options = nonReverse;
-      }
-
-      let choice = options[0];
-
-      if (dog.type === "guard") {
-        let bestScore = Infinity;
-        options.forEach(o => {
-          const score = Math.abs(o.row - startTile.row) + Math.abs(o.col - startTile.col);
-          if (score < bestScore) {
-            bestScore = score;
-            choice = o;
+        if (dog.type === "guard") {
+          chooseDirectionToward(dog, startTile.row, startTile.col);
+        } else if (dog.type === "chase") {
+          if (Math.hypot(dog.x - cat.x, dog.y - cat.y) < TILE_SIZE * 1.5) {
+            chooseDirectionAway(dog, cat.x, cat.y);
+          } else {
+            chooseDirectionToward(dog, catTile.row, catTile.col);
           }
-        });
-      } else if (dog.type === "chase") {
-        const tooClose = Math.hypot(dog.x - cat.x, dog.y - cat.y) < TILE_SIZE * 1.5;
+        } else if (dog.type === "patrol") {
+          const corners = [
+            { row: 1, col: 1 },
+            { row: 1, col: COLS - 2 },
+            { row: ROWS - 2, col: COLS - 2 },
+            { row: ROWS - 2, col: 1 }
+          ].filter(c => isWalkable(c.row, c.col));
 
-        if (tooClose) {
-          let bestScore = -Infinity;
-          options.forEach(o => {
-            const center = tileCenter(o.row, o.col);
-            const score = Math.hypot(center.x - cat.x, center.y - cat.y);
-            if (score > bestScore) {
-              bestScore = score;
-              choice = o;
-            }
-          });
-        } else {
-          let bestScore = Infinity;
-          options.forEach(o => {
-            const score = Math.abs(o.row - catTile.row) + Math.abs(o.col - catTile.col);
-            if (score < bestScore) {
-              bestScore = score;
-              choice = o;
-            }
-          });
-        }
-      } else if (dog.type === "patrol") {
-        const corners = [
-          { row: 1, col: 1 },
-          { row: 1, col: COLS - 2 },
-          { row: ROWS - 2, col: COLS - 2 },
-          { row: ROWS - 2, col: 1 }
-        ].filter(c => isWalkable(c.row, c.col));
+          let target = corners[dog.patrolIndex] || corners[0];
 
-        let target = corners[dog.patrolIndex] || corners[0];
-
-        if (dogTile.row === target.row && dogTile.col === target.col) {
-          dog.patrolIndex = (dog.patrolIndex + 1) % corners.length;
-          target = corners[dog.patrolIndex];
-        }
-
-        let bestScore = Infinity;
-        options.forEach(o => {
-          const score = Math.abs(o.row - target.row) + Math.abs(o.col - target.col);
-          if (score < bestScore) {
-            bestScore = score;
-            choice = o;
+          if (dogTile.row === target.row && dogTile.col === target.col) {
+            dog.patrolIndex = (dog.patrolIndex + 1) % corners.length;
+            target = corners[dog.patrolIndex];
           }
-        });
+
+          chooseDirectionToward(dog, target.row, target.col);
+        }
       }
 
-      dog.dirX = choice.dx;
-      dog.dirY = choice.dy;
-      updateFacing(dog);
-    }
-
-    moveEntity(dog, dt);
-  });
-}
-
-      if (dog.type === "chase" && Math.hypot(dog.x - cat.x, dog.y - cat.y) < TILE_SIZE * 1.5) {
-        chooseDirectionAway(dog, cat.x, cat.y);
-      }
+      moveEntity(dog, dt);
     });
   }
 
@@ -479,41 +423,41 @@ function updateDogs(dt) {
     });
   }
 
-function drawCat() {
-  if (catImg.complete && catImg.naturalWidth > 0) {
-    const drawSize = 76;
-    const cropX = catImg.naturalWidth * 0.08;
-    const cropY = catImg.naturalHeight * 0.18;
-    const cropW = catImg.naturalWidth * 0.72;
-    const cropH = catImg.naturalHeight * 0.62;
+  function drawCat() {
+    if (catImg.complete && catImg.naturalWidth > 0) {
+      const drawSize = 76;
+      const cropX = catImg.naturalWidth * 0.08;
+      const cropY = catImg.naturalHeight * 0.18;
+      const cropW = catImg.naturalWidth * 0.72;
+      const cropH = catImg.naturalHeight * 0.62;
 
-    ctx.save();
-    ctx.translate(cat.x, cat.y);
+      ctx.save();
+      ctx.translate(cat.x, cat.y);
 
-    if (cat.facing === "left") {
-      ctx.scale(-1, 1);
+      if (cat.facing === "left") {
+        ctx.scale(-1, 1);
+      }
+
+      ctx.drawImage(
+        catImg,
+        cropX,
+        cropY,
+        cropW,
+        cropH,
+        -drawSize / 2,
+        -drawSize / 2,
+        drawSize,
+        drawSize
+      );
+
+      ctx.restore();
+    } else {
+      ctx.fillStyle = "#111";
+      ctx.beginPath();
+      ctx.arc(cat.x, cat.y, 16, 0, Math.PI * 2);
+      ctx.fill();
     }
-
-    ctx.drawImage(
-      catImg,
-      cropX,
-      cropY,
-      cropW,
-      cropH,
-      -drawSize / 2,
-      -drawSize / 2,
-      drawSize,
-      drawSize
-    );
-
-    ctx.restore();
-  } else {
-    ctx.fillStyle = "#111";
-    ctx.beginPath();
-    ctx.arc(cat.x, cat.y, 16, 0, Math.PI * 2);
-    ctx.fill();
   }
-}
 
   function drawDogSprite(dog) {
     const drawSize = 34;
@@ -570,7 +514,6 @@ function drawCat() {
 
     moveEntity(cat, dt);
     updateDogs(dt);
-    dogs.forEach(dog => moveEntity(dog, dt));
     collectTreats();
     handleDogCollision();
     draw();
@@ -601,29 +544,18 @@ function drawCat() {
   function setCatDirection(dir) {
     if (gameOver) return;
 
-    const tile = pixelToTile(cat.x, cat.y);
-    const neighbors = getNeighbors(tile.row, tile.col);
-
     if (dir === "up") {
-      if (neighbors.some(n => n.dx === 0 && n.dy === -1)) {
-        cat.dirX = 0;
-        cat.dirY = -1;
-      }
+      cat.dirX = 0;
+      cat.dirY = -1;
     } else if (dir === "down") {
-      if (neighbors.some(n => n.dx === 0 && n.dy === 1)) {
-        cat.dirX = 0;
-        cat.dirY = 1;
-      }
+      cat.dirX = 0;
+      cat.dirY = 1;
     } else if (dir === "left") {
-      if (neighbors.some(n => n.dx === -1 && n.dy === 0)) {
-        cat.dirX = -1;
-        cat.dirY = 0;
-      }
+      cat.dirX = -1;
+      cat.dirY = 0;
     } else if (dir === "right") {
-      if (neighbors.some(n => n.dx === 1 && n.dy === 0)) {
-        cat.dirX = 1;
-        cat.dirY = 0;
-      }
+      cat.dirX = 1;
+      cat.dirY = 0;
     }
 
     updateFacing(cat);
