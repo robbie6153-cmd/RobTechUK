@@ -63,6 +63,14 @@ catImg.src = "cat.jpg";
 
 const treatImg = new Image();
 treatImg.src = "treat.jpg";
+const dog1Img = new Image();
+dog1Img.src = "dog1.png";
+
+const dog2Img = new Image();
+dog2Img.src = "dog2.png";
+
+const dog3Img = new Image();
+dog3Img.src = "dog3.png";
 
 function tileKey(row, col) {
   return `${row},${col}`;
@@ -101,6 +109,32 @@ function tileCenter(row, col) {
   };
 }
 
+function pixelToTile(x, y) {
+  return {
+    row: Math.floor(y / TILE_SIZE),
+    col: Math.floor(x / TILE_SIZE)
+  };
+}
+
+function isWalkableTile(row, col) {
+  return row >= 0 && row < ROWS && col >= 0 && col < COLS && maze[row][col] !== WALL;
+}
+
+function isDecisionPoint(entity) {
+  const center = tileCenter(
+    Math.floor(entity.y / TILE_SIZE),
+    Math.floor(entity.x / TILE_SIZE)
+  );
+  return Math.abs(entity.x - center.x) < 5 && Math.abs(entity.y - center.y) < 5;
+}
+
+function alignEntityToTileCenter(entity) {
+  const tile = pixelToTile(entity.x, entity.y);
+  const center = tileCenter(tile.row, tile.col);
+  entity.x = center.x;
+  entity.y = center.y;
+}
+
 function resetCatPosition() {
   const pos = tileCenter(startTile.row, startTile.col);
   cat.x = pos.x;
@@ -109,21 +143,68 @@ function resetCatPosition() {
   cat.dirY = 0;
 }
 
+function findNearestOpenCornerTargets() {
+  return [
+    { row: 1, col: 1 },
+    { row: 1, col: COLS - 2 },
+    { row: ROWS - 2, col: COLS - 2 },
+    { row: ROWS - 2, col: 1 }
+  ].filter(t => isWalkableTile(t.row, t.col));
+}
+
+const patrolTargets = findNearestOpenCornerTargets();
+
 function createDogs() {
   dogs.length = 0;
 
-  for (let i = 0; i < 3; i++) {
-    const pos = tileCenter(exitTile.row, exitTile.col);
+  const spawnPositions = [
+    tileCenter(exitTile.row, exitTile.col),
+    tileCenter(exitTile.row, exitTile.col - 1),
+    tileCenter(exitTile.row - 1, exitTile.col)
+  ];
+
+  dogs.push({
+    x: spawnPositions[0].x,
+    y: spawnPositions[0].y,
+    size: 28,
+    speed: 92,
+    dirX: 0,
+    dirY: 0,
+    type: "guardStart",
+    color: "#8d6e63",
+    name: "Bulldog",
+    img: dog1Img,
+    pathTimer: 0
+  });
+
     dogs.push({
-      x: pos.x + (i - 1) * 6,
-      y: pos.y + (i - 1) * 6,
-      size: 26,
-      speed: 95,
-      dirX: 0,
-      dirY: 0,
-      changeTimer: 0
-    });
-  }
+    x: spawnPositions[1].x,
+    y: spawnPositions[1].y,
+    size: 26,
+    speed: 102,
+    dirX: 0,
+    dirY: 0,
+    type: "stalker",
+    color: "#cfa36f",
+    name: "Terrier",
+    img: dog2Img,
+    pathTimer: 0
+  });
+
+  dogs.push({
+    x: spawnPositions[2].x,
+    y: spawnPositions[2].y,
+    size: 24,
+    speed: 88,
+    dirX: 0,
+    dirY: 0,
+    type: "patrol",
+    color: "#444",
+    name: "Shepherd",
+    img: dog3Img,
+    pathTimer: 0,
+    patrolIndex: 0
+  });
 }
 
 function resetRoundPositions() {
@@ -200,41 +281,142 @@ function handleDogCollision() {
   }
 }
 
-function validDirectionsForDog(dog) {
-  const directions = [
-    { dx: 1, dy: 0 },
-    { dx: -1, dy: 0 },
-    { dx: 0, dy: 1 },
-    { dx: 0, dy: -1 }
+function getNeighbors(row, col) {
+  const candidates = [
+    { row, col: col + 1, dx: 1, dy: 0 },
+    { row, col: col - 1, dx: -1, dy: 0 },
+    { row: row + 1, col, dx: 0, dy: 1 },
+    { row: row - 1, col, dx: 0, dy: -1 }
   ];
 
-  return directions.filter(dir => {
-    const testX = dog.x + dir.dx * 12;
-    const testY = dog.y + dir.dy * 12;
-    return !isWallAtPixel(testX, testY, dog.size / 2 - 2);
-  });
+  return candidates.filter(n => isWalkableTile(n.row, n.col));
+}
+
+function findPathNextStep(fromRow, fromCol, toRow, toCol) {
+  if (fromRow === toRow && fromCol === toCol) return null;
+
+  const queue = [{ row: fromRow, col: fromCol }];
+  const visited = new Set([tileKey(fromRow, fromCol)]);
+  const cameFrom = new Map();
+
+  while (queue.length) {
+    const current = queue.shift();
+
+    if (current.row === toRow && current.col === toCol) {
+      break;
+    }
+
+    const neighbors = getNeighbors(current.row, current.col);
+    for (const next of neighbors) {
+      const key = tileKey(next.row, next.col);
+      if (visited.has(key)) continue;
+
+      visited.add(key);
+      cameFrom.set(key, current);
+      queue.push({ row: next.row, col: next.col });
+    }
+  }
+
+  const targetKey = tileKey(toRow, toCol);
+  if (!cameFrom.has(targetKey)) return null;
+
+  let step = { row: toRow, col: toCol };
+  let prev = cameFrom.get(tileKey(step.row, step.col));
+
+  while (prev && !(prev.row === fromRow && prev.col === fromCol)) {
+    step = prev;
+    prev = cameFrom.get(tileKey(step.row, step.col));
+  }
+
+  return {
+    row: step.row,
+    col: step.col,
+    dx: Math.sign(step.col - fromCol),
+    dy: Math.sign(step.row - fromRow)
+  };
+}
+
+function setDogDirectionToTile(dog, targetRow, targetCol) {
+  const from = pixelToTile(dog.x, dog.y);
+  const nextStep = findPathNextStep(from.row, from.col, targetRow, targetCol);
+
+  if (!nextStep) {
+    dog.dirX = 0;
+    dog.dirY = 0;
+    return;
+  }
+
+  dog.dirX = nextStep.dx;
+  dog.dirY = nextStep.dy;
+}
+
+function updateGuardStartDog(dog) {
+  setDogDirectionToTile(dog, startTile.row, startTile.col);
+}
+
+function updateStalkerDog(dog) {
+  const dogTile = pixelToTile(dog.x, dog.y);
+  const catTile = pixelToTile(cat.x, cat.y);
+  const d = distance(dog, cat);
+
+  if (d < TILE_SIZE * 1.5) {
+    const neighbors = getNeighbors(dogTile.row, dogTile.col);
+
+    let best = null;
+    let bestDist = -1;
+
+    for (const n of neighbors) {
+      const center = tileCenter(n.row, n.col);
+      const distToCat = Math.hypot(center.x - cat.x, center.y - cat.y);
+
+      if (distToCat > bestDist) {
+        bestDist = distToCat;
+        best = n;
+      }
+    }
+
+    if (best) {
+      dog.dirX = best.dx;
+      dog.dirY = best.dy;
+    } else {
+      dog.dirX = 0;
+      dog.dirY = 0;
+    }
+  } else {
+    setDogDirectionToTile(dog, catTile.row, catTile.col);
+  }
+}
+
+function updatePatrolDog(dog) {
+  if (!patrolTargets.length) return;
+
+  const dogTile = pixelToTile(dog.x, dog.y);
+  let target = patrolTargets[dog.patrolIndex];
+
+  if (dogTile.row === target.row && dogTile.col === target.col) {
+    dog.patrolIndex = (dog.patrolIndex + 1) % patrolTargets.length;
+    target = patrolTargets[dog.patrolIndex];
+  }
+
+  setDogDirectionToTile(dog, target.row, target.col);
 }
 
 function updateDogs(dt) {
   dogs.forEach(dog => {
-    dog.changeTimer -= dt;
+    dog.pathTimer -= dt;
 
-    const nearCenterX = Math.abs((dog.x % TILE_SIZE) - TILE_SIZE / 2) < 6;
-    const nearCenterY = Math.abs((dog.y % TILE_SIZE) - TILE_SIZE / 2) < 6;
+    if (isDecisionPoint(dog) || dog.dirX === 0 && dog.dirY === 0 || dog.pathTimer <= 0) {
+      alignEntityToTileCenter(dog);
 
-    if (
-      dog.changeTimer <= 0 ||
-      (dog.dirX === 0 && dog.dirY === 0) ||
-      (nearCenterX && nearCenterY)
-    ) {
-      const options = validDirectionsForDog(dog);
-
-      if (options.length > 0) {
-        const choice = options[Math.floor(Math.random() * options.length)];
-        dog.dirX = choice.dx;
-        dog.dirY = choice.dy;
-        dog.changeTimer = 0.6 + Math.random() * 1.2;
+      if (dog.type === "guardStart") {
+        updateGuardStartDog(dog);
+      } else if (dog.type === "stalker") {
+        updateStalkerDog(dog);
+      } else if (dog.type === "patrol") {
+        updatePatrolDog(dog);
       }
+
+      dog.pathTimer = 0.18;
     }
 
     moveEntity(dog, dt);
@@ -288,6 +470,7 @@ function drawMaze() {
 
         if (left) {
           ctx.moveTo(x, y);
+          ctx.lineTo(x, y - 0 + 0);
           ctx.lineTo(x - TILE_SIZE / 2, y);
         }
 
@@ -334,7 +517,7 @@ function drawTreats() {
 
 function drawCat() {
   if (catImg.complete && catImg.naturalWidth > 0) {
-    const drawSize = 76; // size on the maze
+    const drawSize = 76;
     const cropX = catImg.naturalWidth * 0.08;
     const cropY = catImg.naturalHeight * 0.18;
     const cropW = catImg.naturalWidth * 0.72;
@@ -365,19 +548,55 @@ function drawCat() {
   }
 }
 
-function drawDogs() {
-  dogs.forEach(dog => {
-    ctx.fillStyle = "#8d6e63";
+function drawDogSprite(dog) {
+  const x = dog.x;
+  const y = dog.y;
+  const drawSize = 44;
+
+  ctx.save();
+  ctx.translate(x, y);
+
+  if (dog.dirX !== 0 || dog.dirY !== 0) {
+    ctx.rotate(Math.atan2(dog.dirY, dog.dirX));
+  }
+
+  if (dog.img && dog.img.complete && dog.img.naturalWidth > 0) {
+    ctx.drawImage(
+      dog.img,
+      -drawSize / 2,
+      -drawSize / 2,
+      drawSize,
+      drawSize
+    );
+  } else {
+    ctx.fillStyle = dog.color;
     ctx.beginPath();
-    ctx.arc(dog.x, dog.y, 13, 0, Math.PI * 2);
+    ctx.ellipse(0, 0, dog.size * 0.55, dog.size * 0.4, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = "#fff";
     ctx.beginPath();
-    ctx.arc(dog.x - 4, dog.y - 2, 2, 0, Math.PI * 2);
-    ctx.arc(dog.x + 4, dog.y - 2, 2, 0, Math.PI * 2);
+    ctx.arc(dog.size * 0.45, -1, dog.size * 0.24, 0, Math.PI * 2);
     ctx.fill();
-  });
+
+    ctx.beginPath();
+    ctx.moveTo(dog.size * 0.34, -dog.size * 0.14);
+    ctx.lineTo(dog.size * 0.42, -dog.size * 0.34);
+    ctx.lineTo(dog.size * 0.5, -dog.size * 0.14);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(dog.size * 0.34, dog.size * 0.12);
+    ctx.lineTo(dog.size * 0.42, dog.size * 0.32);
+    ctx.lineTo(dog.size * 0.5, dog.size * 0.12);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+
+
+function drawDogs() {
+  dogs.forEach(dog => drawDogSprite(dog));
 }
 
 function draw() {
