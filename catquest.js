@@ -157,10 +157,13 @@ window.addEventListener("load", () => {
     entity.y = center.y;
   }
 
-  function atTileCenter(entity, tolerance = 4) {
+  function atTileCenter(entity, tolerance = 6) {
     const tile = pixelToTile(entity.x, entity.y);
     const center = tileCenter(tile.row, tile.col);
-    return Math.abs(entity.x - center.x) <= tolerance && Math.abs(entity.y - center.y) <= tolerance;
+    return (
+      Math.abs(entity.x - center.x) <= tolerance &&
+      Math.abs(entity.y - center.y) <= tolerance
+    );
   }
 
   function resetCatPosition() {
@@ -172,7 +175,7 @@ window.addEventListener("load", () => {
     cat.facing = "right";
   }
 
-  function makeDog(row, col, img, type, speed) {
+  function makeDog(row, col, img, speed) {
     const pos = tileCenter(row, col);
     return {
       x: pos.x,
@@ -181,17 +184,17 @@ window.addEventListener("load", () => {
       dirY: 0,
       speed,
       img,
-      type,
       facing: "left",
-      patrolIndex: 0
+      turnDelay: 0
     };
   }
 
   function createDogs() {
     dogs.length = 0;
-    dogs.push(makeDog(exitTile.row, exitTile.col - 1, dog1Img, "guard", 78));
-    dogs.push(makeDog(exitTile.row, exitTile.col - 2, dog2Img, "chase", 86));
-    dogs.push(makeDog(exitTile.row - 1, exitTile.col, dog3Img, "patrol", 74));
+
+    dogs.push(makeDog(exitTile.row, exitTile.col - 1, dog1Img, 78));
+    dogs.push(makeDog(exitTile.row, exitTile.col - 2, dog2Img, 86));
+    dogs.push(makeDog(exitTile.row - 1, exitTile.col, dog3Img, 74));
   }
 
   function resetRoundPositions() {
@@ -200,182 +203,70 @@ window.addEventListener("load", () => {
   }
 
   function moveEntity(entity, dt) {
-  const newX = entity.x + entity.dirX * entity.speed * dt;
-  const newY = entity.y + entity.dirY * entity.speed * dt;
+    const newX = entity.x + entity.dirX * entity.speed * dt;
+    const newY = entity.y + entity.dirY * entity.speed * dt;
 
-  if (entity.dirX !== 0) {
-    const nextTile = pixelToTile(newX, entity.y);
-    if (isWalkable(nextTile.row, nextTile.col)) {
-      entity.x = newX;
-    } else {
-      entity.dirX = 0;
-      snapToTileCenter(entity);
-    }
-  }
-
-  if (entity.dirY !== 0) {
-    const nextTile = pixelToTile(entity.x, newY);
-    if (isWalkable(nextTile.row, nextTile.col)) {
-      entity.y = newY;
-    } else {
-      entity.dirY = 0;
-      snapToTileCenter(entity);
-    }
-  }
-
-  updateFacing(entity);
-}
-  function chooseDirectionToward(dog, targetRow, targetCol) {
-    const tile = pixelToTile(dog.x, dog.y);
-    let options = getNeighbors(tile.row, tile.col);
-
-    const reverseX = -dog.dirX;
-    const reverseY = -dog.dirY;
-    const filtered = options.filter(o => !(o.dx === reverseX && o.dy === reverseY));
-    if (filtered.length) options = filtered;
-
-    if (!options.length) return;
-
-    let best = options[0];
-    let bestScore = Infinity;
-
-    for (const option of options) {
-      const score = Math.abs(option.row - targetRow) + Math.abs(option.col - targetCol);
-      if (score < bestScore) {
-        bestScore = score;
-        best = option;
+    if (entity.dirX !== 0) {
+      const nextTile = pixelToTile(newX, entity.y);
+      if (isWalkable(nextTile.row, nextTile.col)) {
+        entity.x = newX;
+      } else {
+        entity.dirX = 0;
+        snapToTileCenter(entity);
       }
     }
 
-    dog.dirX = best.dx;
-    dog.dirY = best.dy;
-    updateFacing(dog);
-  }
-
-  function chooseDirectionAway(dog, fromX, fromY) {
-    const tile = pixelToTile(dog.x, dog.y);
-    let options = getNeighbors(tile.row, tile.col);
-
-    const reverseX = -dog.dirX;
-    const reverseY = -dog.dirY;
-    const filtered = options.filter(o => !(o.dx === reverseX && o.dy === reverseY));
-    if (filtered.length) options = filtered;
-
-    if (!options.length) return;
-
-    let best = options[0];
-    let bestScore = -Infinity;
-
-    for (const option of options) {
-      const center = tileCenter(option.row, option.col);
-      const score = Math.hypot(center.x - fromX, center.y - fromY);
-      if (score > bestScore) {
-        bestScore = score;
-        best = option;
+    if (entity.dirY !== 0) {
+      const nextTile = pixelToTile(entity.x, newY);
+      if (isWalkable(nextTile.row, nextTile.col)) {
+        entity.y = newY;
+      } else {
+        entity.dirY = 0;
+        snapToTileCenter(entity);
       }
     }
 
-    dog.dirX = best.dx;
-    dog.dirY = best.dy;
-    updateFacing(dog);
+    updateFacing(entity);
   }
 
   function updateDogs(dt) {
-  dogs.forEach(dog => {
-    const dogTile = pixelToTile(dog.x, dog.y);
+    dogs.forEach(dog => {
+      dog.turnDelay -= dt;
 
-    if (atTileCenter(dog, 8) || (dog.dirX === 0 && dog.dirY === 0)) {
-      snapToTileCenter(dog);
+      if (
+        atTileCenter(dog, 8) ||
+        (dog.dirX === 0 && dog.dirY === 0) ||
+        dog.turnDelay <= 0
+      ) {
+        snapToTileCenter(dog);
 
-      let options = getNeighbors(dogTile.row, dogTile.col);
+        const tile = pixelToTile(dog.x, dog.y);
+        let options = getNeighbors(tile.row, tile.col);
 
-      if (options.length === 0) return;
+        if (options.length === 0) return;
 
-      const reverseX = -dog.dirX;
-      const reverseY = -dog.dirY;
+        const reverseX = -dog.dirX;
+        const reverseY = -dog.dirY;
 
-      const nonReverse = options.filter(
-        o => !(o.dx === reverseX && o.dy === reverseY)
-      );
+        const nonReverse = options.filter(
+          o => !(o.dx === reverseX && o.dy === reverseY)
+        );
 
-      if (nonReverse.length > 0) {
-        options = nonReverse;
-      }
-
-      let choice = options[0];
-
-      if (dog.type === "guard") {
-        let bestScore = Infinity;
-        options.forEach(o => {
-          const score =
-            Math.abs(o.row - startTile.row) +
-            Math.abs(o.col - startTile.col);
-          if (score < bestScore) {
-            bestScore = score;
-            choice = o;
-          }
-        });
-      } else if (dog.type === "chase") {
-        const catTile = pixelToTile(cat.x, cat.y);
-        const tooClose = Math.hypot(dog.x - cat.x, dog.y - cat.y) < TILE_SIZE * 1.5;
-
-        if (tooClose) {
-          let bestScore = -Infinity;
-          options.forEach(o => {
-            const center = tileCenter(o.row, o.col);
-            const score = Math.hypot(center.x - cat.x, center.y - cat.y);
-            if (score > bestScore) {
-              bestScore = score;
-              choice = o;
-            }
-          });
-        } else {
-          let bestScore = Infinity;
-          options.forEach(o => {
-            const score =
-              Math.abs(o.row - catTile.row) +
-              Math.abs(o.col - catTile.col);
-            if (score < bestScore) {
-              bestScore = score;
-              choice = o;
-            }
-          });
-        }
-      } else if (dog.type === "patrol") {
-        const corners = [
-          { row: 1, col: 1 },
-          { row: 1, col: COLS - 2 },
-          { row: ROWS - 2, col: COLS - 2 },
-          { row: ROWS - 2, col: 1 }
-        ].filter(c => isWalkable(c.row, c.col));
-
-        let target = corners[dog.patrolIndex] || corners[0];
-
-        if (dogTile.row === target.row && dogTile.col === target.col) {
-          dog.patrolIndex = (dog.patrolIndex + 1) % corners.length;
-          target = corners[dog.patrolIndex];
+        if (nonReverse.length > 0) {
+          options = nonReverse;
         }
 
-        let bestScore = Infinity;
-        options.forEach(o => {
-          const score =
-            Math.abs(o.row - target.row) +
-            Math.abs(o.col - target.col);
-          if (score < bestScore) {
-            bestScore = score;
-            choice = o;
-          }
-        });
+        const choice = options[Math.floor(Math.random() * options.length)];
+
+        dog.dirX = choice.dx;
+        dog.dirY = choice.dy;
+        dog.turnDelay = 0.2;
+        updateFacing(dog);
       }
 
-      dog.dirX = choice.dx;
-      dog.dirY = choice.dy;
-      updateFacing(dog);
-    }
-
-    moveEntity(dog, dt);
-  });
-}
+      moveEntity(dog, dt);
+    });
+  }
 
   function collectTreats() {
     const tile = pixelToTile(cat.x, cat.y);
@@ -412,7 +303,12 @@ window.addEventListener("load", () => {
     for (let row = 0; row < ROWS; row++) {
       for (let col = 0; col < COLS; col++) {
         if (maze[row][col] !== WALL) {
-          ctx.fillRect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+          ctx.fillRect(
+            col * TILE_SIZE,
+            row * TILE_SIZE,
+            TILE_SIZE,
+            TILE_SIZE
+          );
         }
       }
     }
@@ -519,7 +415,13 @@ window.addEventListener("load", () => {
     }
 
     if (dog.img.complete && dog.img.naturalWidth > 0) {
-      ctx.drawImage(dog.img, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
+      ctx.drawImage(
+        dog.img,
+        -drawSize / 2,
+        -drawSize / 2,
+        drawSize,
+        drawSize
+      );
     } else {
       ctx.fillStyle = "#555";
       ctx.beginPath();
@@ -548,7 +450,8 @@ window.addEventListener("load", () => {
     cancelAnimationFrame(animationFrameId);
 
     if (win) {
-      messageEl.textContent = `You cleared every Dreamie with ${timeLeft} seconds left. Final score: ${score}`;
+      messageEl.textContent =
+        `You cleared every Dreamie with ${timeLeft} seconds left. Final score: ${score}`;
     } else {
       messageEl.textContent = `Time up. Final score: ${score}`;
     }
@@ -633,39 +536,51 @@ window.addEventListener("load", () => {
     let touchStartX = 0;
     let touchStartY = 0;
 
-    canvas.addEventListener("touchstart", (e) => {
-      const touch = e.touches[0];
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-      e.preventDefault();
-    }, { passive: false });
-
-    canvas.addEventListener("touchmove", (e) => {
-      e.preventDefault();
-    }, { passive: false });
-
-    canvas.addEventListener("touchend", (e) => {
-      const touch = e.changedTouches[0];
-      const dx = touch.clientX - touchStartX;
-      const dy = touch.clientY - touchStartY;
-      const absX = Math.abs(dx);
-      const absY = Math.abs(dy);
-
-      if (Math.max(absX, absY) < 20) {
+    canvas.addEventListener(
+      "touchstart",
+      (e) => {
+        const touch = e.touches[0];
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
         e.preventDefault();
-        return;
-      }
+      },
+      { passive: false }
+    );
 
-      if (absX > absY) {
-        if (dx > 0) setCatDirection("right");
-        else setCatDirection("left");
-      } else {
-        if (dy > 0) setCatDirection("down");
-        else setCatDirection("up");
-      }
+    canvas.addEventListener(
+      "touchmove",
+      (e) => {
+        e.preventDefault();
+      },
+      { passive: false }
+    );
 
-      e.preventDefault();
-    }, { passive: false });
+    canvas.addEventListener(
+      "touchend",
+      (e) => {
+        const touch = e.changedTouches[0];
+        const dx = touch.clientX - touchStartX;
+        const dy = touch.clientY - touchStartY;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+
+        if (Math.max(absX, absY) < 20) {
+          e.preventDefault();
+          return;
+        }
+
+        if (absX > absY) {
+          if (dx > 0) setCatDirection("right");
+          else setCatDirection("left");
+        } else {
+          if (dy > 0) setCatDirection("down");
+          else setCatDirection("up");
+        }
+
+        e.preventDefault();
+      },
+      { passive: false }
+    );
   }
 
   function initGame() {
