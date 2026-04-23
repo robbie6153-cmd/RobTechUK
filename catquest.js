@@ -66,7 +66,7 @@ window.addEventListener("load", () => {
     speed: 140,
     dirX: 0,
     dirY: 0,
-    facingAngle: 0
+    facing: "right"
   };
 
   const dogs = [];
@@ -165,11 +165,12 @@ window.addEventListener("load", () => {
     entity.y = center.y;
   }
 
-  function updateFacing(entity) {
-    if (entity.dirX !== 0 || entity.dirY !== 0) {
-      entity.facingAngle = Math.atan2(entity.dirY, entity.dirX);
-    }
-  }
+ function updateFacing(entity) {
+  if (entity.dirX > 0) entity.facing = "right";
+  else if (entity.dirX < 0) entity.facing = "left";
+  else if (entity.dirY < 0) entity.facing = "up";
+  else if (entity.dirY > 0) entity.facing = "down";
+}
 
   function resetCatPosition() {
     const pos = tileCenter(startTile.row, startTile.col);
@@ -177,7 +178,7 @@ window.addEventListener("load", () => {
     cat.y = pos.y;
     cat.dirX = 0;
     cat.dirY = 0;
-    cat.facingAngle = 0;
+    facing: "right"
   }
 
 function createDogs() {
@@ -200,7 +201,7 @@ function createDogs() {
     color: "#8d6e63",
     img: dog1Img,
     pathTimer: 0,
-    facingAngle: Math.PI
+    facingAngle: "left"
   });
 
   dogs.push({
@@ -214,7 +215,7 @@ function createDogs() {
     color: "#cfa36f",
     img: dog2Img,
     pathTimer: 0,
-    facingAngle: Math.PI
+    facingAngle: "left"
   });
 
   dogs.push({
@@ -229,7 +230,7 @@ function createDogs() {
     img: dog3Img,
     pathTimer: 0,
     patrolIndex: 0,
-    facingAngle: Math.PI
+    facingAngle: "left"
   });
 }
   function resetRoundPositions() {
@@ -542,85 +543,113 @@ function updateDogs(dt) {
   }
 
   function drawCat() {
-    if (catImg.complete && catImg.naturalWidth > 0) {
-      const drawSize = 76;
-      const cropX = catImg.naturalWidth * 0.08;
-      const cropY = catImg.naturalHeight * 0.18;
-      const cropW = catImg.naturalWidth * 0.72;
-      const cropH = catImg.naturalHeight * 0.62;
+  const drawW = 76;
+  const drawH = 76;
 
-      ctx.save();
-      ctx.translate(cat.x, cat.y);
-      ctx.rotate(cat.facingAngle);
-
-      ctx.drawImage(
-        catImg,
-        cropX,
-        cropY,
-        cropW,
-        cropH,
-        -drawSize / 2,
-        -drawSize / 2,
-        drawSize,
-        drawSize
-      );
-
-      ctx.restore();
-    } else {
-      ctx.save();
-      ctx.translate(cat.x, cat.y);
-      ctx.rotate(cat.facingAngle);
-
-      ctx.fillStyle = "#111";
-      ctx.beginPath();
-      ctx.arc(0, 0, 16, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = "#fff";
-      ctx.beginPath();
-      ctx.arc(5, -3, 2, 0, Math.PI * 2);
-      ctx.arc(10, -3, 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.restore();
-    }
-  }
-
-  function drawDogSprite(dog) {
-    const drawSize = 44;
+  if (catImg.complete && catImg.naturalWidth > 0) {
+    const cropX = catImg.naturalWidth * 0.08;
+    const cropY = catImg.naturalHeight * 0.18;
+    const cropW = catImg.naturalWidth * 0.72;
+    const cropH = catImg.naturalHeight * 0.62;
 
     ctx.save();
-    ctx.translate(dog.x, dog.y);
-    ctx.rotate(dog.facingAngle);
+    ctx.translate(cat.x, cat.y);
 
-    if (dog.img && dog.img.complete && dog.img.naturalWidth > 0) {
-      ctx.drawImage(dog.img, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
-    } else {
-      ctx.fillStyle = dog.color;
-
-      ctx.beginPath();
-      ctx.ellipse(0, 0, dog.size * 0.55, dog.size * 0.4, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.arc(dog.size * 0.45, -1, dog.size * 0.24, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(dog.size * 0.34, -dog.size * 0.14);
-      ctx.lineTo(dog.size * 0.42, -dog.size * 0.34);
-      ctx.lineTo(dog.size * 0.5, -dog.size * 0.14);
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(dog.size * 0.34, dog.size * 0.12);
-      ctx.lineTo(dog.size * 0.42, dog.size * 0.32);
-      ctx.lineTo(dog.size * 0.5, dog.size * 0.12);
-      ctx.fill();
+    if (cat.facing === "left") {
+      ctx.scale(-1, 1);
     }
+
+    if (cat.facing === "up" || cat.facing === "down") {
+      const verticalScale = 0.9;
+      ctx.scale(1, verticalScale);
+    }
+
+    ctx.drawImage(
+      catImg,
+      cropX,
+      cropY,
+      cropW,
+      cropH,
+      -drawW / 2,
+      -drawH / 2,
+      drawW,
+      drawH
+    );
+
+    ctx.restore();
+  } else {
+    ctx.save();
+    ctx.translate(cat.x, cat.y);
+
+    if (cat.facing === "left") {
+      ctx.scale(-1, 1);
+    }
+
+    ctx.fillStyle = "#111";
+    ctx.beginPath();
+    ctx.arc(0, 0, 16, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#fff";
+    ctx.beginPath();
+    ctx.arc(5, -3, 2, 0, Math.PI * 2);
+    ctx.arc(10, -3, 2, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.restore();
   }
+}
+
+ function drawDogSprite(dog) {
+  const drawW = 44;
+  const drawH = 44;
+
+  ctx.save();
+  ctx.translate(dog.x, dog.y);
+
+  if (dog.facing === "left") {
+    ctx.scale(-1, 1);
+  }
+
+  if (dog.facing === "up" || dog.facing === "down") {
+    const verticalScale = 0.9;
+    ctx.scale(1, verticalScale);
+  }
+
+  if (dog.img && dog.img.complete && dog.img.naturalWidth > 0) {
+    ctx.drawImage(
+      dog.img,
+      -drawW / 2,
+      -drawH / 2,
+      drawW,
+      drawH
+    );
+  } else {
+    ctx.fillStyle = dog.color;
+
+    ctx.beginPath();
+    ctx.ellipse(0, 0, dog.size * 0.55, dog.size * 0.4, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(dog.size * 0.45, -1, dog.size * 0.24, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(dog.size * 0.34, -dog.size * 0.14);
+    ctx.lineTo(dog.size * 0.42, -dog.size * 0.34);
+    ctx.lineTo(dog.size * 0.5, -dog.size * 0.14);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(dog.size * 0.34, dog.size * 0.12);
+    ctx.lineTo(dog.size * 0.42, dog.size * 0.32);
+    ctx.lineTo(dog.size * 0.5, dog.size * 0.12);
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
 
   function drawDogs() {
     dogs.forEach(dog => drawDogSprite(dog));
