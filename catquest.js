@@ -1,16 +1,16 @@
 window.addEventListener("load", () => {
   const canvas = document.getElementById("gameCanvas");
-  const ctx = canvas.getContext("2d");
-
   const timeEl = document.getElementById("time");
   const scoreEl = document.getElementById("score");
   const livesLostEl = document.getElementById("livesLost");
   const messageEl = document.getElementById("message");
 
-  if (!canvas || !ctx || !timeEl || !scoreEl || !livesLostEl || !messageEl) {
+  if (!canvas || !timeEl || !scoreEl || !livesLostEl || !messageEl) {
     console.error("Missing required HTML elements.");
     return;
   }
+
+  const ctx = canvas.getContext("2d");
 
   const TILE_SIZE = 40;
   const ROWS = 15;
@@ -45,7 +45,6 @@ window.addEventListener("load", () => {
 
   let maze = [];
   let treats = new Set();
-  let patrolTargets = [];
 
   let score = 0;
   let livesLost = 0;
@@ -54,7 +53,6 @@ window.addEventListener("load", () => {
   let timerInterval = null;
   let animationFrameId = null;
   let lastTime = 0;
-  let controlsBound = false;
 
   let startTile = { row: 1, col: 1 };
   let exitTile = { row: 13, col: 13 };
@@ -62,7 +60,6 @@ window.addEventListener("load", () => {
   const cat = {
     x: 0,
     y: 0,
-    size: 30,
     speed: 140,
     dirX: 0,
     dirY: 0,
@@ -74,9 +71,6 @@ window.addEventListener("load", () => {
   const catImg = new Image();
   catImg.src = "cat.jpg";
 
-  const treatImg = new Image();
-  treatImg.src = "treat.jpg";
-
   const dog1Img = new Image();
   dog1Img.src = "dog1.png";
 
@@ -86,12 +80,8 @@ window.addEventListener("load", () => {
   const dog3Img = new Image();
   dog3Img.src = "dog3.png";
 
-  function tileKey(row, col) {
-    return `${row},${col}`;
-  }
-
   function cloneMaze() {
-    return mazeTemplate.map(row => row.split(""));
+    return mazeTemplate.map(r => r.split(""));
   }
 
   function tileCenter(row, col) {
@@ -108,690 +98,219 @@ window.addEventListener("load", () => {
     };
   }
 
-  function isWalkableTile(row, col) {
-    return (
-      row >= 0 &&
-      row < ROWS &&
-      col >= 0 &&
-      col < COLS &&
-      maze[row] &&
-      maze[row][col] !== WALL
-    );
+  function isWalkable(row, col) {
+    return maze[row] && maze[row][col] !== WALL;
   }
 
   function getNeighbors(row, col) {
-    const candidates = [
+    return [
       { row, col: col + 1, dx: 1, dy: 0 },
       { row, col: col - 1, dx: -1, dy: 0 },
       { row: row + 1, col, dx: 0, dy: 1 },
       { row: row - 1, col, dx: 0, dy: -1 }
-    ];
-
-    return candidates.filter(n => isWalkableTile(n.row, n.col));
+    ].filter(n => isWalkable(n.row, n.col));
   }
 
-  function findNearestOpenCornerTargets() {
-    return [
-      { row: 1, col: 1 },
-      { row: 1, col: COLS - 2 },
-      { row: ROWS - 2, col: COLS - 2 },
-      { row: ROWS - 2, col: 1 }
-    ].filter(t => isWalkableTile(t.row, t.col));
-  }
-
-  function resetMazeAndTreats() {
+  function resetMaze() {
     maze = cloneMaze();
-    treats.clear();
 
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 0; col < COLS; col++) {
-        const cell = maze[row][col];
-
-        if (cell === START) {
-          startTile = { row, col };
-          maze[row][col] = PATH;
-        } else if (cell === EXIT) {
-          exitTile = { row, col };
-          maze[row][col] = PATH;
-        } else if (cell === TREAT) {
-          treats.add(tileKey(row, col));
-          maze[row][col] = PATH;
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (maze[r][c] === START) {
+          startTile = { row: r, col: c };
+          maze[r][c] = PATH;
+        }
+        if (maze[r][c] === EXIT) {
+          exitTile = { row: r, col: c };
+          maze[r][c] = PATH;
         }
       }
     }
-
-    patrolTargets = findNearestOpenCornerTargets();
   }
 
-  function updateFacing(entity) {
-    if (entity.dirX > 0) entity.facing = "right";
-    else if (entity.dirX < 0) entity.facing = "left";
-    else if (entity.dirY < 0) entity.facing = "up";
-    else if (entity.dirY > 0) entity.facing = "down";
-  }
-
-  function isDecisionPoint(entity) {
-    const tile = pixelToTile(entity.x, entity.y);
-    const center = tileCenter(tile.row, tile.col);
-    return Math.abs(entity.x - center.x) < 4 && Math.abs(entity.y - center.y) < 4;
-  }
-
-  function alignEntityToTileCenter(entity) {
-    const tile = pixelToTile(entity.x, entity.y);
-    const center = tileCenter(tile.row, tile.col);
-    entity.x = center.x;
-    entity.y = center.y;
-  }
-
-  function resetCatPosition() {
-    const pos = tileCenter(startTile.row, startTile.col);
-    cat.x = pos.x;
-    cat.y = pos.y;
+  function resetPositions() {
+    const start = tileCenter(startTile.row, startTile.col);
+    cat.x = start.x;
+    cat.y = start.y;
     cat.dirX = 0;
     cat.dirY = 0;
-    cat.facing = "right";
+
+    dogs.length = 0;
+
+    dogs.push(makeDog(exitTile.row, exitTile.col - 1, dog1Img, "guard"));
+    dogs.push(makeDog(exitTile.row, exitTile.col - 2, dog2Img, "chase"));
+    dogs.push(makeDog(exitTile.row - 1, exitTile.col, dog3Img, "wander"));
   }
 
-  function createDogs() {
-  dogs.length = 0;
-
-  const spawnTiles = [
-    { row: 13, col: 12 }, // left of exit
-    { row: 13, col: 11 }, // two left of exit
-    { row: 12, col: 13 }  // above exit
-  ];
-
-  dogs.push({
-    x: tileCenter(spawnTiles[0].row, spawnTiles[0].col).x,
-    y: tileCenter(spawnTiles[0].row, spawnTiles[0].col).y,
-    size: 24,
-    speed: 78,
-    dirX: -1,
-    dirY: 0,
-    type: "guardStart",
-    img: dog1Img,
-    color: "#8d6e63",
-    pathTimer: 0,
-    patrolIndex: 0,
-    facing: "left"
-  });
-
-  dogs.push({
-    x: tileCenter(spawnTiles[1].row, spawnTiles[1].col).x,
-    y: tileCenter(spawnTiles[1].row, spawnTiles[1].col).y,
-    size: 24,
-    speed: 86,
-    dirX: -1,
-    dirY: 0,
-    type: "stalker",
-    img: dog2Img,
-    color: "#cfa36f",
-    pathTimer: 0,
-    patrolIndex: 0,
-    facing: "left"
-  });
-
-  dogs.push({
-    x: tileCenter(spawnTiles[2].row, spawnTiles[2].col).x,
-    y: tileCenter(spawnTiles[2].row, spawnTiles[2].col).y,
-    size: 24,
-    speed: 74,
-    dirX: 0,
-    dirY: 1,
-    type: "patrol",
-    img: dog3Img,
-    color: "#555",
-    pathTimer: 0,
-    patrolIndex: 0,
-    facing: "right"
-  });
-}
-
-
-  function resetRoundPositions() {
-    resetCatPosition();
-    createDogs();
-  }
-
-  function isWallAtPixel(x, y, radius = 10) {
-    const testPoints = [
-      { x: x - radius, y: y - radius },
-      { x: x + radius, y: y - radius },
-      { x: x - radius, y: y + radius },
-      { x: x + radius, y: y + radius }
-    ];
-
-    for (const point of testPoints) {
-      const col = Math.floor(point.x / TILE_SIZE);
-      const row = Math.floor(point.y / TILE_SIZE);
-
-      if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
-        return true;
-      }
-
-      if (!maze[row] || maze[row][col] === WALL) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  function moveEntity(entity, dt) {
-  const radius = entity === cat ? 10 : 8;
-
-  const newX = entity.x + entity.dirX * entity.speed * dt;
-  const newY = entity.y + entity.dirY * entity.speed * dt;
-
-  if (!isWallAtPixel(newX, entity.y, radius)) {
-    entity.x = newX;
-  } else {
-    entity.dirX = 0;
-  }
-
-  if (!isWallAtPixel(entity.x, newY, radius)) {
-    entity.y = newY;
-  } else {
-    entity.dirY = 0;
-  }
-
-  updateFacing(entity);
-}
-
-  function collectTreats() {
-    const col = Math.floor(cat.x / TILE_SIZE);
-    const row = Math.floor(cat.y / TILE_SIZE);
-    const key = tileKey(row, col);
-
-    if (treats.has(key)) {
-      treats.delete(key);
-      score += 1;
-      scoreEl.textContent = score;
-    }
-  }
-
-  function distance(a, b) {
-    return Math.hypot(a.x - b.x, a.y - b.y);
-  }
-
-  function handleDogCollision() {
-    for (const dog of dogs) {
-      if (distance(cat, dog) < 24) {
-        livesLost += 1;
-        livesLostEl.textContent = livesLost;
-        messageEl.textContent = "Caught by a dog! Restarting from the entrance...";
-        resetRoundPositions();
-        return;
-      }
-    }
-  }
-
-  function findPathNextStep(fromRow, fromCol, toRow, toCol) {
-    if (fromRow === toRow && fromCol === toCol) return null;
-
-    const queue = [{ row: fromRow, col: fromCol }];
-    const visited = new Set([tileKey(fromRow, fromCol)]);
-    const cameFrom = new Map();
-
-    while (queue.length > 0) {
-      const current = queue.shift();
-
-      if (current.row === toRow && current.col === toCol) {
-        break;
-      }
-
-      const neighbors = getNeighbors(current.row, current.col);
-
-      for (const next of neighbors) {
-        const key = tileKey(next.row, next.col);
-        if (visited.has(key)) continue;
-
-        visited.add(key);
-        cameFrom.set(key, current);
-        queue.push({ row: next.row, col: next.col });
-      }
-    }
-
-    const targetKey = tileKey(toRow, toCol);
-    if (!cameFrom.has(targetKey)) return null;
-
-    let step = { row: toRow, col: toCol };
-    let prev = cameFrom.get(tileKey(step.row, step.col));
-
-    while (prev && !(prev.row === fromRow && prev.col === fromCol)) {
-      step = prev;
-      prev = cameFrom.get(tileKey(step.row, step.col));
-    }
-
+  function makeDog(row, col, img, type) {
+    const pos = tileCenter(row, col);
     return {
-      row: step.row,
-      col: step.col,
-      dx: Math.sign(step.col - fromCol),
-      dy: Math.sign(step.row - fromRow)
+      x: pos.x,
+      y: pos.y,
+      dirX: -1,
+      dirY: 0,
+      speed: 80,
+      img,
+      type,
+      facing: "left",
+      patrolIndex: 0
     };
   }
 
-function setDogDirectionToTile(dog, targetRow, targetCol) {
-  const from = pixelToTile(dog.x, dog.y);
-  const nextStep = findPathNextStep(from.row, from.col, targetRow, targetCol);
+  function moveEntity(e, dt) {
+    const nx = e.x + e.dirX * e.speed * dt;
+    const ny = e.y + e.dirY * e.speed * dt;
 
-  if (nextStep) {
-    dog.dirX = nextStep.dx;
-    dog.dirY = nextStep.dy;
-    updateFacing(dog);
-    return;
-  }
+    const t = pixelToTile(nx, ny);
 
-  const neighbors = getNeighbors(from.row, from.col);
-
-  if (neighbors.length > 0) {
-    const fallback = neighbors[Math.floor(Math.random() * neighbors.length)];
-    dog.dirX = fallback.dx;
-    dog.dirY = fallback.dy;
-    updateFacing(dog);
-  } else {
-    dog.dirX = 0;
-    dog.dirY = 0;
-  }
-}
-
-  function updateGuardStartDog(dog) {
-    setDogDirectionToTile(dog, startTile.row, startTile.col);
-  }
-
-  function updateStalkerDog(dog) {
-    const dogTile = pixelToTile(dog.x, dog.y);
-    const catTile = pixelToTile(cat.x, cat.y);
-    const d = distance(dog, cat);
-
-    if (d < TILE_SIZE * 1.5) {
-      const neighbors = getNeighbors(dogTile.row, dogTile.col);
-
-      let best = null;
-      let bestDist = -1;
-
-      for (const n of neighbors) {
-        const center = tileCenter(n.row, n.col);
-        const distToCat = Math.hypot(center.x - cat.x, center.y - cat.y);
-
-        if (distToCat > bestDist) {
-          bestDist = distToCat;
-          best = n;
-        }
-      }
-
-      if (best) {
-        dog.dirX = best.dx;
-        dog.dirY = best.dy;
-        updateFacing(dog);
-      } else {
-        dog.dirX = 0;
-        dog.dirY = 0;
-      }
+    if (isWalkable(t.row, t.col)) {
+      e.x = nx;
+      e.y = ny;
     } else {
-      setDogDirectionToTile(dog, catTile.row, catTile.col);
+      e.dirX = 0;
+      e.dirY = 0;
     }
+
+    if (e.dirX > 0) e.facing = "right";
+    if (e.dirX < 0) e.facing = "left";
   }
 
-  function updatePatrolDog(dog) {
-    if (!patrolTargets.length) return;
-
-    const dogTile = pixelToTile(dog.x, dog.y);
-    let target = patrolTargets[dog.patrolIndex];
-
-    if (dogTile.row === target.row && dogTile.col === target.col) {
-      dog.patrolIndex = (dog.patrolIndex + 1) % patrolTargets.length;
-      target = patrolTargets[dog.patrolIndex];
-    }
-
-    setDogDirectionToTile(dog, target.row, target.col);
+  function atCenter(e) {
+    const t = pixelToTile(e.x, e.y);
+    const c = tileCenter(t.row, t.col);
+    return Math.abs(e.x - c.x) < 4 && Math.abs(e.y - c.y) < 4;
   }
 
-function updateDogs(dt) {
-  dogs.forEach(dog => {
-    dog.pathTimer -= dt;
+  function chooseDirection(dog, targetRow, targetCol) {
+    const t = pixelToTile(dog.x, dog.y);
+    const options = getNeighbors(t.row, t.col);
 
-    if (dog.pathTimer <= 0 || isDecisionPoint(dog) || (dog.dirX === 0 && dog.dirY === 0)) {
-      alignEntityToTileCenter(dog);
+    if (!options.length) return;
 
-      if (dog.type === "guardStart") {
-        updateGuardStartDog(dog);
-      } else if (dog.type === "stalker") {
-        updateStalkerDog(dog);
-      } else if (dog.type === "patrol") {
-        updatePatrolDog(dog);
-      }
+    let best = options[0];
+    let bestScore = 9999;
 
-      if (dog.dirX === 0 && dog.dirY === 0) {
-        const tile = pixelToTile(dog.x, dog.y);
-        const neighbors = getNeighbors(tile.row, tile.col);
-
-        if (neighbors.length > 0) {
-          const fallback = neighbors[Math.floor(Math.random() * neighbors.length)];
-          dog.dirX = fallback.dx;
-          dog.dirY = fallback.dy;
-          updateFacing(dog);
-        }
-      }
-
-      dog.pathTimer = 0.25;
-    }
-
-    moveEntity(dog, dt);
-  });
-}
-
-  function drawMaze() {
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "#f8f8f8";
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 0; col < COLS; col++) {
-        if (maze[row][col] !== WALL) {
-          ctx.fillRect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-        }
-      }
-    }
-
-    ctx.strokeStyle = "#1e5eff";
-    ctx.lineWidth = 8;
-    ctx.lineCap = "round";
-
-    for (let row = 0; row < ROWS; row++) {
-      for (let col = 0; col < COLS; col++) {
-        if (maze[row][col] === WALL) {
-          const x = col * TILE_SIZE + TILE_SIZE / 2;
-          const y = row * TILE_SIZE + TILE_SIZE / 2;
-
-          const up = row > 0 && maze[row - 1][col] === WALL;
-          const down = row < ROWS - 1 && maze[row + 1][col] === WALL;
-          const left = col > 0 && maze[row][col - 1] === WALL;
-          const right = col < COLS - 1 && maze[row][col + 1] === WALL;
-
-          ctx.beginPath();
-
-          if (up) {
-            ctx.moveTo(x, y);
-            ctx.lineTo(x, y - TILE_SIZE / 2);
-          }
-
-          if (down) {
-            ctx.moveTo(x, y);
-            ctx.lineTo(x, y + TILE_SIZE / 2);
-          }
-
-          if (left) {
-            ctx.moveTo(x, y);
-            ctx.lineTo(x - TILE_SIZE / 2, y);
-          }
-
-          if (right) {
-            ctx.moveTo(x, y);
-            ctx.lineTo(x + TILE_SIZE / 2, y);
-          }
-
-          ctx.stroke();
-        }
-      }
-    }
-
-    const startPos = tileCenter(startTile.row, startTile.col);
-    const exitPos = tileCenter(exitTile.row, exitTile.col);
-
-    ctx.fillStyle = "#4fc3f7";
-    ctx.beginPath();
-    ctx.arc(startPos.x, startPos.y, 14, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = "#ff7043";
-    ctx.beginPath();
-    ctx.arc(exitPos.x, exitPos.y, 14, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  function drawTreats() {
-    treats.forEach(key => {
-      const [row, col] = key.split(",").map(Number);
-      const x = col * TILE_SIZE + 10;
-      const y = row * TILE_SIZE + 10;
-
-      if (treatImg.complete && treatImg.naturalWidth > 0) {
-        ctx.drawImage(treatImg, x, y, 20, 20);
-      } else {
-        ctx.fillStyle = "#ffd54f";
-        ctx.beginPath();
-        ctx.arc(x + 10, y + 10, 7, 0, Math.PI * 2);
-        ctx.fill();
+    options.forEach(o => {
+      const score = Math.abs(o.row - targetRow) + Math.abs(o.col - targetCol);
+      if (score < bestScore) {
+        bestScore = score;
+        best = o;
       }
     });
+
+    dog.dirX = best.dx;
+    dog.dirY = best.dy;
+  }
+
+  function updateDogs(dt) {
+    dogs.forEach(dog => {
+      if (atCenter(dog)) {
+        const catTile = pixelToTile(cat.x, cat.y);
+
+        if (dog.type === "guard") {
+          chooseDirection(dog, startTile.row, startTile.col);
+        }
+
+        if (dog.type === "chase") {
+          chooseDirection(dog, catTile.row, catTile.col);
+        }
+
+        if (dog.type === "wander") {
+          const options = getNeighbors(catTile.row, catTile.col);
+          if (options.length) {
+            const rand = options[Math.floor(Math.random() * options.length)];
+            dog.dirX = rand.dx;
+            dog.dirY = rand.dy;
+          }
+        }
+      }
+
+      moveEntity(dog, dt);
+    });
+  }
+    function drawMaze() {
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#eee";
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (maze[r][c] !== WALL) {
+          ctx.fillRect(c * TILE_SIZE, r * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+        }
+      }
+    }
   }
 
   function drawCat() {
-    if (catImg.complete && catImg.naturalWidth > 0) {
-      const drawSize = 76;
-      const cropX = catImg.naturalWidth * 0.08;
-      const cropY = catImg.naturalHeight * 0.18;
-      const cropW = catImg.naturalWidth * 0.72;
-      const cropH = catImg.naturalHeight * 0.62;
+    ctx.save();
+    ctx.translate(cat.x, cat.y);
 
-      ctx.save();
-      ctx.translate(cat.x, cat.y);
+    if (cat.facing === "left") ctx.scale(-1, 1);
 
-      if (cat.facing === "left") {
-        ctx.scale(-1, 1);
-      }
+    ctx.drawImage(catImg, -30, -30, 60, 60);
 
-      ctx.drawImage(
-        catImg,
-        cropX,
-        cropY,
-        cropW,
-        cropH,
-        -drawSize / 2,
-        -drawSize / 2,
-        drawSize,
-        drawSize
-      );
-
-      ctx.restore();
-    } else {
-      ctx.fillStyle = "#111";
-      ctx.beginPath();
-      ctx.arc(cat.x, cat.y, 16, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    ctx.restore();
   }
-
-  function drawDogSprite(dog) {
-  const drawSize = 34;
-
-  ctx.save();
-  ctx.translate(dog.x, dog.y);
-
-  if (dog.facing === "left") {
-    ctx.scale(-1, 1);
-  }
-
-  if (dog.img && dog.img.complete && dog.img.naturalWidth > 0) {
-    ctx.drawImage(
-      dog.img,
-      -drawSize / 2,
-      -drawSize / 2,
-      drawSize,
-      drawSize
-    );
-  } else {
-    ctx.fillStyle = dog.color;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 12, 9, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.beginPath();
-    ctx.arc(10, -1, 5, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  ctx.restore();
-}
 
   function drawDogs() {
-    dogs.forEach(drawDogSprite);
+    dogs.forEach(d => {
+      ctx.save();
+      ctx.translate(d.x, d.y);
+
+      if (d.facing === "left") ctx.scale(-1, 1);
+
+      ctx.drawImage(d.img, -20, -20, 40, 40);
+
+      ctx.restore();
+    });
   }
 
   function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawMaze();
-    drawTreats();
     drawCat();
     drawDogs();
   }
 
-  function endGame(win = false) {
-    gameOver = true;
-    clearInterval(timerInterval);
-    cancelAnimationFrame(animationFrameId);
-
-    if (win) {
-      messageEl.textContent = `You cleared every Dreamie with ${timeLeft} seconds left. Final score: ${score}`;
-    } else {
-      messageEl.textContent = `Time up. Final score: ${score}`;
-    }
-  }
-
-  function gameLoop(timestamp) {
+  function gameLoop(t) {
     if (gameOver) return;
 
-    if (!lastTime) lastTime = timestamp;
-    const dt = Math.min((timestamp - lastTime) / 1000, 0.033);
-    lastTime = timestamp;
+    if (!lastTime) lastTime = t;
+    const dt = (t - lastTime) / 1000;
+    lastTime = t;
 
     moveEntity(cat, dt);
     updateDogs(dt);
-    collectTreats();
-    handleDogCollision();
     draw();
-
-    if (treats.size === 0) {
-      endGame(true);
-      return;
-    }
 
     animationFrameId = requestAnimationFrame(gameLoop);
   }
 
   function startTimer() {
-    clearInterval(timerInterval);
     timerInterval = setInterval(() => {
-      if (gameOver) return;
-
-      timeLeft -= 1;
-      if (timeLeft < 0) timeLeft = 0;
+      timeLeft--;
       timeEl.textContent = timeLeft;
-
-      if (timeLeft <= 0) {
-        endGame(false);
-      }
+      if (timeLeft <= 0) gameOver = true;
     }, 1000);
   }
 
   function setCatDirection(dir) {
-    if (gameOver) return;
-
-    if (dir === "up") {
-      cat.dirX = 0;
-      cat.dirY = -1;
-    } else if (dir === "down") {
-      cat.dirX = 0;
-      cat.dirY = 1;
-    } else if (dir === "left") {
-      cat.dirX = -1;
-      cat.dirY = 0;
-    } else if (dir === "right") {
-      cat.dirX = 1;
-      cat.dirY = 0;
-    }
-
-    updateFacing(cat);
+    if (dir === "up") { cat.dirX = 0; cat.dirY = -1; }
+    if (dir === "down") { cat.dirX = 0; cat.dirY = 1; }
+    if (dir === "left") { cat.dirX = -1; cat.dirY = 0; }
+    if (dir === "right") { cat.dirX = 1; cat.dirY = 0; }
   }
 
-  function bindControls() {
-    if (controlsBound) return;
-    controlsBound = true;
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setCatDirection("up");
-      }
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setCatDirection("down");
-      }
-      if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        setCatDirection("left");
-      }
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        setCatDirection("right");
-      }
-    });
-
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-    canvas.addEventListener("touchstart", (e) => {
-      const touch = e.touches[0];
-      touchStartX = touch.clientX;
-      touchStartY = touch.clientY;
-      e.preventDefault();
-    }, { passive: false });
-
-    canvas.addEventListener("touchmove", (e) => {
-      e.preventDefault();
-    }, { passive: false });
-
-    canvas.addEventListener("touchend", (e) => {
-      const touch = e.changedTouches[0];
-      const dx = touch.clientX - touchStartX;
-      const dy = touch.clientY - touchStartY;
-
-      const absX = Math.abs(dx);
-      const absY = Math.abs(dy);
-
-      if (Math.max(absX, absY) < 20) {
-        e.preventDefault();
-        return;
-      }
-
-      if (absX > absY) {
-        if (dx > 0) setCatDirection("right");
-        else setCatDirection("left");
-      } else {
-        if (dy > 0) setCatDirection("down");
-        else setCatDirection("up");
-      }
-
-      e.preventDefault();
-    }, { passive: false });
-  }
+  document.addEventListener("keydown", e => {
+    if (e.key === "ArrowUp") setCatDirection("up");
+    if (e.key === "ArrowDown") setCatDirection("down");
+    if (e.key === "ArrowLeft") setCatDirection("left");
+    if (e.key === "ArrowRight") setCatDirection("right");
+  });
 
   function initGame() {
-    score = 0;
-    livesLost = 0;
-    timeLeft = 60;
-    gameOver = false;
-    lastTime = 0;
-
-    scoreEl.textContent = score;
-    livesLostEl.textContent = livesLost;
-    timeEl.textContent = timeLeft;
-    messageEl.textContent = "";
-
-    resetMazeAndTreats();
-    resetRoundPositions();
-    bindControls();
+    resetMaze();
+    resetPositions();
     draw();
     startTimer();
     animationFrameId = requestAnimationFrame(gameLoop);
