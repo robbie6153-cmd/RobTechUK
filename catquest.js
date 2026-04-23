@@ -156,14 +156,15 @@ window.addEventListener("load", () => {
     entity.x = center.x;
     entity.y = center.y;
   }
-function atTileCenter(entity, tolerance = 1.5) {
-  const tile = pixelToTile(entity.x, entity.y);
-  const center = tileCenter(tile.row, tile.col);
-  return (
-    Math.abs(entity.x - center.x) <= tolerance &&
-    Math.abs(entity.y - center.y) <= tolerance
-  );
-}
+
+  function atTileCenter(entity, tolerance = 1.5) {
+    const tile = pixelToTile(entity.x, entity.y);
+    const center = tileCenter(tile.row, tile.col);
+    return (
+      Math.abs(entity.x - center.x) <= tolerance &&
+      Math.abs(entity.y - center.y) <= tolerance
+    );
+  }
 
   function resetCatPosition() {
     const pos = tileCenter(startTile.row, startTile.col);
@@ -184,7 +185,7 @@ function atTileCenter(entity, tolerance = 1.5) {
       speed,
       img,
       facing: "left",
-      turnDelay: 0
+      wasCentered: true
     };
   }
 
@@ -194,6 +195,8 @@ function atTileCenter(entity, tolerance = 1.5) {
     dogs.push(makeDog(exitTile.row, exitTile.col - 1, dog1Img, 78));
     dogs.push(makeDog(exitTile.row, exitTile.col - 2, dog2Img, 86));
     dogs.push(makeDog(exitTile.row - 1, exitTile.col, dog3Img, 74));
+
+    dogs.forEach(dog => chooseDogDirection(dog, true));
   }
 
   function resetRoundPositions() {
@@ -228,47 +231,52 @@ function atTileCenter(entity, tolerance = 1.5) {
     updateFacing(entity);
   }
 
- function updateDogs(dt) {
-  dogs.forEach(dog => {
-    dog.turnDelay -= dt;
+  function chooseDogDirection(dog, allowReverse = false) {
+    const tile = pixelToTile(dog.x, dog.y);
+    let options = getNeighbors(tile.row, tile.col);
 
-    const centered = atTileCenter(dog, 1.5);
-
-    if (centered) {
-      snapToTileCenter(dog);
-    }
-
-    if (
-      (centered && dog.turnDelay <= 0) ||
-      (dog.dirX === 0 && dog.dirY === 0)
-    ) {
-      const tile = pixelToTile(dog.x, dog.y);
-      let options = getNeighbors(tile.row, tile.col);
-
-      if (options.length === 0) return;
-
+    if (!allowReverse) {
       const reverseX = -dog.dirX;
       const reverseY = -dog.dirY;
-
       const nonReverse = options.filter(
         o => !(o.dx === reverseX && o.dy === reverseY)
       );
-
       if (nonReverse.length > 0) {
         options = nonReverse;
       }
-
-      const choice = options[Math.floor(Math.random() * options.length)];
-
-      dog.dirX = choice.dx;
-      dog.dirY = choice.dy;
-      dog.turnDelay = 0.18;
-      updateFacing(dog);
     }
 
-    moveEntity(dog, dt);
-  });
-}
+    if (options.length === 0) {
+      dog.dirX = 0;
+      dog.dirY = 0;
+      return;
+    }
+
+    const choice = options[Math.floor(Math.random() * options.length)];
+    dog.dirX = choice.dx;
+    dog.dirY = choice.dy;
+    updateFacing(dog);
+  }
+
+  function updateDogs(dt) {
+    dogs.forEach(dog => {
+      moveEntity(dog, dt);
+
+      const centered = atTileCenter(dog, 1.5);
+
+      if (centered && !dog.wasCentered) {
+        snapToTileCenter(dog);
+        chooseDogDirection(dog, false);
+      }
+
+      if (dog.dirX === 0 && dog.dirY === 0) {
+        snapToTileCenter(dog);
+        chooseDogDirection(dog, true);
+      }
+
+      dog.wasCentered = centered;
+    });
+  }
 
   function collectTreats() {
     const tile = pixelToTile(cat.x, cat.y);
