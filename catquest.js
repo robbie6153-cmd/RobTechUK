@@ -289,19 +289,61 @@ window.addEventListener("load", () => {
     updateFacing(dog);
   }
 
-  function updateDogs() {
-    dogs.forEach(dog => {
-      if (!atTileCenter(dog, 5)) return;
-
+function updateDogs(dt) {
+  dogs.forEach(dog => {
+    if (atTileCenter(dog, 6) || (dog.dirX === 0 && dog.dirY === 0)) {
       snapToTileCenter(dog);
 
       const dogTile = pixelToTile(dog.x, dog.y);
       const catTile = pixelToTile(cat.x, cat.y);
+      let options = getNeighbors(dogTile.row, dogTile.col);
+
+      if (options.length === 0) return;
+
+      const reverseX = -dog.dirX;
+      const reverseY = -dog.dirY;
+
+      const nonReverse = options.filter(
+        o => !(o.dx === reverseX && o.dy === reverseY)
+      );
+      if (nonReverse.length > 0) {
+        options = nonReverse;
+      }
+
+      let choice = options[0];
 
       if (dog.type === "guard") {
-        chooseDirectionToward(dog, startTile.row, startTile.col);
+        let bestScore = Infinity;
+        options.forEach(o => {
+          const score = Math.abs(o.row - startTile.row) + Math.abs(o.col - startTile.col);
+          if (score < bestScore) {
+            bestScore = score;
+            choice = o;
+          }
+        });
       } else if (dog.type === "chase") {
-        chooseDirectionToward(dog, catTile.row, catTile.col);
+        const tooClose = Math.hypot(dog.x - cat.x, dog.y - cat.y) < TILE_SIZE * 1.5;
+
+        if (tooClose) {
+          let bestScore = -Infinity;
+          options.forEach(o => {
+            const center = tileCenter(o.row, o.col);
+            const score = Math.hypot(center.x - cat.x, center.y - cat.y);
+            if (score > bestScore) {
+              bestScore = score;
+              choice = o;
+            }
+          });
+        } else {
+          let bestScore = Infinity;
+          options.forEach(o => {
+            const score = Math.abs(o.row - catTile.row) + Math.abs(o.col - catTile.col);
+            if (score < bestScore) {
+              bestScore = score;
+              choice = o;
+            }
+          });
+        }
       } else if (dog.type === "patrol") {
         const corners = [
           { row: 1, col: 1 },
@@ -311,12 +353,30 @@ window.addEventListener("load", () => {
         ].filter(c => isWalkable(c.row, c.col));
 
         let target = corners[dog.patrolIndex] || corners[0];
+
         if (dogTile.row === target.row && dogTile.col === target.col) {
           dog.patrolIndex = (dog.patrolIndex + 1) % corners.length;
           target = corners[dog.patrolIndex];
         }
-        chooseDirectionToward(dog, target.row, target.col);
+
+        let bestScore = Infinity;
+        options.forEach(o => {
+          const score = Math.abs(o.row - target.row) + Math.abs(o.col - target.col);
+          if (score < bestScore) {
+            bestScore = score;
+            choice = o;
+          }
+        });
       }
+
+      dog.dirX = choice.dx;
+      dog.dirY = choice.dy;
+      updateFacing(dog);
+    }
+
+    moveEntity(dog, dt);
+  });
+}
 
       if (dog.type === "chase" && Math.hypot(dog.x - cat.x, dog.y - cat.y) < TILE_SIZE * 1.5) {
         chooseDirectionAway(dog, cat.x, cat.y);
@@ -419,26 +479,41 @@ window.addEventListener("load", () => {
     });
   }
 
-  function drawCat() {
-    if (catImg.complete && catImg.naturalWidth > 0) {
-      const drawSize = 76;
+function drawCat() {
+  if (catImg.complete && catImg.naturalWidth > 0) {
+    const drawSize = 76;
+    const cropX = catImg.naturalWidth * 0.08;
+    const cropY = catImg.naturalHeight * 0.18;
+    const cropW = catImg.naturalWidth * 0.72;
+    const cropH = catImg.naturalHeight * 0.62;
 
-      ctx.save();
-      ctx.translate(cat.x, cat.y);
+    ctx.save();
+    ctx.translate(cat.x, cat.y);
 
-      if (cat.facing === "left") {
-        ctx.scale(-1, 1);
-      }
-
-      ctx.drawImage(catImg, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
-      ctx.restore();
-    } else {
-      ctx.fillStyle = "#111";
-      ctx.beginPath();
-      ctx.arc(cat.x, cat.y, 16, 0, Math.PI * 2);
-      ctx.fill();
+    if (cat.facing === "left") {
+      ctx.scale(-1, 1);
     }
+
+    ctx.drawImage(
+      catImg,
+      cropX,
+      cropY,
+      cropW,
+      cropH,
+      -drawSize / 2,
+      -drawSize / 2,
+      drawSize,
+      drawSize
+    );
+
+    ctx.restore();
+  } else {
+    ctx.fillStyle = "#111";
+    ctx.beginPath();
+    ctx.arc(cat.x, cat.y, 16, 0, Math.PI * 2);
+    ctx.fill();
   }
+}
 
   function drawDogSprite(dog) {
     const drawSize = 34;
@@ -494,7 +569,7 @@ window.addEventListener("load", () => {
     lastTime = timestamp;
 
     moveEntity(cat, dt);
-    updateDogs();
+    updateDogs(dt);
     dogs.forEach(dog => moveEntity(dog, dt));
     collectTreats();
     handleDogCollision();
