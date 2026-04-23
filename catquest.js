@@ -156,15 +156,14 @@ window.addEventListener("load", () => {
     entity.x = center.x;
     entity.y = center.y;
   }
-
-  function atTileCenter(entity, tolerance = 6) {
-    const tile = pixelToTile(entity.x, entity.y);
-    const center = tileCenter(tile.row, tile.col);
-    return (
-      Math.abs(entity.x - center.x) <= tolerance &&
-      Math.abs(entity.y - center.y) <= tolerance
-    );
-  }
+function atTileCenter(entity, tolerance = 1.5) {
+  const tile = pixelToTile(entity.x, entity.y);
+  const center = tileCenter(tile.row, tile.col);
+  return (
+    Math.abs(entity.x - center.x) <= tolerance &&
+    Math.abs(entity.y - center.y) <= tolerance
+  );
+}
 
   function resetCatPosition() {
     const pos = tileCenter(startTile.row, startTile.col);
@@ -229,44 +228,47 @@ window.addEventListener("load", () => {
     updateFacing(entity);
   }
 
-  function updateDogs(dt) {
-    dogs.forEach(dog => {
-      dog.turnDelay -= dt;
+ function updateDogs(dt) {
+  dogs.forEach(dog => {
+    dog.turnDelay -= dt;
 
-      if (
-        atTileCenter(dog, 8) ||
-        (dog.dirX === 0 && dog.dirY === 0) ||
-        dog.turnDelay <= 0
-      ) {
-        snapToTileCenter(dog);
+    const centered = atTileCenter(dog, 1.5);
 
-        const tile = pixelToTile(dog.x, dog.y);
-        let options = getNeighbors(tile.row, tile.col);
+    if (centered) {
+      snapToTileCenter(dog);
+    }
 
-        if (options.length === 0) return;
+    if (
+      (centered && dog.turnDelay <= 0) ||
+      (dog.dirX === 0 && dog.dirY === 0)
+    ) {
+      const tile = pixelToTile(dog.x, dog.y);
+      let options = getNeighbors(tile.row, tile.col);
 
-        const reverseX = -dog.dirX;
-        const reverseY = -dog.dirY;
+      if (options.length === 0) return;
 
-        const nonReverse = options.filter(
-          o => !(o.dx === reverseX && o.dy === reverseY)
-        );
+      const reverseX = -dog.dirX;
+      const reverseY = -dog.dirY;
 
-        if (nonReverse.length > 0) {
-          options = nonReverse;
-        }
+      const nonReverse = options.filter(
+        o => !(o.dx === reverseX && o.dy === reverseY)
+      );
 
-        const choice = options[Math.floor(Math.random() * options.length)];
-
-        dog.dirX = choice.dx;
-        dog.dirY = choice.dy;
-        dog.turnDelay = 0.2;
-        updateFacing(dog);
+      if (nonReverse.length > 0) {
+        options = nonReverse;
       }
 
-      moveEntity(dog, dt);
-    });
-  }
+      const choice = options[Math.floor(Math.random() * options.length)];
+
+      dog.dirX = choice.dx;
+      dog.dirY = choice.dy;
+      dog.turnDelay = 0.18;
+      updateFacing(dog);
+    }
+
+    moveEntity(dog, dt);
+  });
+}
 
   function collectTreats() {
     const tile = pixelToTile(cat.x, cat.y);
