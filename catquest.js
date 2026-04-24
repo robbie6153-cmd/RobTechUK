@@ -415,7 +415,7 @@ window.addEventListener("load", () => {
   }
 
   function drawDogSprite(dog) {
-    const drawSize = 34;
+    const drawSize = 44;
 
     ctx.save();
     ctx.translate(dog.x, dog.y);
