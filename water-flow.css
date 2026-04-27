@@ -88,9 +88,9 @@ body {
   height: 128px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-  gap: 4px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 6px;
 }
 
 .wf-queue-cell {
@@ -212,9 +212,9 @@ body {
   }
 
   .wf-queue-grid {
-    width: 104px;
-    height: 104px;
-  }
+  width: 96px;
+  height: 96px;
+}
 
   .wf-queue-cell {
     font-size: 20px;
