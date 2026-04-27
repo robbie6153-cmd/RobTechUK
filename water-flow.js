@@ -101,7 +101,7 @@ function startGame() {
 }
 
 function spawnTile() {
-  if (!gameRunning || waterStarted) return;
+  if (!gameRunning) return;
 
   if (queue.length >= QUEUE_LIMIT) {
     gameOver("Game over! The waiting area filled up.");
@@ -154,7 +154,7 @@ function renderQueue() {
 }
 
 function placeTile(row, col) {
-  if (!gameRunning || waterStarted) return;
+if (!gameRunning) return;
   if (selectedTile === null || !queue[selectedTile]) return;
   if (grid[row][col]) return;
 
@@ -170,7 +170,7 @@ function placeTile(row, col) {
 }
 
 function placeDraggedTile(row, col) {
-  if (!gameRunning || waterStarted) return;
+if (!gameRunning) return;
   if (draggedTileIndex === null || !queue[draggedTileIndex]) return;
   if (grid[row][col]) return;
 
@@ -197,7 +197,6 @@ function addTileToGrid(row, col, tile) {
 function startWater() {
   waterStarted = true;
   clearInterval(buildTimer);
-  clearInterval(spawnTimer);
 
   messageEl.textContent = "Water is flowing!";
   waterPos = { row: 0, col: 0 };
