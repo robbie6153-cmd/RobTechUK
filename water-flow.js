@@ -13,13 +13,17 @@ let draggedTileIndex = null;
 
 let score = 0;
 let timeLeft = BUILD_TIME;
+let flowTime = 0;
+
 let buildTimer = null;
 let spawnTimer = null;
 let waterTimer = null;
+let flowClock = null;
+
 let gameRunning = false;
 let waterStarted = false;
 let waterPos = { row: 0, col: 0 };
-let waterDir = "right";
+let waterDir = "down";
 let crossPasses = {};
 
 const waterGrid = document.getElementById("waterGrid");
@@ -30,6 +34,8 @@ const scoreEl = document.getElementById("score");
 const messageEl = document.getElementById("gameMessage");
 const startBtn = document.getElementById("startBtn");
 const resetBtn = document.getElementById("resetBtn");
+const rulesOverlay = document.getElementById("rulesOverlay");
+const rulesPlayBtn = document.getElementById("rulesPlayBtn");
 
 const TILE_TYPES = [
   { type: "horizontal", symbol: "━", exits: ["left", "right"] },
@@ -78,9 +84,14 @@ function initGrid() {
 function startGame() {
   resetGame(false);
 
+  if (rulesOverlay) rulesOverlay.style.display = "none";
+
   gameRunning = true;
   startBtn.disabled = true;
   messageEl.textContent = "Arrange the pipes before the water starts!";
+
+  timerEl.classList.remove("timer-flow");
+  timerEl.classList.add("timer-build");
 
   upcomingTile = randomTile();
 
@@ -154,9 +165,8 @@ function renderQueue() {
 }
 
 function placeTile(row, col) {
-if (!gameRunning) return;
+  if (!gameRunning) return;
   if (selectedTile === null || !queue[selectedTile]) return;
-  if (grid[row][col]) return;
 
   const tile = queue[selectedTile];
   addTileToGrid(row, col, tile);
@@ -164,15 +174,12 @@ if (!gameRunning) return;
   queue.splice(selectedTile, 1);
   selectedTile = null;
 
-  score += 1;
-  updateDisplay();
   renderQueue();
 }
 
 function placeDraggedTile(row, col) {
-if (!gameRunning) return;
+  if (!gameRunning) return;
   if (draggedTileIndex === null || !queue[draggedTileIndex]) return;
-  if (grid[row][col]) return;
 
   const tile = queue[draggedTileIndex];
   addTileToGrid(row, col, tile);
@@ -181,27 +188,45 @@ if (!gameRunning) return;
   draggedTileIndex = null;
   selectedTile = null;
 
-  score += 1;
-  updateDisplay();
   renderQueue();
 }
 
 function addTileToGrid(row, col, tile) {
+  if (grid[row][col]) {
+    score -= 1;
+    messageEl.textContent = "Tile replaced. -1 point.";
+  } else {
+    score += 1;
+  }
+
   grid[row][col] = tile;
 
   const cell = getCell(row, col);
   cell.innerHTML = `<span class="pipe-symbol">${tile.symbol}</span>`;
   cell.classList.add("has-tile");
+
+  updateDisplay();
 }
 
 function startWater() {
   waterStarted = true;
   clearInterval(buildTimer);
 
+  flowTime = 0;
+  timerEl.classList.remove("timer-build");
+  timerEl.classList.add("timer-flow");
+  timerEl.textContent = "0";
+
   messageEl.textContent = "Water is flowing!";
   waterPos = { row: 0, col: 0 };
-  waterDir = "right";
+  waterDir = "down";
 
+  flowClock = setInterval(() => {
+    flowTime++;
+    timerEl.textContent = flowTime;
+  }, 1000);
+
+  moveWater();
   waterTimer = setInterval(moveWater, WATER_SPEED_MS);
 }
 
@@ -222,7 +247,7 @@ function moveWater() {
 
   const enteringFrom = opposite(waterDir);
 
-  if (!tile.exits.includes(enteringFrom) && !(row === 0 && col === 0)) {
+  if (!tile.exits.includes(enteringFrom)) {
     gameOver("Game over! The pipe connection failed.");
     return;
   }
@@ -232,6 +257,9 @@ function moveWater() {
 
   const pipe = cell.querySelector(".pipe-symbol");
   if (pipe) pipe.classList.add("pipe-water");
+
+  score += 1;
+  updateDisplay();
 
   if (tile.type === "cross") {
     const key = `${row}-${col}`;
@@ -283,7 +311,7 @@ function getCell(row, col) {
 }
 
 function updateDisplay() {
-  timerEl.textContent = timeLeft;
+  if (!waterStarted) timerEl.textContent = timeLeft;
   scoreEl.textContent = score;
 }
 
@@ -291,6 +319,7 @@ function gameOver(text) {
   clearInterval(buildTimer);
   clearInterval(spawnTimer);
   clearInterval(waterTimer);
+  clearInterval(flowClock);
 
   gameRunning = false;
   messageEl.textContent = text;
@@ -299,6 +328,8 @@ function gameOver(text) {
 
 function winGame() {
   clearInterval(waterTimer);
+  clearInterval(flowClock);
+  clearInterval(spawnTimer);
 
   gameRunning = false;
   score += 25;
@@ -312,6 +343,7 @@ function resetGame(showMessage = true) {
   clearInterval(buildTimer);
   clearInterval(spawnTimer);
   clearInterval(waterTimer);
+  clearInterval(flowClock);
 
   queue = [];
   upcomingTile = null;
@@ -320,11 +352,15 @@ function resetGame(showMessage = true) {
 
   score = 0;
   timeLeft = BUILD_TIME;
+  flowTime = 0;
   waterStarted = false;
   gameRunning = false;
   waterPos = { row: 0, col: 0 };
-  waterDir = "right";
+  waterDir = "down";
   crossPasses = {};
+
+  timerEl.classList.remove("timer-flow");
+  timerEl.classList.add("timer-build");
 
   initGrid();
   renderQueue();
@@ -339,5 +375,9 @@ function resetGame(showMessage = true) {
 
 startBtn.addEventListener("click", startGame);
 resetBtn.addEventListener("click", () => resetGame(true));
+
+if (rulesPlayBtn) {
+  rulesPlayBtn.addEventListener("click", startGame);
+}
 
 resetGame(true);
