@@ -230,24 +230,25 @@ function startWater() {
     timerEl.textContent = flowTime;
   }, 1000);
 
-  moveWater();
-  waterTimer = setInterval(moveWater, WATER_SPEED_MS);
+const cell = getCell(row, col);
+const pipe = cell.querySelector(".pipe-symbol");
+
+if (pipe) {
+  if (tile.type === "cross") {
+    if (enteringFrom === "left" || enteringFrom === "right") {
+      pipe.textContent = "━";
+    }
+
+    if (enteringFrom === "up" || enteringFrom === "down") {
+      pipe.textContent = "┃";
+    }
+
+    pipe.classList.add("pipe-water");
+  } else {
+    cell.classList.add("water-passed");
+    pipe.classList.add("pipe-water");
+  }
 }
-
-function moveWater() {
-  const { row, col } = waterPos;
-
-  if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
-    gameOver("Game over! The water escaped the grid.");
-    return;
-  }
-
-  const tile = grid[row][col];
-
-  if (!tile) {
-    gameOver("Game over! The water hit a hole.");
-    return;
-  }
 
   const enteringFrom = opposite(waterDir);
 

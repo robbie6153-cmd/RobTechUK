@@ -353,34 +353,3 @@ body {
   font-size: 16px;
   margin: 12px 0 18px;
 }
-.tile.water-horizontal::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 40%;
-  height: 20%;
-  background: #1e90ff;
-}
-
-.tile.water-vertical::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 40%;
-  width: 20%;
-  background: #1e90ff;
-}
-.tile {
-  position: relative;
-}
-.pipe-symbol.pipe-water-horizontal {
-  color: #1e90ff;
-  text-shadow: 0 0 8px #1e90ff;
-}
-
-.pipe-symbol.pipe-water-vertical {
-  color: #1e90ff;
-  text-shadow: 0 0 8px #1e90ff;
-}
