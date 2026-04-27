@@ -323,3 +323,33 @@ body {
   50% { transform: translateY(6px); }
   100% { transform: translateY(0); }
 }
+.wf-gameover-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 1000;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.wf-gameover-box {
+  width: min(90vw, 360px);
+  background: rgba(120, 0, 0, 0.95);
+  border: 3px solid #ff3b3b;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.wf-gameover-box h1 {
+  color: #ff3b3b;
+  margin-top: 0;
+}
+
+.wf-gameover-box p {
+  font-size: 16px;
+  margin: 12px 0 18px;
+}

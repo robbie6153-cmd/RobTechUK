@@ -29,6 +29,8 @@
 
     <p>Guide the water from the top-left start square to the highlighted finish square in the bottom-right. Cross tiles can be used horizontally and vertically. If the water passes through the same cross tile twice in different directions, you earn a 10 point bonus.</p>
 
+<p>Be careful of the 4 box tile queue. If this overflows then it is game over.</p>
+
     <p>Reach the finish square to win and earn a 25 point bonus.</p>
 
     <button id="rulesPlayBtn" class="wf-button">Play Game</button>
@@ -85,7 +87,14 @@
     <p class="wf-home-link">
       <a href="arcade.html">Back to Arcade</a>
     </p>
+<div id="gameOverOverlay" class="wf-gameover-overlay">
+  <div class="wf-gameover-box">
+    <h1 id="gameOverTitle">Game Over</h1>
+    <p id="gameOverText">The water escaped the grid.</p>
 
+    <button id="playAgainBtn" class="wf-button">Play Again</button>
+  </div>
+</div>
   </main>
 
   <script src="water-flow.js?v=1"></script>

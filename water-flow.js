@@ -4,6 +4,9 @@ const BUILD_TIME = 30;
 const QUEUE_LIMIT = 4;
 const TILE_SPAWN_MS = 2000;
 const WATER_SPEED_MS = 1000;
+const gameOverOverlay = document.getElementById("gameOverOverlay");
+const gameOverText = document.getElementById("gameOverText");
+const playAgainBtn = document.getElementById("playAgainBtn");
 
 let grid = [];
 let queue = [];
@@ -83,6 +86,7 @@ function initGrid() {
 
 function startGame() {
   resetGame(false);
+  if (gameOverOverlay) gameOverOverlay.style.display = "none";
 
   if (rulesOverlay) rulesOverlay.style.display = "none";
 
@@ -322,8 +326,19 @@ function gameOver(text) {
   clearInterval(flowClock);
 
   gameRunning = false;
-  messageEl.textContent = text;
+
+  if (gameOverOverlay) {
+    gameOverOverlay.style.display = "flex";
+    gameOverText.textContent = text;
+  }
+
   startBtn.disabled = false;
+}
+if (playAgainBtn) {
+  playAgainBtn.addEventListener("click", () => {
+    if (gameOverOverlay) gameOverOverlay.style.display = "none";
+    startGame();
+  });
 }
 
 function winGame() {
@@ -344,7 +359,7 @@ function resetGame(showMessage = true) {
   clearInterval(spawnTimer);
   clearInterval(waterTimer);
   clearInterval(flowClock);
-
+if (gameOverOverlay) gameOverOverlay.style.display = "none";
   queue = [];
   upcomingTile = null;
   selectedTile = null;
