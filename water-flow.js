@@ -4,6 +4,7 @@ const BUILD_TIME = 30;
 const QUEUE_LIMIT = 4;
 const TILE_SPAWN_MS = 2000;
 const WATER_SPEED_MS = 2000;
+
 const gameOverOverlay = document.getElementById("gameOverOverlay");
 const gameOverText = document.getElementById("gameOverText");
 const playAgainBtn = document.getElementById("playAgainBtn");
@@ -86,8 +87,8 @@ function initGrid() {
 
 function startGame() {
   resetGame(false);
-  if (gameOverOverlay) gameOverOverlay.style.display = "none";
 
+  if (gameOverOverlay) gameOverOverlay.style.display = "none";
   if (rulesOverlay) rulesOverlay.style.display = "none";
 
   gameRunning = true;
@@ -230,25 +231,24 @@ function startWater() {
     timerEl.textContent = flowTime;
   }, 1000);
 
-const cell = getCell(row, col);
-const pipe = cell.querySelector(".pipe-symbol");
-
-if (pipe) {
-  if (tile.type === "cross") {
-    if (enteringFrom === "left" || enteringFrom === "right") {
-      pipe.textContent = "━";
-    }
-
-    if (enteringFrom === "up" || enteringFrom === "down") {
-      pipe.textContent = "┃";
-    }
-
-    pipe.classList.add("pipe-water");
-  } else {
-    cell.classList.add("water-passed");
-    pipe.classList.add("pipe-water");
-  }
+  moveWater();
+  waterTimer = setInterval(moveWater, WATER_SPEED_MS);
 }
+
+function moveWater() {
+  const { row, col } = waterPos;
+
+  if (row < 0 || row >= ROWS || col < 0 || col >= COLS) {
+    gameOver("Game over! The water escaped the grid.");
+    return;
+  }
+
+  const tile = grid[row][col];
+
+  if (!tile) {
+    gameOver("Game over! The water hit a hole.");
+    return;
+  }
 
   const enteringFrom = opposite(waterDir);
 
@@ -257,24 +257,25 @@ if (pipe) {
     return;
   }
 
- const cell = getCell(row, col);
+  const cell = getCell(row, col);
+  const pipe = cell.querySelector(".pipe-symbol");
 
-const pipe = cell.querySelector(".pipe-symbol");
+  if (pipe) {
+    if (tile.type === "cross") {
+      if (enteringFrom === "left" || enteringFrom === "right") {
+        pipe.textContent = "━";
+      }
 
-if (pipe) {
-  if (tile.type === "cross") {
-    if (enteringFrom === "left" || enteringFrom === "right") {
-      pipe.classList.add("pipe-water-horizontal");
+      if (enteringFrom === "up" || enteringFrom === "down") {
+        pipe.textContent = "┃";
+      }
+
+      pipe.classList.add("pipe-water");
+    } else {
+      cell.classList.add("water-passed");
+      pipe.classList.add("pipe-water");
     }
-
-    if (enteringFrom === "up" || enteringFrom === "down") {
-      pipe.classList.add("pipe-water-vertical");
-    }
-  } else {
-    cell.classList.add("water-passed");
-    pipe.classList.add("pipe-water");
   }
-}
 
   score += 1;
   updateDisplay();
@@ -348,6 +349,7 @@ function gameOver(text) {
 
   startBtn.disabled = false;
 }
+
 if (playAgainBtn) {
   playAgainBtn.addEventListener("click", () => {
     if (gameOverOverlay) gameOverOverlay.style.display = "none";
@@ -373,7 +375,9 @@ function resetGame(showMessage = true) {
   clearInterval(spawnTimer);
   clearInterval(waterTimer);
   clearInterval(flowClock);
-if (gameOverOverlay) gameOverOverlay.style.display = "none";
+
+  if (gameOverOverlay) gameOverOverlay.style.display = "none";
+
   queue = [];
   upcomingTile = null;
   selectedTile = null;
