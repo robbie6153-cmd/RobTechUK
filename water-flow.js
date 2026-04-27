@@ -1,14 +1,16 @@
-// Water Flow MVP
-
 const COLS = 7;
 const ROWS = 9;
 const BUILD_TIME = 30;
 const QUEUE_LIMIT = 4;
-const TILE_SPAWN_MS = 5000;
+const TILE_SPAWN_MS = 2000;
+const WATER_SPEED_MS = 1000;
 
 let grid = [];
 let queue = [];
+let upcomingTile = null;
 let selectedTile = null;
+let draggedTileIndex = null;
+
 let score = 0;
 let timeLeft = BUILD_TIME;
 let buildTimer = null;
@@ -39,6 +41,10 @@ const TILE_TYPES = [
   { type: "cross", symbol: "╋", exits: ["up", "down", "left", "right"] }
 ];
 
+function randomTile() {
+  return TILE_TYPES[Math.floor(Math.random() * TILE_TYPES.length)];
+}
+
 function initGrid() {
   grid = [];
   waterGrid.innerHTML = "";
@@ -58,25 +64,29 @@ function initGrid() {
       if (r === ROWS - 1 && c === COLS - 1) cell.classList.add("wf-finish");
 
       cell.addEventListener("click", () => placeTile(r, c));
+      cell.addEventListener("dragover", e => e.preventDefault());
+      cell.addEventListener("drop", e => {
+        e.preventDefault();
+        placeDraggedTile(r, c);
+      });
 
       waterGrid.appendChild(cell);
     }
   }
 }
 
-function randomTile() {
-  return TILE_TYPES[Math.floor(Math.random() * TILE_TYPES.length)];
-}
-
 function startGame() {
-  resetGame();
+  resetGame(false);
 
   gameRunning = true;
-  messageEl.textContent = "Place pipes before the water starts!";
   startBtn.disabled = true;
+  messageEl.textContent = "Arrange the pipes before the water starts!";
+
+  upcomingTile = randomTile();
 
   spawnTile();
   updateDisplay();
+  renderQueue();
 
   buildTimer = setInterval(() => {
     timeLeft--;
@@ -94,11 +104,13 @@ function spawnTile() {
   if (!gameRunning || waterStarted) return;
 
   if (queue.length >= QUEUE_LIMIT) {
-    gameOver("Game over! The tile queue filled up.");
+    gameOver("Game over! The waiting area filled up.");
     return;
   }
 
-  queue.push(randomTile());
+  queue.push(upcomingTile || randomTile());
+  upcomingTile = randomTile();
+
   renderQueue();
 }
 
@@ -108,9 +120,11 @@ function renderQueue() {
   cells.forEach((cell, index) => {
     cell.textContent = "";
     cell.classList.remove("selected");
+    cell.removeAttribute("draggable");
 
     if (queue[index]) {
       cell.textContent = queue[index].symbol;
+      cell.draggable = true;
       cell.dataset.index = index;
 
       cell.onclick = () => {
@@ -118,28 +132,34 @@ function renderQueue() {
         renderQueue();
       };
 
+      cell.ondragstart = () => {
+        draggedTileIndex = index;
+      };
+
+      cell.ondragend = () => {
+        draggedTileIndex = null;
+      };
+
       if (selectedTile === index) {
         cell.classList.add("selected");
       }
     } else {
       cell.onclick = null;
+      cell.ondragstart = null;
+      cell.ondragend = null;
     }
   });
 
-  nextTile.textContent = queue[0] ? queue[0].symbol : "?";
+  nextTile.textContent = upcomingTile ? upcomingTile.symbol : "?";
 }
 
 function placeTile(row, col) {
   if (!gameRunning || waterStarted) return;
   if (selectedTile === null || !queue[selectedTile]) return;
+  if (grid[row][col]) return;
 
   const tile = queue[selectedTile];
-
-  grid[row][col] = tile;
-
-  const cell = getCell(row, col);
-  cell.textContent = tile.symbol;
-  cell.classList.add("has-tile");
+  addTileToGrid(row, col, tile);
 
   queue.splice(selectedTile, 1);
   selectedTile = null;
@@ -147,6 +167,31 @@ function placeTile(row, col) {
   score += 1;
   updateDisplay();
   renderQueue();
+}
+
+function placeDraggedTile(row, col) {
+  if (!gameRunning || waterStarted) return;
+  if (draggedTileIndex === null || !queue[draggedTileIndex]) return;
+  if (grid[row][col]) return;
+
+  const tile = queue[draggedTileIndex];
+  addTileToGrid(row, col, tile);
+
+  queue.splice(draggedTileIndex, 1);
+  draggedTileIndex = null;
+  selectedTile = null;
+
+  score += 1;
+  updateDisplay();
+  renderQueue();
+}
+
+function addTileToGrid(row, col, tile) {
+  grid[row][col] = tile;
+
+  const cell = getCell(row, col);
+  cell.innerHTML = `<span class="pipe-symbol">${tile.symbol}</span>`;
+  cell.classList.add("has-tile");
 }
 
 function startWater() {
@@ -158,7 +203,7 @@ function startWater() {
   waterPos = { row: 0, col: 0 };
   waterDir = "right";
 
-  waterTimer = setInterval(moveWater, 700);
+  waterTimer = setInterval(moveWater, WATER_SPEED_MS);
 }
 
 function moveWater() {
@@ -172,19 +217,22 @@ function moveWater() {
   const tile = grid[row][col];
 
   if (!tile) {
-    gameOver("Game over! The water hit an empty square.");
+    gameOver("Game over! The water hit a hole.");
     return;
   }
 
   const enteringFrom = opposite(waterDir);
 
   if (!tile.exits.includes(enteringFrom) && !(row === 0 && col === 0)) {
-    gameOver("Game over! The pipes did not connect.");
+    gameOver("Game over! The pipe connection failed.");
     return;
   }
 
   const cell = getCell(row, col);
-  cell.classList.add("water");
+  cell.classList.add("water-passed");
+
+  const pipe = cell.querySelector(".pipe-symbol");
+  if (pipe) pipe.classList.add("pipe-water");
 
   if (tile.type === "cross") {
     const key = `${row}-${col}`;
@@ -216,12 +264,11 @@ function moveWater() {
 }
 
 function getNextDirection(tile, enteringFrom) {
-  const exits = tile.exits.filter(exit => exit !== enteringFrom);
-
   if (tile.type === "cross") {
     return opposite(enteringFrom);
   }
 
+  const exits = tile.exits.filter(exit => exit !== enteringFrom);
   return exits[0];
 }
 
@@ -258,17 +305,20 @@ function winGame() {
   score += 25;
   updateDisplay();
 
-  messageEl.textContent = "You win! Water reached the bottom-right corner. +25 bonus!";
+  messageEl.textContent = "You win! Water reached the finish. +25 bonus!";
   startBtn.disabled = false;
 }
 
-function resetGame() {
+function resetGame(showMessage = true) {
   clearInterval(buildTimer);
   clearInterval(spawnTimer);
   clearInterval(waterTimer);
 
   queue = [];
+  upcomingTile = null;
   selectedTile = null;
+  draggedTileIndex = null;
+
   score = 0;
   timeLeft = BUILD_TIME;
   waterStarted = false;
@@ -281,11 +331,14 @@ function resetGame() {
   renderQueue();
   updateDisplay();
 
-  messageEl.textContent = "Place pipes before the water starts.";
+  if (showMessage) {
+    messageEl.textContent = "Press Start Game to begin.";
+  }
+
   startBtn.disabled = false;
 }
 
 startBtn.addEventListener("click", startGame);
-resetBtn.addEventListener("click", resetGame);
+resetBtn.addEventListener("click", () => resetGame(true));
 
-resetGame();
+resetGame(true);

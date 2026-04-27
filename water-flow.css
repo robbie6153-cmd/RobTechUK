@@ -134,8 +134,8 @@ body {
   background: #d7ecff;
   color: #062033;
   border-radius: 5px;
-  border: 1px solid #ffffff;
-  font-size: clamp(22px, 7vw, 34px);
+  border: 3px solid #ffffff;
+  font-size: clamp(24px, 8vw, 38px);
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -156,8 +156,21 @@ body {
 }
 
 .wf-cell.water {
-  background: #39bfff;
-  box-shadow: 0 0 10px #39bfff;
+  background: #d7ecff;
+}
+.pipe-symbol {
+  display: inline-block;
+  color: #062033;
+  line-height: 1;
+}
+
+.pipe-symbol.pipe-water {
+  color: #0099ff;
+  text-shadow: 0 0 8px #00c8ff;
+}
+
+.wf-cell.water-passed {
+  background: #eefaff;
 }
 
 .wf-message {
@@ -174,13 +187,14 @@ body {
 }
 
 .wf-button {
-  border: none;
-  border-radius: 10px;
-  padding: 10px 16px;
+  border: 3px solid #ffffff;
+  border-radius: 12px;
+  padding: 12px 18px;
   background: #28ff87;
   color: #062033;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 16px;
+  box-shadow: 0 4px 0 #0f8f4d;
 }
 
 .wf-button.secondary {
@@ -216,9 +230,17 @@ body {
   height: 96px;
 }
 
-  .wf-queue-cell {
-    font-size: 20px;
-  }
+ .wf-queue-cell {
+  background: #d7ecff;
+  color: #062033;
+  border: 3px solid #ffffff;
+  border-radius: 6px;
+  font-size: 28px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
   .wf-main-grid {
     width: min(92vw, 310px);
@@ -232,4 +254,12 @@ body {
   .wf-button {
     padding: 8px 12px;
   }
+}
+#startBtn {
+  background: #28ff87;
+  transform: scale(1.08);
+}
+
+.wf-buttons {
+  margin-top: 6px;
 }
