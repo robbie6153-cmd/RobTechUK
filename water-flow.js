@@ -3,7 +3,7 @@ const ROWS = 9;
 const BUILD_TIME = 30;
 const QUEUE_LIMIT = 4;
 const TILE_SPAWN_MS = 2000;
-const WATER_SPEED_MS = 1000;
+const WATER_SPEED_MS = 2000;
 const gameOverOverlay = document.getElementById("gameOverOverlay");
 const gameOverText = document.getElementById("gameOverText");
 const playAgainBtn = document.getElementById("playAgainBtn");
@@ -256,11 +256,24 @@ function moveWater() {
     return;
   }
 
-  const cell = getCell(row, col);
-  cell.classList.add("water-passed");
+ const cell = getCell(row, col);
 
-  const pipe = cell.querySelector(".pipe-symbol");
-  if (pipe) pipe.classList.add("pipe-water");
+const pipe = cell.querySelector(".pipe-symbol");
+
+if (pipe) {
+  if (tile.type === "cross") {
+    if (enteringFrom === "left" || enteringFrom === "right") {
+      pipe.classList.add("pipe-water-horizontal");
+    }
+
+    if (enteringFrom === "up" || enteringFrom === "down") {
+      pipe.classList.add("pipe-water-vertical");
+    }
+  } else {
+    cell.classList.add("water-passed");
+    pipe.classList.add("pipe-water");
+  }
+}
 
   score += 1;
   updateDisplay();
