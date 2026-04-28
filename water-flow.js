@@ -2,8 +2,8 @@ const COLS = 7;
 const ROWS = 9;
 const BUILD_TIME = 30;
 const QUEUE_LIMIT = 4;
-const TILE_SPAWN_MS = 2500;
-const WATER_SPEED_MS = 2000;
+const TILE_SPAWN_MS = 2000;
+const WATER_SPEED_MS = 2500;
 
 const gameOverOverlay = document.getElementById("gameOverOverlay");
 const gameOverText = document.getElementById("gameOverText");
