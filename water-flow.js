@@ -2,7 +2,7 @@ const COLS = 7;
 const ROWS = 9;
 const BUILD_TIME = 30;
 const QUEUE_LIMIT = 4;
-const TILE_SPAWN_MS = 2000;
+const TILE_SPAWN_MS = 2500;
 const WATER_SPEED_MS = 2000;
 
 const gameOverOverlay = document.getElementById("gameOverOverlay");
@@ -308,9 +308,12 @@ function moveWater() {
     const pipe = cell.querySelector(".pipe-symbol");
 
     if (pipe) {
-      cell.classList.add("water-passed");
-      pipe.classList.add("pipe-water");
-    }
+  cell.classList.add("water-passed");
+
+  pipe.classList.remove("pipe-water");
+  void pipe.offsetWidth; // restarts animation
+  pipe.classList.add("pipe-water");
+}
   }
 
   score += 1;
