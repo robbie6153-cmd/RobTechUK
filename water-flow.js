@@ -305,13 +305,23 @@ function moveWater() {
       messageEl.textContent = "Cross tile bonus! +10";
     }
   } else {
-    const pipe = cell.querySelector(".pipe-symbol");
+const pipe = cell.querySelector(".pipe-symbol");
 
-    if (pipe) {
+if (pipe) {
   cell.classList.add("water-passed");
 
+  // 🔥 ADD THESE LINES HERE
+  const symbol = pipe.textContent;
+
+  if (symbol === "│") pipe.classList.add("vertical");
+  if (symbol === "─") pipe.classList.add("horizontal");
+  if (symbol === "┌" || symbol === "┐" || symbol === "└" || symbol === "┘") {
+    pipe.classList.add("corner");
+  }
+
+  // restart animation
   pipe.classList.remove("pipe-water");
-  void pipe.offsetWidth; // restarts animation
+  void pipe.offsetWidth;
   pipe.classList.add("pipe-water");
 }
   }
