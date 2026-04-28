@@ -41,6 +41,8 @@ const resetBtn = document.getElementById("resetBtn");
 const rulesOverlay = document.getElementById("rulesOverlay");
 const rulesPlayBtn = document.getElementById("rulesPlayBtn");
 
+const HIGH_SCORE_KEY = "waterflow_high_scores_v1";
+
 const TILE_TYPES = [
   { type: "horizontal", symbol: "━", exits: ["left", "right"] },
   { type: "vertical", symbol: "┃", exits: ["up", "down"] },
@@ -207,7 +209,18 @@ function addTileToGrid(row, col, tile) {
   grid[row][col] = tile;
 
   const cell = getCell(row, col);
-  cell.innerHTML = `<span class="pipe-symbol">${tile.symbol}</span>`;
+
+  if (tile.type === "cross") {
+    cell.innerHTML = `
+      <span class="pipe-symbol cross-symbol">
+        <span class="cross-line cross-horizontal"></span>
+        <span class="cross-line cross-vertical"></span>
+      </span>
+    `;
+  } else {
+    cell.innerHTML = `<span class="pipe-symbol">${tile.symbol}</span>`;
+  }
+
   cell.classList.add("has-tile");
 
   updateDisplay();
@@ -258,20 +271,43 @@ function moveWater() {
   }
 
   const cell = getCell(row, col);
-  const pipe = cell.querySelector(".pipe-symbol");
 
-  if (pipe) {
-    if (tile.type === "cross") {
-      if (enteringFrom === "left" || enteringFrom === "right") {
-        pipe.textContent = "━";
-      }
+  if (tile.type === "cross") {
+    const key = `${row}-${col}`;
 
-      if (enteringFrom === "up" || enteringFrom === "down") {
-        pipe.textContent = "┃";
-      }
+    if (!crossPasses[key]) {
+      crossPasses[key] = {
+        horizontal: false,
+        vertical: false,
+        count: 0
+      };
+    }
 
-      pipe.classList.add("pipe-water");
-    } else {
+    if (enteringFrom === "left" || enteringFrom === "right") {
+      crossPasses[key].horizontal = true;
+
+      const horizontal = cell.querySelector(".cross-horizontal");
+      if (horizontal) horizontal.classList.add("pipe-water");
+    }
+
+    if (enteringFrom === "up" || enteringFrom === "down") {
+      crossPasses[key].vertical = true;
+
+      const vertical = cell.querySelector(".cross-vertical");
+      if (vertical) vertical.classList.add("pipe-water");
+    }
+
+    crossPasses[key].count++;
+
+    if (crossPasses[key].count === 2) {
+      score += 10;
+      updateDisplay();
+      messageEl.textContent = "Cross tile bonus! +10";
+    }
+  } else {
+    const pipe = cell.querySelector(".pipe-symbol");
+
+    if (pipe) {
       cell.classList.add("water-passed");
       pipe.classList.add("pipe-water");
     }
@@ -279,17 +315,6 @@ function moveWater() {
 
   score += 1;
   updateDisplay();
-
-  if (tile.type === "cross") {
-    const key = `${row}-${col}`;
-    crossPasses[key] = (crossPasses[key] || 0) + 1;
-
-    if (crossPasses[key] === 2) {
-      score += 10;
-      updateDisplay();
-      messageEl.textContent = "Cross tile bonus! +10";
-    }
-  }
 
   if (row === ROWS - 1 && col === COLS - 1) {
     winGame();
@@ -342,19 +367,64 @@ function gameOver(text) {
 
   gameRunning = false;
 
+  const qualifies = scoreQualifies(score);
+
   if (gameOverOverlay) {
     gameOverOverlay.style.display = "flex";
-    gameOverText.textContent = text;
+  }
+
+  if (gameOverText) {
+    gameOverText.innerHTML = `
+      <h2>Game Over</h2>
+      <p>${text}</p>
+      <p>Final score: <strong>${score}</strong></p>
+
+      ${
+        qualifies
+          ? `
+            <div class="high-score-entry">
+              <h3>New High Score!</h3>
+              <p>Enter name, max 7 letters:</p>
+              <input id="highScoreNameInput" maxlength="7" placeholder="PLAYER">
+              <button id="saveHighScoreBtn">Save Score</button>
+            </div>
+          `
+          : `<p>You did not reach the top 100 this time.</p>`
+      }
+
+      <div id="gameOverHighScores">
+        ${getHighScoresHtml()}
+      </div>
+    `;
+  }
+
+  const saveBtn = document.getElementById("saveHighScoreBtn");
+
+  if (saveBtn) {
+    saveBtn.addEventListener("click", () => {
+      const input = document.getElementById("highScoreNameInput");
+
+      let name = input.value.trim().toUpperCase();
+      name = name.replace(/[^A-Z0-9]/g, "");
+      name = name.substring(0, 7);
+
+      if (!name) name = "PLAYER";
+
+      saveHighScore(name, score);
+
+      const entryBox = document.querySelector(".high-score-entry");
+      if (entryBox) {
+        entryBox.innerHTML = `<h3>Score Saved!</h3>`;
+      }
+
+      const scoresBox = document.getElementById("gameOverHighScores");
+      if (scoresBox) {
+        scoresBox.innerHTML = getHighScoresHtml();
+      }
+    });
   }
 
   startBtn.disabled = false;
-}
-
-if (playAgainBtn) {
-  playAgainBtn.addEventListener("click", () => {
-    if (gameOverOverlay) gameOverOverlay.style.display = "none";
-    startGame();
-  });
 }
 
 function winGame() {
@@ -367,6 +437,64 @@ function winGame() {
   updateDisplay();
 
   messageEl.textContent = "You win! Water reached the finish. +25 bonus!";
+
+  const qualifies = scoreQualifies(score);
+
+  if (gameOverOverlay) {
+    gameOverOverlay.style.display = "flex";
+  }
+
+  if (gameOverText) {
+    gameOverText.innerHTML = `
+      <h2>You Win!</h2>
+      <p>Water reached the finish.</p>
+      <p>Final score: <strong>${score}</strong></p>
+
+      ${
+        qualifies
+          ? `
+            <div class="high-score-entry">
+              <h3>New High Score!</h3>
+              <p>Enter name, max 7 letters:</p>
+              <input id="highScoreNameInput" maxlength="7" placeholder="PLAYER">
+              <button id="saveHighScoreBtn">Save Score</button>
+            </div>
+          `
+          : `<p>You did not reach the top 100 this time.</p>`
+      }
+
+      <div id="gameOverHighScores">
+        ${getHighScoresHtml()}
+      </div>
+    `;
+  }
+
+  const saveBtn = document.getElementById("saveHighScoreBtn");
+
+  if (saveBtn) {
+    saveBtn.addEventListener("click", () => {
+      const input = document.getElementById("highScoreNameInput");
+
+      let name = input.value.trim().toUpperCase();
+      name = name.replace(/[^A-Z0-9]/g, "");
+      name = name.substring(0, 7);
+
+      if (!name) name = "PLAYER";
+
+      saveHighScore(name, score);
+
+      const entryBox = document.querySelector(".high-score-entry");
+      if (entryBox) {
+        entryBox.innerHTML = `<h3>Score Saved!</h3>`;
+      }
+
+      const scoresBox = document.getElementById("gameOverHighScores");
+      if (scoresBox) {
+        scoresBox.innerHTML = getHighScoresHtml();
+      }
+    });
+  }
+
   startBtn.disabled = false;
 }
 
@@ -406,6 +534,258 @@ function resetGame(showMessage = true) {
   startBtn.disabled = false;
 }
 
+/* -------------------------
+   HIGH SCORES
+------------------------- */
+
+function loadHighScores() {
+  const saved = localStorage.getItem(HIGH_SCORE_KEY);
+
+  if (!saved) return [];
+
+  try {
+    return JSON.parse(saved);
+  } catch {
+    return [];
+  }
+}
+
+function saveHighScores(scores) {
+  localStorage.setItem(HIGH_SCORE_KEY, JSON.stringify(scores));
+}
+
+function saveHighScore(name, scoreValue) {
+  const scores = loadHighScores();
+
+  scores.push({
+    name,
+    score: scoreValue,
+    date: new Date().toISOString()
+  });
+
+  scores.sort((a, b) => b.score - a.score);
+
+  saveHighScores(scores.slice(0, 100));
+}
+
+function scoreQualifies(scoreValue) {
+  const scores = loadHighScores();
+
+  if (scores.length < 100) return true;
+
+  return scoreValue > scores[scores.length - 1].score;
+}
+
+function getHighScoresHtml() {
+  const scores = loadHighScores();
+
+  if (!scores.length) {
+    return `
+      <div class="high-score-list">
+        <h3>High Scores</h3>
+        <p>No scores yet.</p>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="high-score-list">
+      <h3>High Scores</h3>
+      <ol>
+        ${scores.map(item => `
+          <li>
+            <span>${escapeHtml(item.name)}</span>
+            <strong>${item.score}</strong>
+          </li>
+        `).join("")}
+      </ol>
+    </div>
+  `;
+}
+
+function showHighScoresPopup() {
+  let popup = document.getElementById("highScoresPopup");
+
+  if (!popup) {
+    popup = document.createElement("div");
+    popup.id = "highScoresPopup";
+    popup.className = "high-scores-popup";
+    document.body.appendChild(popup);
+  }
+
+  popup.innerHTML = `
+    <div class="high-scores-inner">
+      <button id="closeHighScoresBtn" class="close-high-scores">×</button>
+      ${getHighScoresHtml()}
+    </div>
+  `;
+
+  popup.style.display = "flex";
+
+  document.getElementById("closeHighScoresBtn").addEventListener("click", () => {
+    popup.style.display = "none";
+  });
+}
+
+function addHighScoresButtonToRules() {
+  if (!rulesPlayBtn) return;
+  if (document.getElementById("rulesHighScoresBtn")) return;
+
+  const btn = document.createElement("button");
+  btn.id = "rulesHighScoresBtn";
+  btn.textContent = "High Scores";
+  btn.type = "button";
+
+  btn.addEventListener("click", showHighScoresPopup);
+
+  rulesPlayBtn.insertAdjacentElement("afterend", btn);
+}
+
+function escapeHtml(text) {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+/* -------------------------
+   CSS FOR CROSS + SCORES
+------------------------- */
+
+function injectExtraStyles() {
+  const style = document.createElement("style");
+
+  style.textContent = `
+    .cross-symbol {
+      position: relative;
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      font-size: inherit;
+    }
+
+    .cross-line {
+      position: absolute;
+      background: black;
+      border-radius: 999px;
+    }
+
+    .cross-horizontal {
+      left: 0;
+      right: 0;
+      top: 43%;
+      height: 14%;
+    }
+
+    .cross-vertical {
+      top: 0;
+      bottom: 0;
+      left: 43%;
+      width: 14%;
+    }
+
+    .cross-line.pipe-water {
+      background: #00aaff;
+    }
+
+    .high-score-entry {
+      margin: 12px auto;
+      padding: 10px;
+      border: 2px solid #00ff66;
+      border-radius: 10px;
+      max-width: 280px;
+    }
+
+    #highScoreNameInput {
+      text-transform: uppercase;
+      text-align: center;
+      font-size: 18px;
+      max-width: 140px;
+      padding: 8px;
+      margin: 8px;
+    }
+
+    #saveHighScoreBtn,
+    #rulesHighScoresBtn {
+      padding: 10px 14px;
+      margin: 8px;
+      font-weight: bold;
+      border-radius: 8px;
+      border: 2px solid #00ff66;
+      background: #111;
+      color: #00ff66;
+      cursor: pointer;
+    }
+
+    .high-score-list {
+      margin-top: 12px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .high-score-list ol {
+      padding-left: 25px;
+      text-align: left;
+    }
+
+    .high-score-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 4px 0;
+      font-family: monospace;
+    }
+
+    .high-scores-popup {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .high-scores-inner {
+      background: white;
+      color: black;
+      width: 90%;
+      max-width: 420px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 20px;
+      border-radius: 14px;
+      position: relative;
+      text-align: center;
+    }
+
+    .close-high-scores {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      border: none;
+      background: none;
+      font-size: 28px;
+      cursor: pointer;
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+/* -------------------------
+   BUTTONS
+------------------------- */
+
+if (playAgainBtn) {
+  playAgainBtn.addEventListener("click", () => {
+    if (gameOverOverlay) gameOverOverlay.style.display = "none";
+    startGame();
+  });
+}
+
 startBtn.addEventListener("click", startGame);
 resetBtn.addEventListener("click", () => resetGame(true));
 
@@ -413,4 +793,10 @@ if (rulesPlayBtn) {
   rulesPlayBtn.addEventListener("click", startGame);
 }
 
+/* -------------------------
+   INIT
+------------------------- */
+
+injectExtraStyles();
+addHighScoresButtonToRules();
 resetGame(true);
