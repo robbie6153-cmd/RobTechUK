@@ -307,8 +307,10 @@ function moveWater() {
   } else {
 const pipe = cell.querySelector(".pipe-symbol");
 
-if (pipe) {
+iif (pipe) {
   cell.classList.add("water-passed");
+  pipe.classList.add("pipe-water");
+}
 
   // 🔥 ADD THESE LINES HERE
   const symbol = pipe.textContent;

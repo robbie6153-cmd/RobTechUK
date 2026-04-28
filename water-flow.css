@@ -165,9 +165,8 @@ body {
 }
 
 .pipe-symbol.pipe-water {
-  position: relative;
-  overflow: hidden;
-  color: #062033; /* keep pipe base colour */
+  color: #0099ff;
+  text-shadow: 0 0 8px #00c8ff;
 }
 
 .wf-cell.water-passed {
@@ -361,48 +360,3 @@ body {
   line-height: 1;
 }
 
-/* water overlay */
-.pipe-symbol.pipe-water::after {
-  content: "";
-  position: absolute;
-  background: #0099ff;
-  box-shadow: 0 0 8px #00c8ff;
-  animation: flowVertical 2.5s linear forwards;
-}
-.pipe-symbol.pipe-water.vertical::after {
-  width: 20%;
-  height: 100%;
-  left: 40%;
-  top: 0;
-}
-.pipe-symbol.pipe-water.horizontal::after {
-  height: 20%;
-  width: 100%;
-  top: 40%;
-  left: 0;
-  animation: flowHorizontal 2.5s linear forwards;
-}
-.pipe-symbol.pipe-water.corner::after {
-  width: 20%;
-  height: 100%;
-  left: 40%;
-  top: 0;
-  animation: flowVertical 2.5s linear forwards;
-}
-@keyframes flowVertical {
-  from {
-    transform: translateY(-100%);
-  }
-  to {
-    transform: translateY(100%);
-  }
-}
-
-@keyframes flowHorizontal {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(100%);
-  }
-}
