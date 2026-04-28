@@ -307,23 +307,8 @@ function moveWater() {
   } else {
 const pipe = cell.querySelector(".pipe-symbol");
 
-iif (pipe) {
+if (pipe) {
   cell.classList.add("water-passed");
-  pipe.classList.add("pipe-water");
-}
-
-  // 🔥 ADD THESE LINES HERE
-  const symbol = pipe.textContent;
-
-  if (symbol === "│") pipe.classList.add("vertical");
-  if (symbol === "─") pipe.classList.add("horizontal");
-  if (symbol === "┌" || symbol === "┐" || symbol === "└" || symbol === "┘") {
-    pipe.classList.add("corner");
-  }
-
-  // restart animation
-  pipe.classList.remove("pipe-water");
-  void pipe.offsetWidth;
   pipe.classList.add("pipe-water");
 }
   }
