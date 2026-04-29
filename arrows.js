@@ -116,22 +116,23 @@ function getNextIndex(index, direction, inverse = false) {
 
 function moveColour(colour, inverse = false) {
   const oldBoard = cloneBoard(board);
-  const newBoard = cloneBoard(board);
+  const newBoard = new Array(TOTAL);
 
   for (let i = 0; i < TOTAL; i++) {
-    if (oldBoard[i].colour === colour) {
-      const next = getNextIndex(i, oldBoard[i].arrow, inverse);
-      newBoard[next] = oldBoard[i];
+    const tile = oldBoard[i];
+
+    if (tile.colour === colour) {
+      const next = getNextIndex(i, tile.arrow, inverse);
+      newBoard[next] = tile;
+    } else {
+      // temporarily leave blank
+      newBoard[i] = null;
     }
   }
 
+  // fill remaining spots with unmoved tiles
   for (let i = 0; i < TOTAL; i++) {
-    const tileMovedHere = oldBoard.find((tile, oldIndex) => {
-      if (tile.colour !== colour) return false;
-      return getNextIndex(oldIndex, tile.arrow, inverse) === i;
-    });
-
-    if (!tileMovedHere && oldBoard[i].colour !== colour) {
+    if (!newBoard[i]) {
       newBoard[i] = oldBoard[i];
     }
   }
