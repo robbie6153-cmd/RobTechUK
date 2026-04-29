@@ -31,12 +31,12 @@ let solutionMoves = [];
 
 const patterns = [
   [
-    "WBWBWB",
-    "BWBWBW",
-    "WBWBWB",
-    "BWBWBW",
-    "WBWBWB",
-    "BWBWBW"
+    "WWWWWW",
+    "BBBBBB",
+    "WWWWWW",
+    "BBBBBB",
+    "WWWWWW",
+    "BBBBBB"
   ],
   [
     "WWWBBB",
@@ -55,20 +55,20 @@ const patterns = [
     "BBWWBB"
   ],
   [
-    "WWWWWW",
-    "BBBBBB",
-    "WWWWWW",
-    "BBBBBB",
-    "WWWWWW",
-    "BBBBBB"
-  ],
-  [
     "WBBBBW",
     "BWBBWB",
     "BBWBBB",
     "BBWBBB",
     "BWBBWB",
     "WBBBBW"
+  ],
+  [
+    "WBWBWB",
+    "BWBWBW",
+    "WBWBWB",
+    "BWBWBW",
+    "WBWBWB",
+    "BWBWBW"
   ]
 ];
 

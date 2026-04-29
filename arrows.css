@@ -91,7 +91,7 @@ h1 {
 
 .middle-row {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   gap: 5px;
 }
@@ -104,10 +104,16 @@ h1 {
   margin: 5px 0;
 }
 
+
 .side-arrows {
+  height: 312px;
   display: grid;
   grid-template-rows: repeat(6, 1fr);
   gap: 5px;
+}
+
+.side-arrows .arrow-btn {
+  height: 100%;
 }
 
 .arrow-btn {
