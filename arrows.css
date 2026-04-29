@@ -140,3 +140,12 @@ a {
   padding: 18px;
   max-width: 360px;
 }
+.top-back-btn {
+  flex: 1;
+  background: #21a84a;
+  border: 2px solid #00ff88;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  padding: 7px 4px;
+}

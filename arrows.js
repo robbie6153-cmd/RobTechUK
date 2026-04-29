@@ -10,10 +10,12 @@ const messageText = document.getElementById("messageText");
 const resetBtn = document.getElementById("resetBtn");
 const hintBtn = document.getElementById("hintBtn");
 const rulesBtn = document.getElementById("rulesBtn");
+const backBtn = document.getElementById("backBtn");
 const rulesOverlay = document.getElementById("rulesOverlay");
 const closeRulesBtn = document.getElementById("closeRulesBtn");
 
-const arrows = ["up", "down", "left", "right"];
+const arrows = ["up", "right", "down", "left"];
+
 const arrowSymbols = {
   up: "↑",
   down: "↓",
@@ -30,14 +32,16 @@ let hintsLeft = 3;
 let board = [];
 let startingBoard = [];
 let targetPattern = [];
+let moveHistory = [];
+
 let plannedSolution = [];
 let solutionStep = 0;
 
 const roundSolutions = [
   ["black", "white", "black"],
   ["white", "black", "black", "white"],
-  ["black", "black", "white", "black", "white"],
-  ["white", "black", "white", "white", "black", "black"],
+  ["black", "white", "black", "white", "black"],
+  ["white", "black", "white", "black", "white", "black"],
   ["black", "white", "black", "white", "black", "white", "black"]
 ];
 
@@ -63,7 +67,7 @@ function createTargets(roundNumber) {
     }
 
     if (roundNumber === 4) {
-      const isT = row === 0 || row === 1 || col === 2 || col === 3;
+      const isT = row < 2 || col === 2 || col === 3;
       pattern.push(isT ? "black" : "white");
     }
 
@@ -75,10 +79,10 @@ function createTargets(roundNumber) {
   return pattern;
 }
 
-function createTargetBoard(pattern) {
-  return pattern.map(colour => ({
+function createSolvedBoard(pattern) {
+  return pattern.map((colour, index) => ({
     colour,
-    arrow: arrows[Math.floor(Math.random() * arrows.length)]
+    arrow: arrows[index % arrows.length]
   }));
 }
 
@@ -111,14 +115,24 @@ function getNextIndex(index, direction, inverse = false) {
 }
 
 function moveColour(colour, inverse = false) {
+  const oldBoard = cloneBoard(board);
   const newBoard = cloneBoard(board);
 
   for (let i = 0; i < TOTAL; i++) {
-    if (board[i].colour === colour) {
-      const next = getNextIndex(i, board[i].arrow, inverse);
-      const temp = newBoard[next];
-      newBoard[next] = newBoard[i];
-      newBoard[i] = temp;
+    if (oldBoard[i].colour === colour) {
+      const next = getNextIndex(i, oldBoard[i].arrow, inverse);
+      newBoard[next] = oldBoard[i];
+    }
+  }
+
+  for (let i = 0; i < TOTAL; i++) {
+    const tileMovedHere = oldBoard.find((tile, oldIndex) => {
+      if (tile.colour !== colour) return false;
+      return getNextIndex(oldIndex, tile.arrow, inverse) === i;
+    });
+
+    if (!tileMovedHere && oldBoard[i].colour !== colour) {
+      newBoard[i] = oldBoard[i];
     }
   }
 
@@ -127,9 +141,10 @@ function moveColour(colour, inverse = false) {
 
 function scrambleFromTarget() {
   targetPattern = createTargets(round);
-  board = createTargetBoard(targetPattern);
+  board = createSolvedBoard(targetPattern);
 
   plannedSolution = roundSolutions[round - 1];
+
   const backwards = [...plannedSolution].reverse();
 
   backwards.forEach(colour => {
@@ -152,7 +167,7 @@ function renderTarget() {
 function renderBoard() {
   gameGrid.innerHTML = "";
 
-  board.forEach((tile) => {
+  board.forEach(tile => {
     const square = document.createElement("button");
     square.className = `tile ${tile.colour}`;
     square.textContent = arrowSymbols[tile.arrow];
@@ -166,7 +181,10 @@ function renderBoard() {
 }
 
 function handleMove(colour) {
+  moveHistory.push(cloneBoard(board));
+
   moveColour(colour);
+
   moves++;
   movesText.textContent = moves;
 
@@ -174,8 +192,28 @@ function handleMove(colour) {
     solutionStep++;
   }
 
+  messageText.textContent = "";
   renderBoard();
   checkWin();
+}
+
+function undoMove() {
+  if (moveHistory.length === 0) {
+    messageText.textContent = "No previous move to undo.";
+    return;
+  }
+
+  board = moveHistory.pop();
+
+  if (moves > 0) {
+    moves--;
+  }
+
+  solutionStep = Math.max(0, solutionStep - 1);
+  movesText.textContent = moves;
+  messageText.textContent = "Previous move undone.";
+
+  renderBoard();
 }
 
 function checkWin() {
@@ -202,6 +240,7 @@ function checkWin() {
 
 function startTimer() {
   clearInterval(timer);
+
   timer = setInterval(() => {
     seconds++;
     timerText.textContent = seconds;
@@ -212,6 +251,7 @@ function startRound() {
   moves = 0;
   hintsLeft = 3;
   solutionStep = 0;
+  moveHistory = [];
 
   roundText.textContent = round;
   movesText.textContent = moves;
@@ -232,6 +272,7 @@ function resetRound() {
   moves = 0;
   hintsLeft = 3;
   solutionStep = 0;
+  moveHistory = [];
 
   movesText.textContent = moves;
   hintBtn.textContent = `Hint ${hintsLeft}`;
@@ -246,15 +287,21 @@ function useHint() {
     return;
   }
 
-  const nextMove = plannedSolution[solutionStep] || plannedSolution[0];
+  const nextMove = plannedSolution[solutionStep];
 
   hintsLeft--;
   hintBtn.textContent = `Hint ${hintsLeft}`;
-  messageText.textContent = `Try tapping a ${nextMove} square next.`;
+
+  if (nextMove) {
+    messageText.textContent = `Try tapping a ${nextMove} square next.`;
+  } else {
+    messageText.textContent = "You may already be close.";
+  }
 }
 
 resetBtn.addEventListener("click", resetRound);
 hintBtn.addEventListener("click", useHint);
+backBtn.addEventListener("click", undoMove);
 
 rulesBtn.addEventListener("click", () => {
   rulesOverlay.classList.remove("hidden");
