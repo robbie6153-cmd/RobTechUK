@@ -15,7 +15,6 @@ body {
 ========================= */
 
 .home-container {
-  position: relative;
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
@@ -27,60 +26,23 @@ body {
   display: block;
 }
 
+/* MENU GRID */
 .menu {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  width: 90%;
-  max-width: 500px;
-  margin: 30px auto 40px;
-}
-
-/* =========================
-   GENERAL PAGE
-========================= */
-body {
-  margin: 0;
-  padding: 0;
-  background: #000;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  color: white;
-}
-
-/* =========================
-   HOME PAGE
-========================= */
-
-.home-container {
-  position: relative;
-  width: 100%;
-  max-width: 600px;
+  grid-template-columns: repeat(4, 1fr); /* 4 per row */
+  gap: 10px;
+  max-width: 430px;
   margin: 0 auto;
+  padding: 10px;
 }
 
-.home-container img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-.menu {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  width: 90%;
-  max-width: 460px;
-  margin: 25px auto 35px;
-  justify-items: center;
-}
-
+/* BUTTON STYLE */
 .menu-btn {
   background: linear-gradient(145deg, #00c853, #009624);
   color: white;
   text-decoration: none;
-  width: 140px;
-  height: 25px;
+  width: 150px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -89,7 +51,7 @@ body {
   font-weight: bold;
   border: 2px solid #00ff88;
   box-shadow: 0 4px 10px rgba(0, 255, 100, 0.4);
-  transition: 0.2s;
+  transition: 0.2s ease;
 }
 
 .menu-btn:visited {
@@ -98,114 +60,18 @@ body {
 
 .menu-btn:hover {
   background: linear-gradient(145deg, #00e676, #00c853);
-  transform: scale(1.08);
-  box-shadow: 0 6px 15px rgba(0, 255, 100, 0.6);
-}
-
-/* =========================
-   ABOUT PAGE
-========================= */
-
-.about-container {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 40px 20px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.about-container h1 {
-  font-size: 36px;
-  margin-bottom: 25px;
-}
-
-.about-container p {
-  font-size: 22px;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-.contact-section {
-  margin-top: auto;
-  padding-top: 20px;
-  border-top: 1px solid #333;
-  font-size: 20px;
-}
-
-.contact-section a {
-  color: #00ff88;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.contact-section a:hover {
-  text-decoration: underline;
-}
-
-.back-button {
-  display: inline-block;
-  margin: 10px 0 20px;
-  padding: 8px 16px;
-  background: #38e761;
-  color: #fff;
-  text-decoration: none;
-  border-radius: 6px;
-  font-size: 14px;
-}
-
-.back-button:hover {
-  opacity: 0.8;
-}
-
-.bottom-home {
-  display: block;
-  text-align: center;
-  margin: 40px auto;
-}
-
-.menu-btn:visited {
-  color: white;
-}
-
-.menu-btn:hover {
-  background: linear-gradient(145deg, #00e676, #00c853);
-  transform: scale(1.04);
+  transform: scale(1.06);
   box-shadow:
     0 0 14px rgba(0, 255, 120, 0.8),
     0 0 28px rgba(0, 255, 120, 0.35);
 }
 
 /* =========================
-   ABOUT PAGE
+   CONTENT PAGES (PSEPHIA, MUSIC, ETC)
 ========================= */
 
-.about-container {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 40px 20px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-.about-container h1 {
-  font-size: 36px;
-  margin-bottom: 25px;
-}
-
-.about-container p {
-  font-size: 22px;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-/* =========================
-   PSEPHIA / GENERAL CONTENT PAGE
-========================= */
-
-.page-content {
+.page-content,
+.home-content {
   max-width: 800px;
   margin: 0 auto;
   padding: 40px 20px 60px;
@@ -213,15 +79,103 @@ body {
   box-sizing: border-box;
 }
 
-.page-content h1 {
-  font-size: 38px;
+.page-content h1,
+.home-content h1 {
+  font-size: 36px;
   margin-bottom: 25px;
 }
 
-.page-content p {
-  font-size: 22px;
+.page-content h2,
+.home-content h2 {
+  font-size: 28px;
+  margin-top: 30px;
+  margin-bottom: 15px;
+}
+
+.page-content p,
+.home-content p {
+  font-size: 21px;
   line-height: 1.7;
   margin-bottom: 22px;
+}
+
+/* =========================
+   ABOUT PAGE
+========================= */
+
+.about-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.about-container h1 {
+  font-size: 36px;
+  margin-bottom: 25px;
+}
+
+.about-container p {
+  font-size: 22px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* =========================
+   ARCADE PAGE
+========================= */
+
+.arcade-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 420px;
+  margin: 30px auto 0;
+}
+
+.arcade-game {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  background: linear-gradient(145deg, #00c853, #009624);
+  color: white;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 12px;
+  border: 2px solid #00ff88;
+  box-shadow: 0 4px 10px rgba(0, 255, 100, 0.35);
+  transition: 0.2s ease;
+}
+
+.arcade-game:visited {
+  color: white;
+}
+
+.arcade-game:hover {
+  transform: scale(1.03);
+  box-shadow: 0 6px 14px rgba(0, 255, 100, 0.5);
+}
+
+/* =========================
+   LINKS
+========================= */
+
+.external-link {
+  display: inline-block;
+  margin-top: 40px;
+  font-size: 20px;
+  color: #00ff88;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.external-link:hover {
+  text-decoration: underline;
 }
 
 /* =========================
@@ -281,19 +235,21 @@ body {
 
 @media (max-width: 600px) {
   .menu-btn {
+    width: 100%;
+    max-width: 200px;
     height: 42px;
-    min-height: 42px;
     font-size: 15px;
-    border-radius: 10px;
   }
 
   .about-container h1,
-  .page-content h1 {
+  .page-content h1,
+  .home-content h1 {
     font-size: 30px;
   }
 
   .about-container p,
-  .page-content p {
+  .page-content p,
+  .home-content p {
     font-size: 19px;
     line-height: 1.6;
   }
@@ -301,52 +257,4 @@ body {
   .contact-section {
     font-size: 18px;
   }
-}
-.external-link {
-  display: inline-block;
-  margin-top: 40px;
-  font-size: 20px;
-  color: #00ff88;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.external-link:hover {
-  text-decoration: underline;
-}
-/* =========================
-   ARCADE PAGE
-========================= */
-
-.arcade-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 420px;
-  margin: 30px auto 0;
-}
-
-.arcade-game {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 56px;
-  background: linear-gradient(145deg, #00c853, #009624);
-  color: white;
-  text-decoration: none;
-  font-size: 20px;
-  font-weight: bold;
-  border-radius: 12px;
-  border: 2px solid #00ff88;
-  box-shadow: 0 4px 10px rgba(0, 255, 100, 0.35);
-  transition: 0.2s ease;
-}
-
-.arcade-game:visited {
-  color: white;
-}
-
-.arcade-game:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 14px rgba(0, 255, 100, 0.5);
 }
