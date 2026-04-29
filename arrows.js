@@ -1,359 +1,334 @@
 const SIZE = 6;
-const TOTAL = SIZE * SIZE;
+const ROUND_COUNT = 5;
+const ROUND_TIME = 60;
 
-const gameGrid = document.getElementById("gameGrid");
-const targetGrid = document.getElementById("targetGrid");
+const targetGridEl = document.getElementById("targetGrid");
+const playerGridEl = document.getElementById("playerGrid");
+
+const topArrowsEl = document.getElementById("topArrows");
+const bottomArrowsEl = document.getElementById("bottomArrows");
+const leftArrowsEl = document.getElementById("leftArrows");
+const rightArrowsEl = document.getElementById("rightArrows");
+
 const roundText = document.getElementById("roundText");
 const movesText = document.getElementById("movesText");
-const timerText = document.getElementById("timerText");
-const messageText = document.getElementById("messageText");
+const timeText = document.getElementById("timeText");
+const messageEl = document.getElementById("message");
+
 const resetBtn = document.getElementById("resetBtn");
 const hintBtn = document.getElementById("hintBtn");
-const rulesBtn = document.getElementById("rulesBtn");
 const backBtn = document.getElementById("backBtn");
-const rulesOverlay = document.getElementById("rulesOverlay");
-const closeRulesBtn = document.getElementById("closeRulesBtn");
-
-const arrows = ["up", "right", "down", "left"];
-
-const arrowSymbols = {
-  up: "↑",
-  down: "↓",
-  left: "←",
-  right: "→"
-};
 
 let round = 1;
 let moves = 0;
-let seconds = 0;
+let timeLeft = ROUND_TIME;
 let timer = null;
-let hintsLeft = 3;
-let animating = false;
 
-let board = [];
-let startingBoard = [];
-let targetPattern = [];
-let moveHistory = [];
+let targetGrid = [];
+let playerGrid = [];
+let startingGrid = [];
+let solutionMoves = [];
 
-let plannedSolution = [];
-let solutionStep = 0;
-
-const roundSolutions = [
-  ["black", "white", "black"],
-  ["white", "black", "black", "white"],
-  ["black", "white", "black", "white", "black"],
-  ["white", "black", "white", "black", "white", "black"],
-  ["black", "white", "black", "white", "black", "white", "black"]
+const patterns = [
+  [
+    "WBWBWB",
+    "BWBWBW",
+    "WBWBWB",
+    "BWBWBW",
+    "WBWBWB",
+    "BWBWBW"
+  ],
+  [
+    "WWWBBB",
+    "WWWBBB",
+    "WWWBBB",
+    "BBBWWW",
+    "BBBWWW",
+    "BBBWWW"
+  ],
+  [
+    "WWBBWW",
+    "BBWWBB",
+    "WWBBWW",
+    "BBWWBB",
+    "WWBBWW",
+    "BBWWBB"
+  ],
+  [
+    "WWWWWW",
+    "BBBBBB",
+    "WWWWWW",
+    "BBBBBB",
+    "WWWWWW",
+    "BBBBBB"
+  ],
+  [
+    "WBBBBW",
+    "BWBBWB",
+    "BBWBBB",
+    "BBWBBB",
+    "BWBBWB",
+    "WBBBBW"
+  ]
 ];
 
-function createTargets(roundNumber) {
-  const pattern = [];
-
-  for (let i = 0; i < TOTAL; i++) {
-    const row = Math.floor(i / SIZE);
-    const col = i % SIZE;
-
-    if (roundNumber === 1) {
-      pattern.push(row % 2 === 0 ? "black" : "white");
-    }
-
-    if (roundNumber === 2) {
-      pattern.push(col < 3 ? "black" : "white");
-    }
-
-    if (roundNumber === 3) {
-      const top = row < 3;
-      const left = col < 3;
-      pattern.push(top === left ? "black" : "white");
-    }
-
-    if (roundNumber === 4) {
-      const isT = row < 2 || col === 2 || col === 3;
-      pattern.push(isT ? "black" : "white");
-    }
-
-    if (roundNumber === 5) {
-      pattern.push((row + col) % 2 === 0 ? "black" : "white");
-    }
-  }
-
-  return pattern;
+function patternToGrid(pattern) {
+  return pattern.map(row => row.split(""));
 }
 
-function createSolvedBoard(pattern) {
-  return pattern.map((colour, index) => ({
-    id: index,
-    colour,
-    arrow: arrows[index % arrows.length]
-  }));
+function copyGrid(grid) {
+  return grid.map(row => [...row]);
 }
 
-function cloneBoard(source) {
-  return source.map(tile => ({ ...tile }));
-}
+function renderGrid(element, grid) {
+  element.innerHTML = "";
 
-function getIndex(row, col) {
-  return row * SIZE + col;
-}
-
-function getNextIndex(index, direction, inverse = false) {
-  let row = Math.floor(index / SIZE);
-  let col = index % SIZE;
-  let dir = direction;
-
-  if (inverse) {
-    if (dir === "up") dir = "down";
-    else if (dir === "down") dir = "up";
-    else if (dir === "left") dir = "right";
-    else if (dir === "right") dir = "left";
-  }
-
-  if (dir === "up") row = (row - 1 + SIZE) % SIZE;
-  if (dir === "down") row = (row + 1) % SIZE;
-  if (dir === "left") col = (col - 1 + SIZE) % SIZE;
-  if (dir === "right") col = (col + 1) % SIZE;
-
-  return getIndex(row, col);
-}
-
-function getMoveAnimations(colour) {
-  const animations = [];
-
-  board.forEach((tile, index) => {
-    if (tile.colour !== colour) return;
-
-    const next = getNextIndex(index, tile.arrow, false);
-    const row = Math.floor(index / SIZE);
-    const col = index % SIZE;
-    const nextRow = Math.floor(next / SIZE);
-    const nextCol = next % SIZE;
-
-    animations.push({
-      id: tile.id,
-      x: (nextCol - col) * 100,
-      y: (nextRow - row) * 100
-    });
-  });
-
-  return animations;
-}
-
-function moveColour(colour, inverse = false) {
-  const selectedTiles = board
-    .filter(tile => tile.colour === colour)
-    .sort((a, b) => inverse ? b.id - a.id : a.id - b.id);
-
-  selectedTiles.forEach(tileToMove => {
-    const currentIndex = board.findIndex(tile => tile.id === tileToMove.id);
-    const tile = board[currentIndex];
-    const nextIndex = getNextIndex(currentIndex, tile.arrow, inverse);
-
-    const temp = board[nextIndex];
-    board[nextIndex] = board[currentIndex];
-    board[currentIndex] = temp;
+  grid.flat().forEach(cell => {
+    const tile = document.createElement("div");
+    tile.className = `tile ${cell === "W" ? "white" : "black"}`;
+    element.appendChild(tile);
   });
 }
 
-function scrambleFromTarget() {
-  targetPattern = createTargets(round);
-  board = createSolvedBoard(targetPattern);
+function renderAll() {
+  renderGrid(targetGridEl, targetGrid);
+  renderGrid(playerGridEl, playerGrid);
 
-  plannedSolution = roundSolutions[round - 1];
-
-  const backwards = [...plannedSolution].reverse();
-
-  backwards.forEach(colour => {
-    moveColour(colour, true);
-  });
-
-  startingBoard = cloneBoard(board);
-}
-
-function renderTarget() {
-  targetGrid.innerHTML = "";
-
-  targetPattern.forEach(colour => {
-    const square = document.createElement("div");
-    square.className = `target-tile ${colour}`;
-    targetGrid.appendChild(square);
-  });
-}
-
-function renderBoard() {
-  gameGrid.innerHTML = "";
-
-  board.forEach(tile => {
-    const square = document.createElement("button");
-    square.className = `tile ${tile.colour}`;
-    square.textContent = arrowSymbols[tile.arrow];
-    square.dataset.id = tile.id;
-
-    square.addEventListener("click", () => {
-      handleMove(tile.colour);
-    });
-
-    gameGrid.appendChild(square);
-  });
-}
-
-function animateMove(colour, callback) {
-  animating = true;
-
-  const animations = getMoveAnimations(colour);
-
-  animations.forEach(move => {
-    const tileEl = document.querySelector(`[data-id="${move.id}"]`);
-
-    if (tileEl) {
-      tileEl.style.transform = `translate(${move.x}%, ${move.y}%)`;
-      tileEl.style.zIndex = "5";
-    }
-  });
-
-  setTimeout(() => {
-    callback();
-
-    renderBoard();
-    animating = false;
-    checkWin();
-  }, 1500);
-}
-
-function handleMove(colour) {
-  if (animating) return;
-
-  moveHistory.push(cloneBoard(board));
-
-  animateMove(colour, () => {
-    moveColour(colour);
-
-    moves++;
-    movesText.textContent = moves;
-
-    if (plannedSolution[solutionStep] === colour) {
-      solutionStep++;
-    }
-
-    messageText.textContent = "";
-  });
-}
-
-function undoMove() {
-  if (animating) return;
-
-  if (moveHistory.length === 0) {
-    messageText.textContent = "No previous move to undo.";
-    return;
-  }
-
-  board = moveHistory.pop();
-
-  if (moves > 0) moves--;
-
-  solutionStep = Math.max(0, solutionStep - 1);
-
+  roundText.textContent = `${round}/${ROUND_COUNT}`;
   movesText.textContent = moves;
-  messageText.textContent = "Previous move undone.";
-
-  renderBoard();
+  timeText.textContent = `${timeLeft}s`;
 }
 
-function checkWin() {
-  const currentPattern = board.map(tile => tile.colour);
+function createArrowButtons() {
+  topArrowsEl.innerHTML = "";
+  bottomArrowsEl.innerHTML = "";
+  leftArrowsEl.innerHTML = "";
+  rightArrowsEl.innerHTML = "";
 
-  const solved = currentPattern.every((colour, index) => {
-    return colour === targetPattern[index];
-  });
+  for (let col = 0; col < SIZE; col++) {
+    const upBtn = document.createElement("button");
+    upBtn.className = "arrow-btn";
+    upBtn.textContent = "↑";
+    upBtn.onclick = () => makeMove("col", col, "up");
+    topArrowsEl.appendChild(upBtn);
 
-  if (!solved) return;
+    const downBtn = document.createElement("button");
+    downBtn.className = "arrow-btn";
+    downBtn.textContent = "↓";
+    downBtn.onclick = () => makeMove("col", col, "down");
+    bottomArrowsEl.appendChild(downBtn);
+  }
 
-  clearInterval(timer);
+  for (let row = 0; row < SIZE; row++) {
+    const leftBtn = document.createElement("button");
+    leftBtn.className = "arrow-btn";
+    leftBtn.textContent = "←";
+    leftBtn.onclick = () => makeMove("row", row, "left");
+    leftArrowsEl.appendChild(leftBtn);
 
-  if (round < 5) {
-    messageText.textContent = `Round ${round} complete!`;
-
-    setTimeout(() => {
-      round++;
-      startRound();
-    }, 1200);
-  } else {
-    messageText.textContent = `Game complete! Final time: ${seconds}s`;
+    const rightBtn = document.createElement("button");
+    rightBtn.className = "arrow-btn";
+    rightBtn.textContent = "→";
+    rightBtn.onclick = () => makeMove("row", row, "right");
+    rightArrowsEl.appendChild(rightBtn);
   }
 }
 
-function startTimer() {
-  clearInterval(timer);
+function shiftRow(grid, row, direction) {
+  if (direction === "right") {
+    grid[row].unshift(grid[row].pop());
+  }
 
-  timer = setInterval(() => {
-    seconds++;
-    timerText.textContent = seconds;
-  }, 1000);
+  if (direction === "left") {
+    grid[row].push(grid[row].shift());
+  }
+}
+
+function shiftColumn(grid, col, direction) {
+  const column = [];
+
+  for (let row = 0; row < SIZE; row++) {
+    column.push(grid[row][col]);
+  }
+
+  if (direction === "down") {
+    column.unshift(column.pop());
+  }
+
+  if (direction === "up") {
+    column.push(column.shift());
+  }
+
+  for (let row = 0; row < SIZE; row++) {
+    grid[row][col] = column[row];
+  }
+}
+
+function applyMove(grid, move) {
+  if (move.type === "row") {
+    shiftRow(grid, move.index, move.direction);
+  }
+
+  if (move.type === "col") {
+    shiftColumn(grid, move.index, move.direction);
+  }
+}
+
+function oppositeMove(move) {
+  const opposites = {
+    left: "right",
+    right: "left",
+    up: "down",
+    down: "up"
+  };
+
+  return {
+    type: move.type,
+    index: move.index,
+    direction: opposites[move.direction]
+  };
+}
+
+function makeMove(type, index, direction) {
+  const move = { type, index, direction };
+
+  applyMove(playerGrid, move);
+
+  moves++;
+  messageEl.textContent = "";
+
+  renderAll();
+  checkWin();
+}
+
+function gridsMatch(a, b) {
+  for (let row = 0; row < SIZE; row++) {
+    for (let col = 0; col < SIZE; col++) {
+      if (a[row][col] !== b[row][col]) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+function getRandomMove() {
+  const type = Math.random() < 0.5 ? "row" : "col";
+  const index = Math.floor(Math.random() * SIZE);
+
+  let direction;
+
+  if (type === "row") {
+    direction = Math.random() < 0.5 ? "left" : "right";
+  } else {
+    direction = Math.random() < 0.5 ? "up" : "down";
+  }
+
+  return { type, index, direction };
+}
+
+function scrambleFromTarget(moveCount) {
+  playerGrid = copyGrid(targetGrid);
+  solutionMoves = [];
+
+  let previousMove = null;
+
+  for (let i = 0; i < moveCount; i++) {
+    let move = getRandomMove();
+
+    while (
+      previousMove &&
+      move.type === previousMove.type &&
+      move.index === previousMove.index &&
+      move.direction === oppositeMove(previousMove).direction
+    ) {
+      move = getRandomMove();
+    }
+
+    applyMove(playerGrid, move);
+    solutionMoves.unshift(oppositeMove(move));
+    previousMove = move;
+  }
+
+  startingGrid = copyGrid(playerGrid);
 }
 
 function startRound() {
+  clearInterval(timer);
+
   moves = 0;
-  hintsLeft = 3;
-  solutionStep = 0;
-  moveHistory = [];
+  timeLeft = ROUND_TIME;
+  messageEl.textContent = "";
 
-  roundText.textContent = round;
-  movesText.textContent = moves;
-  hintBtn.textContent = `Hint ${hintsLeft}`;
-  messageText.textContent = "";
+  targetGrid = patternToGrid(patterns[round - 1]);
 
-  scrambleFromTarget();
-  renderTarget();
-  renderBoard();
+  const movesAway = round + 2;
+  scrambleFromTarget(movesAway);
 
-  if (round === 1 && seconds === 0) {
-    startTimer();
-  }
+  renderAll();
+
+  timer = setInterval(() => {
+    timeLeft--;
+    timeText.textContent = `${timeLeft}s`;
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      messageEl.textContent = "Time up! Round reset.";
+      playerGrid = copyGrid(startingGrid);
+      moves = 0;
+      timeLeft = ROUND_TIME;
+      setTimeout(startRound, 900);
+    }
+  }, 1000);
 }
 
-function resetRound() {
-  if (animating) return;
+function checkWin() {
+  if (!gridsMatch(playerGrid, targetGrid)) return;
 
-  board = cloneBoard(startingBoard);
-  moves = 0;
-  hintsLeft = 3;
-  solutionStep = 0;
-  moveHistory = [];
+  clearInterval(timer);
 
-  movesText.textContent = moves;
-  hintBtn.textContent = `Hint ${hintsLeft}`;
-  messageText.textContent = "Round reset.";
+  messageEl.textContent = "Pattern matched!";
 
-  renderBoard();
+  setTimeout(() => {
+    if (round < ROUND_COUNT) {
+      round++;
+      startRound();
+    } else {
+      messageEl.textContent = "Game complete!";
+    }
+  }, 900);
 }
 
-function useHint() {
-  if (hintsLeft <= 0) {
-    messageText.textContent = "No hints left this round.";
+resetBtn.addEventListener("click", () => {
+  playerGrid = copyGrid(startingGrid);
+  moves = 0;
+  messageEl.textContent = "Round reset.";
+  renderAll();
+});
+
+hintBtn.addEventListener("click", () => {
+  if (!solutionMoves.length) {
+    messageEl.textContent = "No hint available.";
     return;
   }
 
-  const nextMove = plannedSolution[solutionStep];
+  const move = solutionMoves[0];
 
-  hintsLeft--;
-  hintBtn.textContent = `Hint ${hintsLeft}`;
+  let text = "";
 
-  if (nextMove) {
-    messageText.textContent = `Try tapping a ${nextMove} square next.`;
+  if (move.type === "row") {
+    text = `Try row ${move.index + 1} ${move.direction}.`;
   } else {
-    messageText.textContent = "You may already be close.";
+    text = `Try column ${move.index + 1} ${move.direction}.`;
   }
-}
 
-resetBtn.addEventListener("click", resetRound);
-hintBtn.addEventListener("click", useHint);
-backBtn.addEventListener("click", undoMove);
-
-rulesBtn.addEventListener("click", () => {
-  rulesOverlay.classList.remove("hidden");
+  messageEl.textContent = text;
 });
 
-closeRulesBtn.addEventListener("click", () => {
-  rulesOverlay.classList.add("hidden");
+backBtn.addEventListener("click", () => {
+  window.history.back();
 });
 
+createArrowButtons();
 startRound();
