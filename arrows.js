@@ -28,6 +28,7 @@ let moves = 0;
 let seconds = 0;
 let timer = null;
 let hintsLeft = 3;
+let animating = false;
 
 let board = [];
 let startingBoard = [];
@@ -81,6 +82,7 @@ function createTargets(roundNumber) {
 
 function createSolvedBoard(pattern) {
   return pattern.map((colour, index) => ({
+    id: index,
     colour,
     arrow: arrows[index % arrows.length]
   }));
@@ -114,30 +116,42 @@ function getNextIndex(index, direction, inverse = false) {
   return getIndex(row, col);
 }
 
+function getMoveAnimations(colour) {
+  const animations = [];
+
+  board.forEach((tile, index) => {
+    if (tile.colour !== colour) return;
+
+    const next = getNextIndex(index, tile.arrow, false);
+    const row = Math.floor(index / SIZE);
+    const col = index % SIZE;
+    const nextRow = Math.floor(next / SIZE);
+    const nextCol = next % SIZE;
+
+    animations.push({
+      id: tile.id,
+      x: (nextCol - col) * 100,
+      y: (nextRow - row) * 100
+    });
+  });
+
+  return animations;
+}
+
 function moveColour(colour, inverse = false) {
-  const oldBoard = cloneBoard(board);
-  const newBoard = new Array(TOTAL);
+  const selectedTiles = board
+    .filter(tile => tile.colour === colour)
+    .sort((a, b) => inverse ? b.id - a.id : a.id - b.id);
 
-  for (let i = 0; i < TOTAL; i++) {
-    const tile = oldBoard[i];
+  selectedTiles.forEach(tileToMove => {
+    const currentIndex = board.findIndex(tile => tile.id === tileToMove.id);
+    const tile = board[currentIndex];
+    const nextIndex = getNextIndex(currentIndex, tile.arrow, inverse);
 
-    if (tile.colour === colour) {
-      const next = getNextIndex(i, tile.arrow, inverse);
-      newBoard[next] = tile;
-    } else {
-      // temporarily leave blank
-      newBoard[i] = null;
-    }
-  }
-
-  // fill remaining spots with unmoved tiles
-  for (let i = 0; i < TOTAL; i++) {
-    if (!newBoard[i]) {
-      newBoard[i] = oldBoard[i];
-    }
-  }
-
-  board = newBoard;
+    const temp = board[nextIndex];
+    board[nextIndex] = board[currentIndex];
+    board[currentIndex] = temp;
+  });
 }
 
 function scrambleFromTarget() {
@@ -172,6 +186,7 @@ function renderBoard() {
     const square = document.createElement("button");
     square.className = `tile ${tile.colour}`;
     square.textContent = arrowSymbols[tile.arrow];
+    square.dataset.id = tile.id;
 
     square.addEventListener("click", () => {
       handleMove(tile.colour);
@@ -181,24 +196,51 @@ function renderBoard() {
   });
 }
 
+function animateMove(colour, callback) {
+  animating = true;
+
+  const animations = getMoveAnimations(colour);
+
+  animations.forEach(move => {
+    const tileEl = document.querySelector(`[data-id="${move.id}"]`);
+
+    if (tileEl) {
+      tileEl.style.transform = `translate(${move.x}%, ${move.y}%)`;
+      tileEl.style.zIndex = "5";
+    }
+  });
+
+  setTimeout(() => {
+    callback();
+
+    renderBoard();
+    animating = false;
+    checkWin();
+  }, 220);
+}
+
 function handleMove(colour) {
+  if (animating) return;
+
   moveHistory.push(cloneBoard(board));
 
-  moveColour(colour);
+  animateMove(colour, () => {
+    moveColour(colour);
 
-  moves++;
-  movesText.textContent = moves;
+    moves++;
+    movesText.textContent = moves;
 
-  if (plannedSolution[solutionStep] === colour) {
-    solutionStep++;
-  }
+    if (plannedSolution[solutionStep] === colour) {
+      solutionStep++;
+    }
 
-  messageText.textContent = "";
-  renderBoard();
-  checkWin();
+    messageText.textContent = "";
+  });
 }
 
 function undoMove() {
+  if (animating) return;
+
   if (moveHistory.length === 0) {
     messageText.textContent = "No previous move to undo.";
     return;
@@ -206,11 +248,10 @@ function undoMove() {
 
   board = moveHistory.pop();
 
-  if (moves > 0) {
-    moves--;
-  }
+  if (moves > 0) moves--;
 
   solutionStep = Math.max(0, solutionStep - 1);
+
   movesText.textContent = moves;
   messageText.textContent = "Previous move undone.";
 
@@ -230,6 +271,7 @@ function checkWin() {
 
   if (round < 5) {
     messageText.textContent = `Round ${round} complete!`;
+
     setTimeout(() => {
       round++;
       startRound();
@@ -269,6 +311,8 @@ function startRound() {
 }
 
 function resetRound() {
+  if (animating) return;
+
   board = cloneBoard(startingBoard);
   moves = 0;
   hintsLeft = 3;
