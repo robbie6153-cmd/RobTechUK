@@ -73,7 +73,7 @@ h2 {
   border: 2px solid #2b90d9;
 }
 .tile {
-  transition: transform 0.22s ease;
+  transition: transform 1.5s ease;
 }
 .tile:active {
   transform: scale(0.92);

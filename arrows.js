@@ -216,7 +216,7 @@ function animateMove(colour, callback) {
     renderBoard();
     animating = false;
     checkWin();
-  }, 220);
+  }, 1500);
 }
 
 function handleMove(colour) {
