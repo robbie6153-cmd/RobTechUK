@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arrows - RobTechUK Brain Training</title>
+  <link rel="stylesheet" href="arrows.css">
+</head>
+<body>
+
+  <main class="arrows-page">
+    <h1>Arrows</h1>
+
+    <div class="top-info">
+      <div>Round: <span id="roundText">1</span>/5</div>
+      <div>Moves: <span id="movesText">0</span></div>
+      <div>Time: <span id="timerText">0</span>s</div>
+    </div>
+
+    <h2>Target Pattern</h2>
+    <div id="targetGrid" class="mini-grid"></div>
+
+    <h2>Your Grid</h2>
+    <div id="gameGrid" class="game-grid"></div>
+
+    <p id="messageText" class="message"></p>
+
+    <div class="bottom-buttons">
+      <button id="resetBtn">Reset</button>
+      <button id="hintBtn">Hint 3</button>
+      <button id="rulesBtn">Rules</button>
+    </div>
+
+    <p>
+      <a href="braintraining.html">Back to Brain Training</a>
+    </p>
+  </main>
+
+  <div id="rulesOverlay" class="overlay hidden">
+    <div class="rules-box">
+      <h2>How to Play</h2>
+      <p>Match your grid to the target pattern at the top.</p>
+      <p>Tap a square. Every square of that same colour moves one space in the direction of its arrow.</p>
+      <p>Black squares have white arrows. White squares have black arrows.</p>
+      <p>You get 3 hints per round.</p>
+      <button id="closeRulesBtn">Close</button>
+    </div>
+  </div>
+
+  <script src="arrows.js"></script>
+</body>
+</html>
