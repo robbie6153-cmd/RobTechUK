@@ -25,15 +25,21 @@ body {
   height: auto;
   display: block;
 }
-
+html,
+body {
+  overflow-x: hidden;
+}
 /* MENU GRID */
 .menu {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 per row */
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: calc(100% - 24px);
   max-width: 430px;
-  margin: 0 auto;
-  padding: 10px;
+  margin: 14px auto;
+  padding: 0;
+  box-sizing: border-box;
+  grid-auto-rows: 54px;
 }
 
 /* BUTTON STYLE */
@@ -42,12 +48,14 @@ body {
   color: white;
   text-decoration: none;
   width: 100%;
-  min-height: 42px;
+  height: 54px;
+  min-height: 54px;
+  max-height: 54px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
-  font-size: 15px;
+  border-radius: 12px;
+  font-size: 17px;
   font-weight: bold;
   border: 2px solid #00ff88;
   box-shadow: 0 4px 10px rgba(0, 255, 100, 0.4);
@@ -240,13 +248,6 @@ body {
     grid-template-columns: repeat(2, 1fr);
     max-width: 390px;
     padding: 10px;
-  }
-
-  .menu-btn {
-    width: 100%;
-    max-width: none;
-    min-height: 50px;
-    font-size: 16px;
   }
 
   .about-container h1,
