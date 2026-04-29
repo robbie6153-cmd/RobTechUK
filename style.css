@@ -41,8 +41,8 @@ body {
   background: linear-gradient(145deg, #00c853, #009624);
   color: white;
   text-decoration: none;
-  width: 150px;
-  height: 42px;
+  width: 100%;
+  min-height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,6 +52,8 @@ body {
   border: 2px solid #00ff88;
   box-shadow: 0 4px 10px rgba(0, 255, 100, 0.4);
   transition: 0.2s ease;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .menu-btn:visited {
@@ -234,11 +236,17 @@ body {
 ========================= */
 
 @media (max-width: 600px) {
+  .menu {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 390px;
+    padding: 10px;
+  }
+
   .menu-btn {
     width: 100%;
-    max-width: 200px;
-    height: 42px;
-    font-size: 15px;
+    max-width: none;
+    min-height: 50px;
+    font-size: 16px;
   }
 
   .about-container h1,
