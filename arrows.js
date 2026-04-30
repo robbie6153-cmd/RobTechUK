@@ -1,6 +1,15 @@
 const SIZE = 6;
 const ROUND_COUNT = 5;
-let elapsedTime = 0;;
+
+let elapsedTime = 0;
+
+const DIFFICULTY_MOVES = {
+  easy: 3,
+  medium: 4,
+  hard: 5
+};
+
+let selectedDifficulty = "easy";
 
 const targetGridEl = document.getElementById("targetGrid");
 const playerGridEl = document.getElementById("playerGrid");
@@ -27,6 +36,7 @@ let targetGrid = [];
 let playerGrid = [];
 let startingGrid = [];
 let solutionMoves = [];
+let roundPatterns = [];
 
 const patterns = [
   [
@@ -68,6 +78,46 @@ const patterns = [
     "BWBWBW",
     "WBWBWB",
     "BWBWBW"
+  ],
+  [
+    "WWBBWW",
+    "WBBBBW",
+    "BBBBBB",
+    "BBBBBB",
+    "WBBBBW",
+    "WWBBWW"
+  ],
+  [
+    "BBWWBB",
+    "BWWWWB",
+    "WWBBWW",
+    "WWBBWW",
+    "BWWWWB",
+    "BBWWBB"
+  ],
+  [
+    "WWWWWW",
+    "WBBBBW",
+    "WBWWBW",
+    "WBWWBW",
+    "WBBBBW",
+    "WWWWWW"
+  ],
+  [
+    "BBBBBB",
+    "BWWWWB",
+    "BWBBWB",
+    "BWBBWB",
+    "BWWWWB",
+    "BBBBBB"
+  ],
+  [
+    "WWWWWW",
+    "WWBBWW",
+    "WBBBBW",
+    "WBBBBW",
+    "WWBBWW",
+    "WWWWWW"
   ]
 ];
 
@@ -77,6 +127,10 @@ function patternToGrid(pattern) {
 
 function copyGrid(grid) {
   return grid.map(row => [...row]);
+}
+
+function gridKey(grid) {
+  return grid.map(row => row.join("")).join("");
 }
 
 function renderGrid(element, grid) {
@@ -131,6 +185,19 @@ function createArrowButtons() {
     rightBtn.onclick = () => makeMove("row", row, "right");
     rightArrowsEl.appendChild(rightBtn);
   }
+}
+
+function getAllMoves() {
+  const allMoves = [];
+
+  for (let i = 0; i < SIZE; i++) {
+    allMoves.push({ type: "row", index: i, direction: "left" });
+    allMoves.push({ type: "row", index: i, direction: "right" });
+    allMoves.push({ type: "col", index: i, direction: "up" });
+    allMoves.push({ type: "col", index: i, direction: "down" });
+  }
+
+  return allMoves;
 }
 
 function shiftRow(grid, row, direction) {
@@ -201,57 +268,115 @@ function makeMove(type, index, direction) {
 }
 
 function gridsMatch(a, b) {
-  for (let row = 0; row < SIZE; row++) {
-    for (let col = 0; col < SIZE; col++) {
-      if (a[row][col] !== b[row][col]) {
-        return false;
-      }
-    }
-  }
-
-  return true;
+  return gridKey(a) === gridKey(b);
 }
 
 function getRandomMove() {
-  const type = Math.random() < 0.5 ? "row" : "col";
-  const index = Math.floor(Math.random() * SIZE);
-
-  let direction;
-
-  if (type === "row") {
-    direction = Math.random() < 0.5 ? "left" : "right";
-  } else {
-    direction = Math.random() < 0.5 ? "up" : "down";
-  }
-
-  return { type, index, direction };
+  const allMoves = getAllMoves();
+  return allMoves[Math.floor(Math.random() * allMoves.length)];
 }
 
-function scrambleFromTarget(moveCount) {
+function shortestSolutionDepth(startGrid, goalGrid, maxDepth) {
+  const goalKey = gridKey(goalGrid);
+  const startKey = gridKey(startGrid);
+
+  if (startKey === goalKey) return 0;
+
+  const allMoves = getAllMoves();
+  const visited = new Set([startKey]);
+
+  let queue = [
+    {
+      grid: copyGrid(startGrid),
+      depth: 0
+    }
+  ];
+
+  while (queue.length) {
+    const current = queue.shift();
+
+    if (current.depth >= maxDepth) continue;
+
+    for (const move of allMoves) {
+      const nextGrid = copyGrid(current.grid);
+      applyMove(nextGrid, move);
+
+      const key = gridKey(nextGrid);
+
+      if (visited.has(key)) continue;
+
+      if (key === goalKey) {
+        return current.depth + 1;
+      }
+
+      visited.add(key);
+
+      queue.push({
+        grid: nextGrid,
+        depth: current.depth + 1
+      });
+    }
+  }
+
+  return null;
+}
+
+function scrambleFromTargetExact(moveCount) {
+  const maxAttempts = 500;
+
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    playerGrid = copyGrid(targetGrid);
+    solutionMoves = [];
+
+    let previousMove = null;
+
+    for (let i = 0; i < moveCount; i++) {
+      let move = getRandomMove();
+
+      while (
+        previousMove &&
+        move.type === previousMove.type &&
+        move.index === previousMove.index &&
+        move.direction === oppositeMove(previousMove).direction
+      ) {
+        move = getRandomMove();
+      }
+
+      applyMove(playerGrid, move);
+      solutionMoves.unshift(oppositeMove(move));
+      previousMove = move;
+    }
+
+    const depth = shortestSolutionDepth(playerGrid, targetGrid, moveCount);
+
+    if (depth === moveCount) {
+      startingGrid = copyGrid(playerGrid);
+      return;
+    }
+  }
+
+  // Fallback, just in case it struggles to find an exact one.
   playerGrid = copyGrid(targetGrid);
   solutionMoves = [];
 
-  let previousMove = null;
-
   for (let i = 0; i < moveCount; i++) {
-    let move = getRandomMove();
-
-    while (
-      previousMove &&
-      move.type === previousMove.type &&
-      move.index === previousMove.index &&
-      move.direction === oppositeMove(previousMove).direction
-    ) {
-      move = getRandomMove();
-    }
-
+    const move = getRandomMove();
     applyMove(playerGrid, move);
     solutionMoves.unshift(oppositeMove(move));
-    previousMove = move;
   }
 
   startingGrid = copyGrid(playerGrid);
 }
+
+function chooseRoundPatterns() {
+  roundPatterns = [];
+
+  for (let i = 0; i < ROUND_COUNT; i++) {
+    const randomIndex = Math.floor(Math.random() * patterns.length);
+    roundPatterns.push(patterns[randomIndex]);
+  }
+}
+
 function showBigFlash(text) {
   let flash = document.getElementById("bigFlash");
 
@@ -273,16 +398,26 @@ function showBigFlash(text) {
   }, 1000);
 }
 
+function startGame(difficulty = "easy") {
+  selectedDifficulty = difficulty;
+  round = 1;
+  moves = 0;
+  elapsedTime = 0;
+
+  chooseRoundPatterns();
+  startRound();
+}
+
 function startRound() {
   clearInterval(timer);
 
   moves = 0;
   messageEl.textContent = "";
 
-  targetGrid = patternToGrid(patterns[round - 1]);
+  targetGrid = patternToGrid(roundPatterns[round - 1]);
 
-  const movesAway = round + 2;
-  scrambleFromTarget(movesAway);
+  const movesAway = DIFFICULTY_MOVES[selectedDifficulty];
+  scrambleFromTargetExact(movesAway);
 
   renderAll();
 
@@ -320,20 +455,41 @@ resetBtn.addEventListener("click", () => {
   renderAll();
 });
 
+function findBestMove() {
+  const possibleMoves = getAllMoves();
+
+  let bestMove = null;
+  let bestDepth = Infinity;
+
+  possibleMoves.forEach(move => {
+    const testGrid = copyGrid(playerGrid);
+    applyMove(testGrid, move);
+
+    const depth = shortestSolutionDepth(testGrid, targetGrid, 6);
+
+    if (depth !== null && depth < bestDepth) {
+      bestDepth = depth;
+      bestMove = move;
+    }
+  });
+
+  return bestMove;
+}
+
 hintBtn.addEventListener("click", () => {
-  if (!solutionMoves.length) {
+  const bestMove = findBestMove();
+
+  if (!bestMove) {
     messageEl.textContent = "No hint available.";
     return;
   }
 
-  const move = solutionMoves[0];
-
   let text = "";
 
-  if (move.type === "row") {
-    text = `Try row ${move.index + 1} ${move.direction}.`;
+  if (bestMove.type === "row") {
+    text = `Try row ${bestMove.index + 1} ${bestMove.direction}.`;
   } else {
-    text = `Try column ${move.index + 1} ${move.direction}.`;
+    text = `Try column ${bestMove.index + 1} ${bestMove.direction}.`;
   }
 
   messageEl.textContent = text;
@@ -343,5 +499,17 @@ backBtn.addEventListener("click", () => {
   window.history.back();
 });
 
+document.addEventListener("touchend", function (e) {
+  const now = new Date().getTime();
+  const timeSince = now - (window.lastTouchEnd || 0);
+
+  if (timeSince < 300 && timeSince > 0) {
+    e.preventDefault();
+  }
+
+  window.lastTouchEnd = now;
+}, false);
+
 createArrowButtons();
-startRound();
+chooseRoundPatterns();
+startGame("easy");
