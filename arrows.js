@@ -1,6 +1,6 @@
 const SIZE = 6;
 const ROUND_COUNT = 5;
-const ROUND_TIME = 60;
+let elapsedTime = 0;;
 
 const targetGridEl = document.getElementById("targetGrid");
 const playerGridEl = document.getElementById("playerGrid");
@@ -21,7 +21,6 @@ const backBtn = document.getElementById("backBtn");
 
 let round = 1;
 let moves = 0;
-let timeLeft = ROUND_TIME;
 let timer = null;
 
 let targetGrid = [];
@@ -96,7 +95,7 @@ function renderAll() {
 
   roundText.textContent = `${round}/${ROUND_COUNT}`;
   movesText.textContent = moves;
-  timeText.textContent = `${timeLeft}s`;
+  timeText.textContent = `${elapsedTime}s`;
 }
 
 function createArrowButtons() {
@@ -253,12 +252,31 @@ function scrambleFromTarget(moveCount) {
 
   startingGrid = copyGrid(playerGrid);
 }
+function showBigFlash(text) {
+  let flash = document.getElementById("bigFlash");
+
+  if (!flash) {
+    flash = document.createElement("div");
+    flash.id = "bigFlash";
+    document.body.appendChild(flash);
+  }
+
+  flash.textContent = text;
+  flash.classList.remove("show");
+
+  void flash.offsetWidth;
+
+  flash.classList.add("show");
+
+  setTimeout(() => {
+    flash.classList.remove("show");
+  }, 1000);
+}
 
 function startRound() {
   clearInterval(timer);
 
   moves = 0;
-  timeLeft = ROUND_TIME;
   messageEl.textContent = "";
 
   targetGrid = patternToGrid(patterns[round - 1]);
@@ -268,18 +286,11 @@ function startRound() {
 
   renderAll();
 
-  timer = setInterval(() => {
-    timeLeft--;
-    timeText.textContent = `${timeLeft}s`;
+  showBigFlash(`Round ${round}`);
 
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      messageEl.textContent = "Time up! Round reset.";
-      playerGrid = copyGrid(startingGrid);
-      moves = 0;
-      timeLeft = ROUND_TIME;
-      setTimeout(startRound, 900);
-    }
+  timer = setInterval(() => {
+    elapsedTime++;
+    timeText.textContent = `${elapsedTime}s`;
   }, 1000);
 }
 
@@ -288,6 +299,7 @@ function checkWin() {
 
   clearInterval(timer);
 
+  showBigFlash("Correct!");
   messageEl.textContent = "Pattern matched!";
 
   setTimeout(() => {
@@ -295,9 +307,10 @@ function checkWin() {
       round++;
       startRound();
     } else {
-      messageEl.textContent = "Game complete!";
+      showBigFlash("Game complete!");
+      messageEl.textContent = `Game complete! Time: ${elapsedTime}s`;
     }
-  }, 900);
+  }, 1200);
 }
 
 resetBtn.addEventListener("click", () => {
