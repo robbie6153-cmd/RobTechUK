@@ -558,14 +558,14 @@ hintBtn.addEventListener("click", () => {
     return;
   }
 
-  hintsLeft--;
-
-  const bestMove = solutionMoves[moves];
+  const bestMove = findBestMove();
 
   if (!bestMove) {
-    messageEl.textContent = `No hint available. Hints left: ${hintsLeft}`;
+    messageEl.textContent = "No hint available.";
     return;
   }
+
+  hintsLeft--;
 
   let text = "";
 
