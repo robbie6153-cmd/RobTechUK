@@ -37,6 +37,8 @@ let playerGrid = [];
 let startingGrid = [];
 let solutionMoves = [];
 let roundPatterns = [];
+let hintsLeft = 3;
+let isAnimating = false;
 
 const patterns = [
   [
@@ -256,15 +258,70 @@ function oppositeMove(move) {
 }
 
 function makeMove(type, index, direction) {
+  if (isAnimating) return;
+
   const move = { type, index, direction };
 
-  applyMove(playerGrid, move);
-
-  moves++;
+  isAnimating = true;
   messageEl.textContent = "";
 
-  renderAll();
-  checkWin();
+  animateMove(move, () => {
+    applyMove(playerGrid, move);
+
+    moves++;
+    renderAll();
+    checkWin();
+
+    isAnimating = false;
+  });
+}
+function animateMove(move, done) {
+  const tiles = [...playerGridEl.children];
+  const firstTile = tiles[0];
+
+  if (!firstTile) {
+    done();
+    return;
+  }
+
+  const tileRect = firstTile.getBoundingClientRect();
+  const tileSize = tileRect.width + 4; // includes grid gap roughly
+
+  let movingTiles = [];
+
+  if (move.type === "row") {
+    for (let col = 0; col < SIZE; col++) {
+      movingTiles.push(tiles[move.index * SIZE + col]);
+    }
+  }
+
+  if (move.type === "col") {
+    for (let row = 0; row < SIZE; row++) {
+      movingTiles.push(tiles[row * SIZE + move.index]);
+    }
+  }
+
+  movingTiles.forEach(tile => {
+    tile.style.transition = "transform 0.8s ease";
+  });
+
+  requestAnimationFrame(() => {
+    movingTiles.forEach(tile => {
+      if (move.direction === "left") tile.style.transform = `translateX(-${tileSize}px)`;
+      if (move.direction === "right") tile.style.transform = `translateX(${tileSize}px)`;
+      if (move.direction === "up") tile.style.transform = `translateY(-${tileSize}px)`;
+      if (move.direction === "down") tile.style.transform = `translateY(${tileSize}px)`;
+    });
+  });
+
+  setTimeout(() => {
+    movingTiles.forEach(tile => {
+      tile.style.transition = "";
+      tile.style.transform = "";
+    });
+
+    done();
+  }, 800);
 }
 
 function gridsMatch(a, b) {
@@ -428,6 +485,7 @@ function startRound() {
   clearInterval(timer);
 
   moves = 0;
+  hintsLeft = 3;
   messageEl.textContent = "";
 
   targetGrid = patternToGrid(roundPatterns[round - 1]);
@@ -493,10 +551,19 @@ function findBestMove() {
 }
 
 hintBtn.addEventListener("click", () => {
-  const bestMove = findBestMove();
+  if (isAnimating) return;
+
+  if (hintsLeft <= 0) {
+    messageEl.textContent = "No hints left this round.";
+    return;
+  }
+
+  hintsLeft--;
+
+  const bestMove = solutionMoves[moves];
 
   if (!bestMove) {
-    messageEl.textContent = "No hint available.";
+    messageEl.textContent = `No hint available. Hints left: ${hintsLeft}`;
     return;
   }
 
@@ -508,23 +575,13 @@ hintBtn.addEventListener("click", () => {
     text = `Try column ${bestMove.index + 1} ${bestMove.direction}.`;
   }
 
-  messageEl.textContent = text;
+  messageEl.textContent = `${text} Hints left: ${hintsLeft}`;
 });
 
 backBtn.addEventListener("click", () => {
   window.history.back();
 });
 
-document.addEventListener("touchend", function (e) {
-  const now = new Date().getTime();
-  const timeSince = now - (window.lastTouchEnd || 0);
-
-  if (timeSince < 300 && timeSince > 0) {
-    e.preventDefault();
-  }
-
-  window.lastTouchEnd = now;
-}, false);
 
 createArrowButtons();
 chooseRoundPatterns();
