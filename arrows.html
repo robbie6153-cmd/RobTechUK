@@ -28,11 +28,12 @@
       </div>
     </div>
 
-    <div class="difficulty-select">
-  <button onclick="startGame('easy')">Easy</button>
-  <button onclick="startGame('medium')">Medium</button>
-  <button onclick="startGame('hard')">Hard</button>
+<div class="difficulty-select">
+  <button class="difficulty-btn" onclick="startGame('easy', this)">Easy</button>
+  <button class="difficulty-btn" onclick="startGame('medium', this)">Medium</button>
+  <button class="difficulty-btn" onclick="startGame('hard', this)">Hard</button>
 </div>
+
     <h1>Target Pattern</h1>
     <div id="targetGrid" class="mini-grid"></div>
 

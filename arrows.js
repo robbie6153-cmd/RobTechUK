@@ -398,11 +398,21 @@ function showBigFlash(text) {
   }, 1000);
 }
 
-function startGame(difficulty = "easy") {
+function startGame(difficulty, btn) {
   selectedDifficulty = difficulty;
   round = 1;
   moves = 0;
   elapsedTime = 0;
+
+  // remove active from all buttons
+  document.querySelectorAll(".difficulty-btn").forEach(b => {
+    b.classList.remove("active");
+  });
+
+  // add active to clicked one
+  if (btn) {
+    btn.classList.add("active");
+  }
 
   chooseRoundPatterns();
   startRound();
