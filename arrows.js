@@ -398,20 +398,26 @@ function showBigFlash(text) {
   }, 1000);
 }
 
-function startGame(difficulty, btn) {
+function startGame(difficulty = "easy", btn = null) {
   selectedDifficulty = difficulty;
   round = 1;
   moves = 0;
   elapsedTime = 0;
 
-  // remove active from all buttons
-  document.querySelectorAll(".difficulty-btn").forEach(b => {
-    b.classList.remove("active");
+  document.querySelectorAll(".difficulty-btn").forEach(button => {
+    button.classList.remove("active");
   });
 
-  // add active to clicked one
   if (btn) {
     btn.classList.add("active");
+  } else {
+    const defaultBtn = document.querySelector(
+      `.difficulty-btn[onclick*="${difficulty}"]`
+    );
+
+    if (defaultBtn) {
+      defaultBtn.classList.add("active");
+    }
   }
 
   chooseRoundPatterns();
@@ -522,4 +528,4 @@ document.addEventListener("touchend", function (e) {
 
 createArrowButtons();
 chooseRoundPatterns();
-startGame("easy");
+startGame("easy", document.querySelector(".difficulty-btn"));

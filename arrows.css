@@ -186,3 +186,21 @@ h1 {
   opacity: 1;
   transform: scale(1);
 }
+html, body {
+  touch-action: manipulation;
+}
+.difficulty-select button {
+  padding: 8px 14px;
+  margin: 4px;
+  border-radius: 8px;
+  border: 2px solid #2b90d9;
+  background: #102f4a;
+  color: white;
+  cursor: pointer;
+}
+
+.difficulty-select .difficulty-btn.active {
+  background: #2ecc71 !important;
+  border-color: #27ae60 !important;
+  color: black !important;
+}
