@@ -6,7 +6,7 @@ const GAP_TIME = 500;
 const START_LIVES = 3;
 
 let round = 1;
-let lives = START_LIVES;
+let lives = 3; // reset every round
 let sequence = [];
 let playerInput = [];
 let acceptingInput = false;
@@ -152,11 +152,16 @@ async function handleWrongAnswer() {
   }, 350);
 
   await sleep(1200);
+if (lives <= 0) {
+  showMessage("ROUND FAILED", "red", 1500);
 
-  if (lives <= 0) {
-    gameOver();
-    return;
-  }
+  setTimeout(() => {
+    playerInput = [];
+    startRound(); // 🔥 restart same round with fresh lives
+  }, 1500);
+
+  return;
+}
 
   showMessage("TRY AGAIN", "red", 900);
   await sleep(1000);
@@ -166,6 +171,9 @@ async function handleWrongAnswer() {
 }
 
 function startRound() {
+  lives = 3;            // ✅ reset lives every round
+  updateDisplay();      // ✅ update hearts display
+
   generateSequence();
   playSequence();
 }
