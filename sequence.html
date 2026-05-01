@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Repeat the Sequence - RobTechUK Brain Training</title>
+  <link rel="stylesheet" href="sequence.css" />
+</head>
+
+<body>
+  <main class="game-page">
+    <header class="top-bar">
+      <button id="backBtn">Back</button>
+
+      <div class="stat">
+        <span>Round</span>
+        <strong id="roundText">1/50</strong>
+      </div>
+
+      <div class="stat">
+        <span>Lives</span>
+        <strong id="livesText">❤️❤️❤️</strong>
+      </div>
+    </header>
+
+    <section class="title-area">
+      <h1>Repeat the Sequence</h1>
+      <p>Enter the squares that flash in the order.</p>
+    </section>
+
+    <section id="grid" class="grid"></section>
+
+    <div id="message" class="message hidden"></div>
+
+    <section class="controls">
+      <button id="startBtn">Start Game</button>
+      <button id="restartBtn" class="hidden">Play Again</button>
+    </section>
+  </main>
+
+  <script src="sequence.js"></script>
+</body>
+</html>
