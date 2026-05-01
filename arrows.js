@@ -120,6 +120,89 @@ const patterns = [
     "WBBBBW",
     "WWBBWW",
     "WWWWWW"
+  ],
+
+  // NEW ONES BELOW
+
+  [
+    "WWBBWW",
+    "WWBBWW",
+    "BBWWBB",
+    "BBWWBB",
+    "WWBBWW",
+    "WWBBWW"
+  ],
+  [
+    "WBWWBW",
+    "BWWWWB",
+    "WWBBWW",
+    "WWBBWW",
+    "BWWWWB",
+    "WBWWBW"
+  ],
+  [
+    "WWWWWW",
+    "BBWWBB",
+    "BBWWBB",
+    "BBWWBB",
+    "BBWWBB",
+    "WWWWWW"
+  ],
+  [
+    "BBBBBB",
+    "WWBBWW",
+    "WWBBWW",
+    "WWBBWW",
+    "WWBBWW",
+    "BBBBBB"
+  ],
+  [
+    "WBWBWB",
+    "WBWBWB",
+    "BWBWBW",
+    "BWBWBW",
+    "WBWBWB",
+    "WBWBWB"
+  ],
+  [
+    "WWWWWW",
+    "WBBBBW",
+    "WBBBBW",
+    "WBBBBW",
+    "WBBBBW",
+    "WWWWWW"
+  ],
+  [
+    "BBBBBB",
+    "BWWWWB",
+    "BWWWWB",
+    "BWWWWB",
+    "BWWWWB",
+    "BBBBBB"
+  ],
+  [
+    "WWBBWW",
+    "BBWWBB",
+    "BBWWBB",
+    "BBWWBB",
+    "BBWWBB",
+    "WWBBWW"
+  ],
+  [
+    "WBWWBW",
+    "WBWWBW",
+    "BBWWBB",
+    "BBWWBB",
+    "WBWWBW",
+    "WBWWBW"
+  ],
+  [
+    "WWWWWW",
+    "WBWBWW",
+    "BWBWBW",
+    "BWBWBW",
+    "WBWBWW",
+    "WWWWWW"
   ]
 ];
 
