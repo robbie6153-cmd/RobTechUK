@@ -1,20 +1,22 @@
-/* =========================
-   GENERAL PAGE
-========================= */
-body {
+html, body {
   margin: 0;
   padding: 0;
-  background: #000;
+  box-sizing: border-box;
+  min-height: 100vh;
   font-family: Arial, sans-serif;
-  text-align: center;
-  color: white;
+  background: url("./background.jpg") center center / cover no-repeat;
+  overflow-x: hidden;
 }
 
-/* =========================
-   HOME PAGE
-========================= */
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
 
+/* HOME SCREEN */
 .home-container {
+  position: relative;
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
@@ -25,245 +27,438 @@ body {
   height: auto;
   display: block;
 }
-html,
-body {
-  overflow-x: hidden;
+
+.hotspot {
+  position: absolute;
+  display: block;
+  z-index: 20;
 }
-/* MENU GRID */
-.menu {
+
+/* TOP MENU HOTSPOTS */
+.home-link { top: 0.5%; left: 0.5%; width: 11%; height: 7%; }
+.leaderboard-link { top: 0.5%; left: 12%; width: 16%; height: 7%; }
+.privacy-link { top: 0.5%; left: 28.5%; width: 21%; height: 7%; }
+.terms-link { top: 0.5%; left: 49.5%; width: 19%; height: 7%; }
+.about-link { top: 0.5%; left: 69%; width: 11%; height: 7%; }
+.settings-link { top: 0.5%; left: 80%; width: 11%; height: 7%; }
+.profile-link { top: 0.5%; left: 91%; width: 9%; height: 7%; }
+
+/* PLAY BUTTON */
+.play-button {
+  position: absolute;
+  left: 50%;
+  top: 65%;
+  transform: translate(-50%, -50%);
+  width: 46%;
+  height: 11%;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+/* CONTACT */
+.contact-link {
+  bottom: 4%;
+  right: 1.5%;
+  width: 26%;
+  height: 7%;
+}
+
+/* RULES */
+#rules-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.rules-container {
+  background: rgba(255,255,255,0.95);
+  color: black;
+  padding: 25px;
+  max-width: 500px;
+  width: 90%;
+  border-radius: 14px;
+  text-align: left;
+}
+
+.rules-container h1 {
+  margin: 0 0 20px;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.rules-container p {
+  margin: 0 0 14px;
+}
+
+.rules-container button {
+  display: block;
+  margin: 25px auto 0;
+  padding: 14px 28px;
+  background: #2e8b57;
+  color: white;
+  border: none;
+  border-radius: 10px;
+}
+
+/* GAME */
+#game {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 30px 16px 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* TITLE */
+h1 {
+  font-size: 3.4rem;
+  color: black;
+  margin: 24px 0;
+}
+.subheading {
+  font-size: 1.6rem;
+  font-weight: normal;
+  margin-top: -10px;
+  margin-bottom: 20px;
+  color: #333;
+  text-align:center;
+}
+/* LETTERS */
+#letters {
+  display: grid;
+  grid-template-columns: repeat(5, 56px);
+  gap: 10px;
+  justify-content: center;
+  margin: 20px auto;
+}
+
+.tile {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom, #7d8b99, #55616d);
+  color: black;
+  font-size: 2rem;
+  font-weight: bold;
+  border-radius: 8px;
+  box-shadow: 0 4px 0 #3f4952;
+}
+
+/* INFO */
+#infoBar {
+  display: flex;
+  gap: 25px;
+  margin: 16px 0 24px;
+  font-weight: bold;
+  color: black;
+}
+
+/* INPUT */
+.input-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 0 auto 20px;
+}
+
+#wordInput {
+  width: 280px;
+  max-width: 90%;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  text-align: center;
+}
+
+#submitBtn {
+  width: 180px;
+  padding: 14px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+}
+
+/* MESSAGES */
+#message,
+#finalScore {
+  margin-top: 15px;
+  color: black;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  #game {
+    padding: 24px 16px 140px;
+  }
+.subheading {
+  font-size: 1.2rem;
+}
+  h1 {
+    font-size: 3rem;
+    margin: 20px 0 18px;
+    text-align: center;
+  }
+
+  #letters {
+    grid-template-columns: repeat(5, 54px);
+    gap: 10px;
+    margin: 20px auto;
+  }
+
+  .tile {
+    width: 54px;
+    height: 54px;
+    font-size: 2rem;
+  }
+
+  #infoBar {
+    flex-direction: column;
+    gap: 10px;
+    font-size: 1.3rem;
+    margin: 18px 0 20px;
+  }
+
+  .input-row {
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  #wordInput {
+    width: 280px;
+    max-width: 90%;
+    font-size: 16px;
+    padding: 14px;
+  }
+
+  #submitBtn {
+    width: 160px;
+    font-size: 16px;
+    padding: 14px;
+  }
+}
+.more-games {
+  margin-top: 25px;
+  padding: 15px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  text-align: left;
+}
+
+.more-games h2 {
+  margin-bottom: 10px;
+}
+
+.more-games a {
+  color: #00c3ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.more-games a:hover {
+  text-decoration: underline;
+}
+.brain-quote {
+  margin-top: 20px;
+  padding: 15px;
+  font-style: italic;
+  background: rgba(0,0,0,0.05);
+  border-left: 4px solid #00c3ff;
+}
+.account-required-box {
+  margin-top: 15px;
+  padding: 15px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.account-required-box button {
+  display: block;
+  width: 90%;
+  max-width: 260px;
+  margin: 8px auto;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.account-link {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 85%; /* adjust slightly if needed */
+
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 16px;
+
+  z-index: 10;
+}
+
+.account-link:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+.end-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.submit-score-btn {
+  background: #28a745;
+  color: white;
+  font-size: 18px;
+  padding: 14px 30px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+}
+
+.submit-score-btn:hover {
+  background: #218838;
+  transform: scale(1.05);
+}
+.submit-score-btn {
+  width: 80%;
+  max-width: 300px;
+}
+/* ADDITION - Profile page */
+
+.profile-page {
+  margin: 0;
+  min-height: 100vh;
+  background-image: url("background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  font-family: Arial, sans-serif;
+}
+
+.profile-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 16px;
+  box-sizing: border-box;
+}
+
+.profile-box {
+  width: 100%;
+  max-width: 700px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.profile-box h1 {
+  margin-top: 0;
+  font-size: 2rem;
+}
+
+.profile-section {
+  margin-top: 25px;
+  padding: 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.profile-section h2 {
+  margin-top: 0;
+}
+
+.stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  width: calc(100% - 24px);
-  max-width: 430px;
-  margin: 14px auto;
-  padding: 0;
-  box-sizing: border-box;
-  grid-auto-rows: 54px;
 }
 
-/* BUTTON STYLE */
-.menu-btn {
-  background: linear-gradient(145deg, #00c853, #009624);
-  color: white;
-  text-decoration: none;
-  width: 100%;
-  height: 54px;
-  min-height: 54px;
-  max-height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.stat-card {
+  background: white;
   border-radius: 12px;
-  font-size: 17px;
-  font-weight: bold;
-  border: 2px solid #00ff88;
-  box-shadow: 0 4px 10px rgba(0, 255, 100, 0.4);
-  transition: 0.2s ease;
-  box-sizing: border-box;
-  text-align: center;
+  padding: 15px 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
-.menu-btn:visited {
-  color: white;
-}
-
-.menu-btn:hover {
-  background: linear-gradient(145deg, #00e676, #00c853);
-  transform: scale(1.06);
-  box-shadow:
-    0 0 14px rgba(0, 255, 120, 0.8),
-    0 0 28px rgba(0, 255, 120, 0.35);
-}
-
-/* =========================
-   CONTENT PAGES (PSEPHIA, MUSIC, ETC)
-========================= */
-
-.page-content,
-.home-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 40px 20px 60px;
-  min-height: 100vh;
-  box-sizing: border-box;
-}
-
-.page-content h1,
-.home-content h1 {
-  font-size: 36px;
-  margin-bottom: 25px;
-}
-
-.page-content h2,
-.home-content h2 {
-  font-size: 28px;
-  margin-top: 30px;
-  margin-bottom: 15px;
-}
-
-.page-content p,
-.home-content p {
-  font-size: 21px;
-  line-height: 1.7;
-  margin-bottom: 22px;
-}
-
-/* =========================
-   ABOUT PAGE
-========================= */
-
-.about-container {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 40px 20px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-}
-
-.about-container h1 {
-  font-size: 36px;
-  margin-bottom: 25px;
-}
-
-.about-container p {
-  font-size: 22px;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-/* =========================
-   ARCADE PAGE
-========================= */
-
-.arcade-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 420px;
-  margin: 30px auto 0;
-}
-
-.arcade-game {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 56px;
-  background: linear-gradient(145deg, #00c853, #009624);
-  color: white;
-  text-decoration: none;
-  font-size: 20px;
-  font-weight: bold;
-  border-radius: 12px;
-  border: 2px solid #00ff88;
-  box-shadow: 0 4px 10px rgba(0, 255, 100, 0.35);
-  transition: 0.2s ease;
-}
-
-.arcade-game:visited {
-  color: white;
-}
-
-.arcade-game:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 14px rgba(0, 255, 100, 0.5);
-}
-
-/* =========================
-   LINKS
-========================= */
-
-.external-link {
-  display: inline-block;
-  margin-top: 40px;
-  font-size: 20px;
-  color: #00ff88;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.external-link:hover {
-  text-decoration: underline;
-}
-
-/* =========================
-   CONTACT / FOOTER
-========================= */
-
-.contact-section {
-  margin-top: auto;
-  padding-top: 20px;
-  border-top: 1px solid #333;
-  font-size: 20px;
-}
-
-.contact-section a {
-  color: #00ff88;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.contact-section a:hover {
-  text-decoration: underline;
-}
-
-/* =========================
-   BACK BUTTON
-========================= */
-
-.back-button {
-  display: inline-block;
-  margin: 10px 0 20px;
-  padding: 10px 18px;
-  background: linear-gradient(145deg, #00c853, #009624);
-  color: #fff;
-  text-decoration: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: bold;
-  border: 2px solid #00ff88;
-  box-shadow: 0 4px 10px rgba(0, 255, 100, 0.35);
-  transition: 0.2s ease;
-}
-
-.back-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 14px rgba(0, 255, 100, 0.5);
-}
-
-.bottom-home {
+.stat-number {
   display: block;
-  text-align: center;
-  margin: 40px auto;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #1b7f3a;
 }
 
-/* =========================
-   MOBILE
-========================= */
+.stat-label {
+  display: block;
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
 
-@media (max-width: 600px) {
-  .menu {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 390px;
-    padding: 10px;
+.profile-button {
+  background: #1b7f3a;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.danger-zone {
+  border: 2px solid #c0392b;
+}
+
+.delete-account-button {
+  background: #c0392b;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.back-home {
+  display: inline-block;
+  margin-top: 22px;
+  color: #111;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+@media (max-width: 500px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
 
-  .about-container h1,
-  .page-content h1,
-  .home-content h1 {
-    font-size: 30px;
-  }
-
-  .about-container p,
-  .page-content p,
-  .home-content p {
-    font-size: 19px;
-    line-height: 1.6;
-  }
-
-  .contact-section {
-    font-size: 18px;
+  .profile-box {
+    padding: 18px;
   }
 }
