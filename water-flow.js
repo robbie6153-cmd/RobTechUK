@@ -4,7 +4,7 @@ const BUILD_TIME = 30;
 const QUEUE_LIMIT = 4;
 const TILE_SPAWN_MS = 2000;
 const WATER_SPEED_MS = 2500;
-const waterMusic = new Audio("water.wav");
+const waterMusic = new Audio("water.mp3");
 
 waterMusic.loop = false;
 waterMusic.volume = 0.8;
