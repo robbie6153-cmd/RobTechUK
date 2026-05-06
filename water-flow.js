@@ -4,20 +4,15 @@ const BUILD_TIME = 30;
 const QUEUE_LIMIT = 4;
 const TILE_SPAWN_MS = 2000;
 const WATER_SPEED_MS = 2500;
-const waterStartMusic = new Audio("waterstart.wav");
-const waterMainMusic = new Audio("watermain.wav");
+const waterMusic = new Audio("water.wav");
 
-waterStartMusic.loop = false;
-waterMainMusic.loop = true;
-waterMainMusic.volume = 0.8;
-waterStartMusic.volume = 0.8;
+waterMusic.loop = false;
+waterMusic.volume = 0.8;
 
 function stopWaterMusic() {
-  waterStartMusic.pause();
-  waterStartMusic.currentTime = 0;
-
-  waterMainMusic.pause();
-  waterMainMusic.currentTime = 0;
+  waterMusic.pause();
+  waterMusic.currentTime = 0;
+}
 }
 const gameOverOverlay = document.getElementById("gameOverOverlay");
 const gameOverText = document.getElementById("gameOverText");
@@ -112,8 +107,8 @@ startBtn.disabled = true;
 messageEl.textContent = "Arrange the pipes before the water starts!";
 
 stopWaterMusic();
-waterStartMusic.currentTime = 0;
-waterStartMusic.play().catch(() => {});
+waterMusic.currentTime = 0;
+waterMusic.play().catch(() => {});
 
   timerEl.classList.remove("timer-flow");
   timerEl.classList.add("timer-build");
@@ -248,11 +243,6 @@ function startWater() {
   waterStarted = true;
   clearInterval(buildTimer);
 
-  waterStartMusic.pause();
-  waterStartMusic.currentTime = 0;
-
-  waterMainMusic.currentTime = 0;
-  waterMainMusic.play().catch(() => {});
 
   flowTime = 0;
   timerEl.classList.remove("timer-build");
