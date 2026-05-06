@@ -13,7 +13,7 @@ function stopWaterMusic() {
   waterMusic.pause();
   waterMusic.currentTime = 0;
 }
-}
+
 const gameOverOverlay = document.getElementById("gameOverOverlay");
 const gameOverText = document.getElementById("gameOverText");
 const playAgainBtn = document.getElementById("playAgainBtn");
