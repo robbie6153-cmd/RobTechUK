@@ -267,3 +267,12 @@ body {
     font-size: 18px;
   }
 }
+.scorecast-text {
+  text-align: center;
+  color: white;
+  font-size: 1rem;
+  margin-top: 12px;
+  margin-bottom: 18px;
+  padding: 0 20px;
+  line-height: 1.4;
+}
