@@ -1,5 +1,5 @@
 const SIZE = 6;
-const ROUND_COUNT = 5;
+const ROUND_COUNT = 10;
 
 let elapsedTime = 0;
 
@@ -511,10 +511,18 @@ function scrambleFromTargetExact(moveCount) {
 function chooseRoundPatterns() {
   roundPatterns = [];
 
-  for (let i = 0; i < ROUND_COUNT; i++) {
-    const randomIndex = Math.floor(Math.random() * patterns.length);
-    roundPatterns.push(patterns[randomIndex]);
+  // Copy the patterns array
+  const shuffled = [...patterns];
+
+  // Shuffle it
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
+
+  // Take the first ROUND_COUNT unique patterns
+  roundPatterns = shuffled.slice(0, ROUND_COUNT);
 }
 
 function showBigFlash(text) {
