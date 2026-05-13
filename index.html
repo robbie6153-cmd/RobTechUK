@@ -1,204 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9ZR2X5WEG8"></script>
-
+  <!-- Google tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-GFMC9780RY"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-9ZR2X5WEG8');
+    gtag('config', 'G-GFMC9780RY');
   </script>
-
-  <!-- Google AdSense -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7137119315620021"
-     crossorigin="anonymous"></script>
-
-  <!-- Monetag verification -->
-  <meta name="monetag" content="c5534009f55fca775117f02c8efcc01c">
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Letters In – Free Daily Word Game</title>
 
-  <title>RobTechUK – Free Browser Games by an Independent UK Developer</title>
+  <meta name="description" content="Play Letters In, a free daily word game. Find as many words as you can from 9 letters in 200 seconds. New puzzle every day!">
 
-  <meta name="description" content="Play free online browser games by RobTechUK, an independent UK developer creating word games, arcade games, brain training puzzles, music projects and the Psephia polling platform.">
+  <link rel="stylesheet" href="style.css">
 
-  <link rel="canonical" href="https://robtech.uk/">
+  <script>
+    function showGameScreen() {
+      document.getElementById("home-screen").style.display = "none";
+      document.getElementById("home-content").style.display = "none";
+      document.getElementById("game").style.display = "block";
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="RobTechUK – Free Browser Games">
-  <meta property="og:description" content="Free online word games, arcade games, brain training puzzles and web projects by independent UK developer RobTechUK.">
-  <meta property="og:image" content="https://robtech.uk/homepage.jpg">
-  <meta property="og:url" content="https://robtech.uk/">
-  <meta property="og:type" content="website">
-
-  <link rel="stylesheet" href="style.css?v=13">
-
-  <!-- Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "RobTechUK",
-    "url": "https://robtech.uk/",
-    "description": "Free browser games, word games, arcade games, brain training puzzles and web projects by independent UK developer RobTechUK."
-  }
+      if (typeof startGame === "function") {
+        startGame();
+      }
+    }
   </script>
-
 </head>
 
 <body>
 
-  <!-- HEADER IMAGE -->
-  <header class="home-container">
-    <img src="homepage.jpg" alt="RobTechUK - Independent UK games developer">
-  </header>
+<!-- HOME IMAGE -->
+<div id="home-screen">
+  <div class="home-container">
+    <img src="homepage.jpg" alt="Letters In Home">
 
-  <!-- SMALL INTRO -->
-  <p class="intro-text">
-    Free browser games, word puzzles, arcade games and web projects by independent UK developer RobTechUK.
-  </p>
+    <a href="index.html" class="hotspot home-link"></a>
+    <a href="leaderboard.html" class="hotspot leaderboard-link"></a>
+    <a href="privacy.html" class="hotspot privacy-link"></a>
+    <a href="terms.html" class="hotspot terms-link"></a>
+    <a href="about.html" class="hotspot about-link"></a>
+    <a href="settings.html" class="hotspot settings-link"></a>
+    <a href="profile.html" class="hotspot profile-link"></a>
 
-  <!-- BUTTON GRID -->
-  <nav class="menu" aria-label="Main navigation">
+    <div class="play-button" onclick="showGameScreen()"></div>
 
-    <a href="wordgames.html" class="menu-btn">Word Games</a>
-    <a href="arcade.html" class="menu-btn">Arcade</a>
+    <a href="account.html" id="loginBtn" class="account-link">Log in / Create Account</a>
+    <a href="contact.html" class="hotspot contact-link"></a>
+    <div id="loggedInBox" class="logged-in-box"></div>
+  </div>
+</div>
 
-    <a href="braintraining.html" class="menu-btn">Brain Training</a>
-    <a href="psephia.html" class="menu-btn">Psephia</a>
+<!-- HOME CONTENT -->
+<div id="home-content">
 
-    <a href="comingsoon.html" class="menu-btn">Coming Soon</a>
-    <a href="robtechmusic.html" class="menu-btn">RobTech Music</a>
+  <div class="seo-text">
+    <h1>Letters In</h1>
+    <h2 class="subheading">Free Daily Word Game</h2>
 
-    <a href="about.html" class="menu-btn">About</a>
-    <a href="https://scorecast24.com" class="menu-btn">
-  ScoreCast24
-</a>
+    <p>
+      Play Letters In, a free daily word puzzle game. Find as many words as possible from 9 letters before time runs out.
+      Perfect for fans of Wordle, anagrams, and brain training games.
+    </p>
+  </div>
 
-  </nav>
+  <section class="info-section">
+    <h2>How to Play Letters In</h2>
+    <p>
+      Letters In is a free daily word game. Each day, players are given 9 letters and must make as many valid words as possible before the timer runs out.
+    </p>
+    <p>
+      Words must be at least 3 letters long. You will score a point for each word, 2 points for a six letter word, 3 points for a seven letter word, 4 points for an eight letter word and 5 points for a nine letter word.
+    </p>
+    <p>
+      The game resets daily at midnight GMT, giving all players the same challenge each day.
+    </p>
+  </section>
 
+  <section class="info-section">
+    <h2>More Games from RobTechUK</h2>
 
-  <!-- MAIN SEO CONTENT -->
-  <main class="home-content">
+    <p><strong>For more word games by RobTechUK, try the following:</strong></p>
 
-    <section>
+    <p>
+      <strong>Word Shuffle:</strong><br>
+      Arrange the letters in the grid to find words. Score for combos and chain bonus.<br>
+      <a href="https://wordshuffle.co.uk" target="_blank">Play Word Shuffle</a>
+    </p>
 
-      <h1>RobTechUK – Independent UK Games Developer</h1>
+    <p>
+      <strong>Word Steps:</strong><br>
+      Change one letter at a time to make as many words as you can in one minute, as the words get longer, but the points get bigger.<br>
+      <a href="https://wordsteps.co.uk" target="_blank">Play Word Steps</a>
+    </p>
 
-      <p>
-        RobTechUK is an independent UK games and web-projects brand creating free browser-based games,
-        word puzzles, brain training games, arcade games and interactive online platforms.
-      </p>
+    <p>
+      <strong>Word Scramble:</strong><br>
+      Solve the ever increasingly longer anagrams before the timer runs out.<br>
+      <a href="https://wordscramble.co.uk" target="_blank">Play Word Scramble</a>
+    </p>
 
-      <p>
-        The site focuses on accessible games that work directly in the browser without downloads.
-        Projects include word games, arcade games, leaderboard competitions, puzzle games and experimental web projects.
-      </p>
+    <p>
+      <strong>Letters Drop:</strong><br>
+      In this Tetris inspired word game, arrange the letter tiles as they fall to create words. More points for longer words.<br>
+      <a href="https://lettersdrop.co.uk" target="_blank">Play Letters Drop</a>
+    </p>
 
-    </section>
+    <p>
+      <a href="https://robtech.uk" target="_blank"><strong>RobTech.uk</strong></a>
+    </p>
 
-    <section>
+    <p class="brain-quote">
+      Research suggests that just 10–15 minutes a day of word and brain training games can help improve memory, attention, and mental speed.
+    </p>
+  </section>
 
-      <h2>Free Online Word Games</h2>
+</div>
 
-      <p>
-        RobTechUK creates free online word games designed for players who enjoy vocabulary challenges,
-        timed rounds and daily puzzle gameplay.
-      </p>
+<!-- GAME -->
+<div id="game" style="display:none;">
+  <h1>Letters In</h1>
+  <div id="gameLoggedInBox" class="game-logged-in-box"></div>
 
-      <p>
-        Visit the <a href="wordgames.html">Word Games</a> section to play games including
-        Letters In, Word Shuffle, Word Steps and Word Scramble.
-      </p>
+  <div id="letters"></div>
 
-    </section>
+  <div id="infoBar">
+    <div>Time: <span id="time">200</span></div>
+    <div>Score: <span id="score">0</span></div>
+  </div>
 
-    <section>
+  <div class="input-row">
+    <input type="text" id="wordInput" placeholder="Type a word..." autocomplete="off">
+    <button id="submitBtn">Submit Word</button>
+  </div>
 
-      <h2>Arcade Games</h2>
+  <div id="message"></div>
+  <div id="finalScore"></div>
+</div>
 
-      <p>
-        RobTechUK also develops arcade-style browser games designed to be playable on desktop and mobile devices.
-      </p>
+<script src="dictionary.js"></script>
+<script src="game.js?v=12345"></script>
 
-      <p>
-        Visit the <a href="arcade.html">Arcade</a> section to play games including
-        <a href="catquest.html">Cat Quest</a>, Invaders and Water Flow.
-      </p>
+<!-- Auth only -->
+<script type="module" src="auth.js"></script>
 
-    </section>
-
-    <section>
-
-      <h2>Brain Training Games</h2>
-
-      <p>
-        The Brain Training section features puzzle and logic games designed for quick and repeatable play sessions.
-      </p>
-
-      <p>
-        Visit the <a href="braintraining.html">Brain Training</a> section to explore RobTechUK puzzle games.
-      </p>
-
-    </section>
-
-    <section>
-
-      <h2>Psephia Polling Platform</h2>
-
-      <p>
-        Psephia is a RobTechUK web project focused on online polls, opinions and public voting.
-      </p>
-
-      <p>
-        Learn more about <a href="psephia.html">Psephia</a>.
-      </p>
-
-    </section>
-
-    <section>
-
-      <h2>RobTech Music</h2>
-
-      <p>
-        RobTech Music features original music created for RobTechUK games and development projects.
-      </p>
-
-      <p>
-        Visit <a href="robtechmusic.html">RobTech Music</a>.
-      </p>
-
-    </section>
-
-    <section>
-
-      <h2>About RobTechUK</h2>
-
-      <p>
-        RobTechUK is developed independently in the UK and focuses on building creative and accessible online projects.
-      </p>
-
-      <p>
-        Read more on the <a href="about.html">About</a> page.
-      </p>
-
-    </section>
-
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="footer-links">
-
-    <a href="privacy.html">Privacy Policy</a>
-    <a href="terms.html">Terms & Conditions</a>
-
-  </footer>
-<p class="scorecast-text">
-  ScoreCast24 will be arriving in time for the 2026/27 football season!
-</p>
 </body>
 </html>
