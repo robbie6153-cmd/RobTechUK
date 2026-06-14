@@ -1,286 +1,578 @@
-/* =========================
-   GENERAL PAGE
-========================= */
+ * {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  padding: 0;
-  background: #000;
   font-family: Arial, sans-serif;
-  text-align: center;
+  background: #061b08;
   color: white;
 }
 
-/* =========================
-   HOME PAGE
-========================= */
-
-.home-container {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.home-container img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-html,
-body {
-  overflow-x: hidden;
-}
-/* MENU GRID */
-.menu {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  width: calc(100% - 24px);
-  max-width: 430px;
-  margin: 14px auto;
-  padding: 0;
-  box-sizing: border-box;
-  grid-auto-rows: 54px;
-}
-
-/* BUTTON STYLE */
-.menu-btn {
-  background: linear-gradient(145deg, #00c853, #009624);
-  color: white;
-  text-decoration: none;
-  width: 100%;
-  height: 54px;
-  min-height: 54px;
-  max-height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  font-size: 17px;
-  font-weight: bold;
-  border: 2px solid #00ff88;
-  box-shadow: 0 4px 10px rgba(0, 255, 100, 0.4);
-  transition: 0.2s ease;
-  box-sizing: border-box;
-  text-align: center;
-}
-
-.menu-btn:visited {
-  color: white;
-}
-
-.menu-btn:hover {
-  background: linear-gradient(145deg, #00e676, #00c853);
-  transform: scale(1.06);
-  box-shadow:
-    0 0 14px rgba(0, 255, 120, 0.8),
-    0 0 28px rgba(0, 255, 120, 0.35);
-}
-
-/* =========================
-   CONTENT PAGES (PSEPHIA, MUSIC, ETC)
-========================= */
-
-.page-content,
-.home-content {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 40px 20px 60px;
+.page {
   min-height: 100vh;
-  box-sizing: border-box;
+  padding-bottom: 30px;
 }
 
-.page-content h1,
-.home-content h1 {
-  font-size: 36px;
-  margin-bottom: 25px;
+.hidden {
+  display: none !important;
 }
 
-.page-content h2,
-.home-content h2 {
+.top-bar {
+  position: absolute;
+  top: 25px;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 28px;
+}
+
+.logo-text {
   font-size: 28px;
-  margin-top: 30px;
-  margin-bottom: 15px;
+  font-weight: bold;
+  color: #ffd21a;
+  text-shadow: 2px 2px 4px #000;
 }
 
-.page-content p,
-.home-content p {
-  font-size: 21px;
-  line-height: 1.7;
-  margin-bottom: 22px;
+.menu-btn {
+  font-size: 30px;
+  background: rgba(0, 0, 0, 0.25);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  padding: 8px 16px;
 }
 
-/* =========================
-   ABOUT PAGE
-========================= */
-
-.about-container {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 40px 20px;
+.home-page {
+  position: relative;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  text-align: center;
 }
 
-.about-container h1 {
-  font-size: 36px;
+.home-image {
+  width: 100%;
+  min-height: 100vh;
+  object-fit: cover;
+  display: block;
+}
+
+.start-btn {
+  position: absolute;
+  left: 50%;
+  top: 70vh !important;
+  transform: translateX(-50%);
+  width: 65%;
+  max-width: 560px;
+  padding: 16px 18px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(#ffd34d, #d89400);
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  box-shadow: 0 0 18px rgba(255, 213, 0, 0.8);
+  z-index: 5;
+}
+
+.predictions-page,
+.leaderboard-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 95px 18px 30px;
+}
+
+h1 {
+  text-align: center;
+  color: #ffd21a;
+  margin-bottom: 8px;
+}
+
+.subheading {
+  text-align: center;
+  color: #e8f6e8;
   margin-bottom: 25px;
 }
 
-.about-container p {
-  font-size: 22px;
-  line-height: 1.6;
-  margin-bottom: 20px;
+.username-box {
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 18px;
 }
 
-/* =========================
-   ARCADE PAGE
-========================= */
-
-.arcade-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  max-width: 420px;
-  margin: 30px auto 0;
-}
-
-.arcade-game {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 56px;
-  background: linear-gradient(145deg, #00c853, #009624);
-  color: white;
-  text-decoration: none;
-  font-size: 20px;
-  font-weight: bold;
-  border-radius: 12px;
-  border: 2px solid #00ff88;
-  box-shadow: 0 4px 10px rgba(0, 255, 100, 0.35);
-  transition: 0.2s ease;
-}
-
-.arcade-game:visited {
-  color: white;
-}
-
-.arcade-game:hover {
-  transform: scale(1.03);
-  box-shadow: 0 6px 14px rgba(0, 255, 100, 0.5);
-}
-
-/* =========================
-   LINKS
-========================= */
-
-.external-link {
-  display: inline-block;
-  margin-top: 40px;
-  font-size: 20px;
-  color: #00ff88;
-  font-weight: bold;
-  text-decoration: none;
-}
-
-.external-link:hover {
-  text-decoration: underline;
-}
-
-/* =========================
-   CONTACT / FOOTER
-========================= */
-
-.contact-section {
-  margin-top: auto;
-  padding-top: 20px;
-  border-top: 1px solid #333;
-  font-size: 20px;
-}
-
-.contact-section a {
-  color: #00ff88;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.contact-section a:hover {
-  text-decoration: underline;
-}
-
-/* =========================
-   BACK BUTTON
-========================= */
-
-.back-button {
-  display: inline-block;
-  margin: 10px 0 20px;
-  padding: 10px 18px;
-  background: linear-gradient(145deg, #00c853, #009624);
-  color: #fff;
-  text-decoration: none;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: bold;
-  border: 2px solid #00ff88;
-  box-shadow: 0 4px 10px rgba(0, 255, 100, 0.35);
-  transition: 0.2s ease;
-}
-
-.back-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 14px rgba(0, 255, 100, 0.5);
-}
-
-.bottom-home {
+.username-box label {
   display: block;
-  text-align: center;
-  margin: 40px auto;
+  font-weight: bold;
+  margin-bottom: 8px;
 }
 
-/* =========================
-   MOBILE
-========================= */
+.username-box input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #bbb;
+  font-size: 16px;
+}
+
+.fixture-card {
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.fixture-teams {
+  display: grid;
+  grid-template-columns: 1fr 60px 40px 60px 1fr;
+  gap: 8px;
+  align-items: center;
+  text-align: center;
+}
+
+.team-name {
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.score-input {
+  width: 60px;
+  padding: 10px;
+  font-size: 18px;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid #aaa;
+}
+
+.vs {
+  font-weight: bold;
+  color: #176c1c;
+}
+
+.fixture-date {
+  margin-top: 10px;
+  text-align: center;
+  color: #555;
+  font-size: 14px;
+}
+
+.main-btn,
+.secondary-btn {
+  width: 100%;
+  max-width: 500px;
+  display: block;
+  margin: 18px auto 0;
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.main-btn {
+  background: linear-gradient(#ffd34d, #d89400);
+  color: white;
+  border: none;
+}
+
+.secondary-btn {
+  background: white;
+  color: #124e15;
+  border: 2px solid #124e15;
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 90px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.leaderboard-points {
+  font-weight: bold;
+  color: #176c1c;
+  text-align: right;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal-box {
+  background: white;
+  color: #111;
+  max-width: 420px;
+  width: 100%;
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+}
+
+.modal-box h2 {
+  margin-top: 0;
+  color: #124e15;
+}
+
+.modal-buttons {
+  margin-top: 18px;
+}
 
 @media (max-width: 600px) {
-  .menu {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 390px;
-    padding: 10px;
+  .logo-text {
+    font-size: 22px;
   }
 
-  .about-container h1,
-  .page-content h1,
-  .home-content h1 {
-    font-size: 30px;
+  .start-btn {
+    top: 58%;
+    width: 72%;
+    font-size: 17px;
+    padding: 13px 12px;
   }
 
-  .about-container p,
-  .page-content p,
-  .home-content p {
-    font-size: 19px;
-    line-height: 1.6;
+  .fixture-teams {
+    grid-template-columns: 1fr 48px 28px 48px 1fr;
+    gap: 5px;
   }
 
-  .contact-section {
-    font-size: 18px;
+  .score-input {
+    width: 48px;
+    font-size: 16px;
+  }
+
+  .team-name {
+    font-size: 14px;
   }
 }
-.scorecast-text {
-  text-align: center;
-  color: white;
-  font-size: 1rem;
-  margin-top: 12px;
-  margin-bottom: 18px;
-  padding: 0 20px;
-  line-height: 1.4;
+.home-boxes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  width: 90%;
+  max-width: 900px;
+  margin: 35px auto 0;
 }
-.music-cover {
-  width: 100%;
-  max-width: 400px;
+
+.home-card {
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+  text-decoration: none;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.25);
+}
+
+.home-card h2 {
+  margin: 0 0 14px;
+  font-size: 1.2rem;
+}
+
+.preview-row {
+  display: flex;
+  justify-content: space-between;
+  background: #f5f5f5;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.preview-points {
+  color: #0b5d1e;
+}
+
+@media (max-width: 700px) {
+  .home-boxes {
+    grid-template-columns: 1fr;
+  }
+}
+.info-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.info-box {
+  background: rgba(255,255,255,0.95);
+  color: #111;
+  padding: 25px;
   border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.info-box h2 {
+  margin-top: 25px;
+}
+
+.info-box a {
+  color: #0066cc;
+  font-weight: bold;
+}
+.how-to-play-box {
   display: block;
-  margin: 20px auto;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  width: 90%;
+  max-width: 700px;
+  margin: 15px auto 20px auto;
+  padding: 12px;
+  text-align: center;
+  background: #ffffff;
+  color: #111;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+.view-predictions-text {
+  font-size: 0.8rem;
+  color: #f4c542;
+  margin-top: 4px;
+  font-weight: bold;
+}
+
+.leaderboard-row {
+  cursor: pointer;
+}
+.prediction-view-row {
+  background: #111;
+  border: 1px solid #f4c542;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.prediction-fixture {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.prediction-score {
+  color: #f4c542;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+.dropdown-menu {
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  background: #111;
+  border: 2px solid #f4c542;
+  border-radius: 10px;
+  min-width: 220px;
+  z-index: 1000;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 12px;
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px solid #333;
+}
+
+.dropdown-menu a:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu a:hover {
+  background: #222;
+}
+
+.hidden {
+  display: none;
+}
+.menu-dropdown {
+  padding: 0;
+}
+
+.menu-dropdown > a {
+  display: block;
+  padding: 12px;
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px solid #333;
+}
+
+.menu-dropdown-content {
+  display: none;
+  background: #1a1a1a;
+}
+
+.menu-dropdown-content a {
+  padding-left: 25px;
+}
+
+.menu-dropdown:hover .menu-dropdown-content {
+  display: block;
+}
+.fixtures-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 20px auto;
+}
+/* NEWS PAGE */
+
+.news-page {
+  padding: 20px;
+}
+
+.news-hero {
+  background: #ffd400;
+  color: #111;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.news-hero h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+}
+
+.news-hero p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.news-card {
+  background: #ffffff;
+  color: #111;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+  line-height: 1.6;
+}
+
+.news-card h2 {
+  margin-top: 0;
+  font-size: 1.6rem;
+}
+
+.news-card h3 {
+  margin-bottom: 6px;
+  color: #111;
+}
+
+.news-tag {
+  display: inline-block;
+  background: #111;
+  color: #ffd400;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+.news-prediction-box {
+  margin-top: 20px;
+  padding: 14px;
+  border-left: 5px solid #ffd400;
+  background: #f5f5f5;
+  border-radius: 10px;
+  color: #111;
+}
+
+.about-page h1,
+.contact-page h1 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.about-page p,
+.contact-page p {
+  margin-bottom: 18px;
+}
+
+.about-page a,
+.contact-page a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.about-page a:hover,
+.contact-page a:hover {
+  text-decoration: underline;
+}
+
+.about-page hr,
+.contact-page hr {
+  margin: 30px 0;
+}
+.news-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.news-links a {
+  display: block;
+  padding: 10px;
+  background: #f5c400;
+  color: #111;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+/* =========================
+   LEADERBOARD ROUND TABS
+========================= */
+
+.round-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0 20px;
+}
+
+.round-tab {
+  background: #2b2b2b;
+  color: white;
+  border: 2px solid #555;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.round-tab:hover {
+  background: #3a3a3a;
+}
+
+.round-tab.active {
+  background: linear-gradient(#ffd34d, #d89400);
+  border-color: #ffd34d;
+  color: black;
+}
+.countdown-box {
+  margin-top: -10px;
+  font-size: 1rem;
+  text-align: center;
+  color: #ffd700;
+}
+
+.countdown-box strong {
+  display: block;
+  font-size: 1.2rem;
+  margin-top: 4px;
 }
