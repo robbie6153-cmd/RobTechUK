@@ -4,7 +4,6 @@ const teams = [
   "Bournemouth",
   "Brentford",
   "Brighton & Hove Albion",
-  "Burnley",
   "Chelsea",
   "Coventry City",
   "Crystal Palace",
@@ -19,8 +18,7 @@ const teams = [
   "Newcastle United",
   "Nottingham Forest",
   "Sunderland",
-  "Tottenham Hotspur",
-  "West Ham United"
+  "Tottenham Hotspur"
 ];
 
 const homeScreen = document.getElementById("homeScreen");
