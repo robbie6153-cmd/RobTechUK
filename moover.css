@@ -1,0 +1,94 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #050505;
+  color: #ffffff;
+}
+
+.moover-page {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #0b0b0b;
+  min-height: 100vh;
+}
+
+.hero img {
+  width: 100%;
+  display: block;
+}
+
+.booking-intro,
+.booking-form,
+.thank-you {
+  padding: 28px 20px;
+  text-align: center;
+}
+
+h1, h2 {
+  color: #ffd21f;
+  margin-bottom: 12px;
+}
+
+p {
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.book-btn {
+  background: #ffd21f;
+  color: #000;
+  border: none;
+  padding: 16px 28px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 18px;
+  box-shadow: 0 0 12px rgba(255, 210, 31, 0.4);
+}
+
+.book-btn:hover {
+  background: #ffffff;
+}
+
+.booking-form {
+  border-top: 2px solid #ffd21f;
+}
+
+.booking-form label {
+  display: block;
+  text-align: left;
+  margin: 16px auto 6px;
+  max-width: 520px;
+  font-weight: bold;
+  color: #ffd21f;
+}
+
+.booking-form input,
+.booking-form select {
+  width: 100%;
+  max-width: 520px;
+  padding: 14px;
+  border-radius: 8px;
+  border: 2px solid #ffd21f;
+  background: #111;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.booking-form input::placeholder {
+  color: #aaa;
+}
+
+.thank-you {
+  border-top: 2px solid #ffd21f;
+  background: #111;
+}
+
+.hidden {
+  display: none;
+}

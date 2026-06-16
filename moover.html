@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Moover Taxis - Tameside Taxis You Can Trust</title>
+  <link rel="stylesheet" href="moover.css">
+</head>
+
+<body>
+
+  <main class="moover-page">
+
+    <section class="hero">
+      <img src="moover.jpg" alt="Moover Taxis - Tameside taxis you can trust">
+    </section>
+
+    <section class="booking-intro">
+      <h1>Moover Taxis</h1>
+      <p>Reliable taxis across Tameside, 24 hours a day.</p>
+      <button id="bookNowBtn" class="book-btn">Book Now</button>
+    </section>
+
+    <section id="bookingForm" class="booking-form hidden">
+      <h2>When would you like to book for?</h2>
+
+      <label>Date</label>
+      <input type="date" id="bookingDate">
+
+      <label>Time</label>
+      <input type="time" id="bookingTime">
+
+      <label>Name</label>
+      <input type="text" id="name" placeholder="Your name">
+
+      <label>Contact number</label>
+      <input type="tel" id="contact" placeholder="Your phone number">
+
+      <label>Pick up Location</label>
+      <input type="text" id="pickup" placeholder="Pick up address">
+
+      <label>Destination</label>
+      <input type="text" id="destination" placeholder="Destination">
+
+      <label>How many people?</label>
+      <input type="number" id="people" min="1" placeholder="Number of passengers">
+
+      <label>Luggage?</label>
+      <select id="luggage">
+        <option value="">Please choose</option>
+        <option>Yes</option>
+        <option>No</option>
+      </select>
+
+      <label>Child safety seat needed?</label>
+      <select id="childSeat">
+        <option value="">Please choose</option>
+        <option>Yes</option>
+        <option>No</option>
+      </select>
+
+      <button id="submitBooking" class="book-btn">Submit Booking</button>
+    </section>
+
+    <section id="thankYouMessage" class="thank-you hidden">
+      <h2>Thank you for booking.</h2>
+      <p>One of our team will be in touch soon.</p>
+    </section>
+
+  </main>
+
+  <script src="moover.js"></script>
+</body>
+</html>
