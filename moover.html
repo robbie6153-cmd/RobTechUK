@@ -26,39 +26,43 @@
       <h2>When would you like to book for?</h2>
 
       <label>Date</label>
-      <input type="date" id="bookingDate">
+      <input type="date" id="bookingDate" required>
 
       <label>Time</label>
-      <input type="time" id="bookingTime">
+      <input type="time" id="bookingTime" required>
 
       <label>Name</label>
-      <input type="text" id="name" placeholder="Your name">
+      <input type="text" id="name" placeholder="Your name" required>
 
       <label>Contact number</label>
-      <input type="tel" id="contact" placeholder="Your phone number">
+      <input type="tel" id="contact" placeholder="Your phone number" required>
 
       <label>Pick up Location</label>
-      <input type="text" id="pickup" placeholder="Pick up address">
+      <input type="text" id="pickup" placeholder="Pick up address" required>
 
       <label>Destination</label>
-      <input type="text" id="destination" placeholder="Destination">
+      <input type="text" id="destination" placeholder="Destination" required>
 
       <label>How many people?</label>
-      <input type="number" id="people" min="1" placeholder="Number of passengers">
+      <input type="number" id="people" min="1" placeholder="Number of passengers" required>
 
       <label>Luggage?</label>
-      <select id="luggage">
+      <select id="luggage" required>
         <option value="">Please choose</option>
         <option>Yes</option>
         <option>No</option>
       </select>
 
       <label>Child safety seat needed?</label>
-      <select id="childSeat">
+      <select id="childSeat" required>
         <option value="">Please choose</option>
         <option>Yes</option>
         <option>No</option>
       </select>
+
+      <p id="formError" class="form-error hidden">
+        Please complete all booking details before submitting.
+      </p>
 
       <button id="submitBooking" class="book-btn">Submit Booking</button>
     </section>
