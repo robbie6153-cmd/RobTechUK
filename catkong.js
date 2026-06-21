@@ -195,56 +195,58 @@ window.addEventListener("load", () => {
 }
 
   function updateCat(dt) {
-    if (cat.vx === undefined) cat.vx = 0;
+  const ladder = getTouchingLadder(cat);
+  cat.onLadder = !!ladder;
 
-    const ladder = getTouchingLadder(cat);
-    cat.onLadder = !!ladder;
-
-    if (keys.left) {
-      cat.vx = -CAT_SPEED;
-      cat.facing = "left";
-    }
-
-    if (keys.right) {
-      cat.vx = CAT_SPEED;
-      cat.facing = "right";
-    }
-
-    if (cat.onLadder && keys.up) {
-      cat.vy = -CLIMB_SPEED;
-    } else if (cat.onLadder && keys.down) {
-      cat.vy = CLIMB_SPEED;
-    } else if (cat.onLadder) {
-      cat.vy = 0;
-    } else {
-      cat.vy += GRAVITY * dt;
-    }
-
-    cat.x += cat.vx * dt;
-    cat.y += cat.vy * dt;
-
-    cat.x = Math.max(20, Math.min(canvas.width - cat.w - 20, cat.x));
-
-    cat.onGround = false;
-
-    platforms.forEach(platform => {
-      if (
-        cat.x + cat.w > platform.x &&
-        cat.x < platform.x + platform.w &&
-        cat.y + cat.h >= platform.y &&
-        cat.y + cat.h <= platform.y + 20 &&
-        cat.vy >= 0
-      ) {
-        cat.y = platform.y - cat.h;
-        cat.vy = 0;
-        cat.onGround = true;
-      }
-    });
-
-    if (cat.y > canvas.height) {
-      loseLife();
-    }
+  if (keys.left) {
+    cat.vx = -CAT_SPEED;
+    cat.facing = "left";
   }
+
+  if (keys.right) {
+    cat.vx = CAT_SPEED;
+    cat.facing = "right";
+  }
+
+  if (cat.onLadder && keys.up) {
+    cat.vx = 0;
+    cat.vy = -CLIMB_SPEED;
+    cat.x = ladder.x + ladder.w / 2 - cat.w / 2;
+  } else if (cat.onLadder && keys.down) {
+    cat.vx = 0;
+    cat.vy = CLIMB_SPEED;
+    cat.x = ladder.x + ladder.w / 2 - cat.w / 2;
+  } else if (cat.onLadder) {
+    cat.vy = 0;
+  } else {
+    cat.vy += GRAVITY * dt;
+  }
+
+  cat.x += cat.vx * dt;
+  cat.y += cat.vy * dt;
+
+  cat.x = Math.max(20, Math.min(canvas.width - cat.w - 20, cat.x));
+
+  cat.onGround = false;
+
+  platforms.forEach(platform => {
+    if (
+      cat.x + cat.w > platform.x &&
+      cat.x < platform.x + platform.w &&
+      cat.y + cat.h >= platform.y &&
+      cat.y + cat.h <= platform.y + 20 &&
+      cat.vy >= 0
+    ) {
+      cat.y = platform.y - cat.h;
+      cat.vy = 0;
+      cat.onGround = true;
+    }
+  });
+
+  if (cat.y > canvas.height) {
+    loseLife();
+  }
+}
 
 function updateDogs(dt) {
   dogs.forEach(dog => {
@@ -408,7 +410,7 @@ function updateDogs(dt) {
         ctx.scale(-1, 1);
       }
 
-      ctx.drawImage(catImg, -38, -38, 76, 76);
+     ctx.drawImage(catImg, -45, -45, 90, 90);
     } else {
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(cat.x, cat.y, cat.w, cat.h);
