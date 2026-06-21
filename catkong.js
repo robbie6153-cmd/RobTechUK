@@ -136,20 +136,20 @@ window.addEventListener("load", () => {
     dogs.push(makeDog(330, 66, -1));
   }
 
-  function makeDog(x, y, dir) {
-    return {
-      x,
-      y,
-      w: 34,
-      h: 34,
-      vx: DOG_SPEED * dir,
-      vy: 0,
-      onLadder: false,
-      platformIndex: platforms.length - 1,
-      facing: dir > 0 ? "right" : "left",
-      ladderCooldown: 0
-    };
-  }
+ function makeDog(x, y, dir) {
+  return {
+    x,
+    y,
+    w: 34,
+    h: 34,
+    vx: DOG_SPEED * dir,
+    vy: 0,
+    onLadder: false,
+    targetPlatformIndex: null,
+    facing: dir > 0 ? "right" : "left",
+    ladderCooldown: 1.5
+  };
+}
 
   function resetCat() {
     cat.x = 55;
@@ -195,7 +195,7 @@ window.addEventListener("load", () => {
 }
 
   function updateCat(dt) {
-    cat.vx = 0;
+    if (cat.vx === undefined) cat.vx = 0;
 
     const ladder = getTouchingLadder(cat);
     cat.onLadder = !!ladder;
@@ -246,62 +246,62 @@ window.addEventListener("load", () => {
     }
   }
 
-  function updateDogs(dt) {
-    dogs.forEach(dog => {
-      dog.ladderCooldown -= dt;
+function updateDogs(dt) {
+  dogs.forEach(dog => {
+    dog.ladderCooldown -= dt;
 
-      const ladder = getTouchingLadder(dog);
-      const currentPlatform = getCurrentPlatform(dog);
+    const currentPlatform = getCurrentPlatform(dog);
+    const ladder = getTouchingLadder(dog);
+
+    if (!dog.onLadder && currentPlatform) {
+      dog.y = currentPlatform.platform.y - dog.h;
 
       if (
         ladder &&
         dog.ladderCooldown <= 0 &&
-        currentPlatform &&
         currentPlatform.index > 0 &&
-        Math.random() < 0.75
+        Math.random() < 0.012
       ) {
         dog.onLadder = true;
+        dog.targetPlatformIndex = currentPlatform.index - 1;
         dog.x = ladder.x + ladder.w / 2 - dog.w / 2;
         dog.vx = 0;
         dog.vy = DOG_SPEED;
-        dog.ladderCooldown = 1.2;
+        dog.ladderCooldown = 2.5;
+        return;
       }
 
-      if (dog.onLadder) {
-        dog.y += dog.vy * dt;
+      dog.x += dog.vx * dt;
 
-        const landed = getCurrentPlatform(dog);
-
-        if (landed && landed.index < currentPlatform?.index) {
-          dog.onLadder = false;
-          dog.vy = 0;
-          dog.y = landed.platform.y - dog.h;
-          dog.vx = Math.random() < 0.5 ? DOG_SPEED : -DOG_SPEED;
-          dog.facing = dog.vx > 0 ? "right" : "left";
-        }
-      } else {
-        dog.x += dog.vx * dt;
-
-        const platform = getCurrentPlatform(dog);
-
-        if (platform) {
-          dog.y = platform.platform.y - dog.h;
-
-          if (dog.x <= platform.platform.x) {
-            dog.x = platform.platform.x;
-            dog.vx = DOG_SPEED;
-          }
-
-          if (dog.x + dog.w >= platform.platform.x + platform.platform.w) {
-            dog.x = platform.platform.x + platform.platform.w - dog.w;
-            dog.vx = -DOG_SPEED;
-          }
-
-          dog.facing = dog.vx > 0 ? "right" : "left";
-        }
+      if (dog.x <= currentPlatform.platform.x) {
+        dog.x = currentPlatform.platform.x;
+        dog.vx = DOG_SPEED;
       }
-    });
-  }
+
+      if (dog.x + dog.w >= currentPlatform.platform.x + currentPlatform.platform.w) {
+        dog.x = currentPlatform.platform.x + currentPlatform.platform.w - dog.w;
+        dog.vx = -DOG_SPEED;
+      }
+
+      dog.facing = dog.vx > 0 ? "right" : "left";
+      return;
+    }
+
+    if (dog.onLadder) {
+      dog.y += dog.vy * dt;
+
+      const targetPlatform = platforms[dog.targetPlatformIndex];
+
+      if (dog.y + dog.h >= targetPlatform.y) {
+        dog.y = targetPlatform.y - dog.h;
+        dog.onLadder = false;
+        dog.vy = 0;
+        dog.vx = Math.random() < 0.5 ? DOG_SPEED : -DOG_SPEED;
+        dog.facing = dog.vx > 0 ? "right" : "left";
+      }
+    }
+  });
+}
 
   function collectTreats() {
     treats.forEach(treat => {
