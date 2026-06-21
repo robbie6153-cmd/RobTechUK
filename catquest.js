@@ -503,25 +503,26 @@ window.addEventListener("load", () => {
         COMPLETE!
       </div>
 
-      <div id="scoreBreakdown" style="
-        width: 85%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 24px;
-        font-weight: 800;
-        margin-bottom: 28px;
-      ">
-        <div>
-          <div>Dreamies</div>
-          <div style="font-size: 38px;">${dreamiesScore}</div>
-        </div>
+    <div id="scoreBreakdown" style="
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  align-items: center;
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+">
+    <div style="min-width:120px;">
+  <div>Dreamies</div>
+  <div style="font-size:38px;">${dreamiesScore}</div>
+</div>
 
-        <div>
-          <div>Time</div>
-          <div style="font-size: 38px;">${timeBonus}</div>
-        </div>
-      </div>
+<div style="min-width:120px;">
+  <div>Time</div>
+  <div style="font-size:38px;">${timeBonus}</div>
+</div>
 
       <div id="totalScoreBox" style="
         display: none;

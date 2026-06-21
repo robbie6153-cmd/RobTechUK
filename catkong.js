@@ -98,7 +98,7 @@ window.addEventListener("load", () => {
       const ladderCount = i === 0 ? 2 : 1;
 
       for (let j = 0; j < ladderCount; j++) {
-        const x = randomBetween(90, 500);
+        const x = [110, 230, 350, 470][Math.floor(Math.random() * 4)];
 
         ladders.push({
           x,
@@ -180,18 +180,19 @@ window.addEventListener("load", () => {
     return null;
   }
 
-  function getTouchingLadder(entity) {
-    return ladders.find(ladder => {
-      const centreX = entity.x + entity.w / 2;
+ function getTouchingLadder(entity) {
+  return ladders.find(ladder => {
+    const centreX = entity.x + entity.w / 2;
+    const feetY = entity.y + entity.h;
 
-      return (
-        centreX >= ladder.x &&
-        centreX <= ladder.x + ladder.w &&
-        entity.y + entity.h > ladder.y &&
-        entity.y < ladder.y + ladder.h
-      );
-    });
-  }
+    return (
+      centreX >= ladder.x - 10 &&
+      centreX <= ladder.x + ladder.w + 10 &&
+      feetY >= ladder.y - 6 &&
+      entity.y <= ladder.y + ladder.h
+    );
+  });
+}
 
   function updateCat(dt) {
     cat.vx = 0;
@@ -333,10 +334,10 @@ window.addEventListener("load", () => {
     resetCat();
   }
 
-  function drawBackground() {
-    ctx.fillStyle = "#090909";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }
+ function drawBackground() {
+  ctx.fillStyle = "#d8d8d8";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
 
   function drawPlatforms() {
     platforms.forEach(platform => {
@@ -407,7 +408,7 @@ window.addEventListener("load", () => {
         ctx.scale(-1, 1);
       }
 
-      ctx.drawImage(catImg, -26, -26, 52, 52);
+      ctx.drawImage(catImg, -38, -38, 76, 76);
     } else {
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(cat.x, cat.y, cat.w, cat.h);
