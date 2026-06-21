@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Cat Kong - RobTechUK Arcade</title>
+
+  <link rel="stylesheet" href="catkong.css?v=1">
+</head>
+
+<body>
+
+  <div class="game-page">
+
+    <a href="arcade.html" class="back-button">
+      Back to Arcade
+    </a>
+
+    <h1>🐱 Cat Kong</h1>
+
+    <div class="hud">
+      <div>Time: <span id="time">60</span></div>
+      <div>Dreamies: <span id="score">0</span></div>
+      <div>Lives Lost: <span id="livesLost">0</span></div>
+    </div>
+
+    <div class="instructions">
+      Climb the ladders and reach HOME at the top-left of the tower.
+      Collect Dreamies for extra points, but beware of the dogs roaming
+      the platforms. Your final score is Dreamies collected plus time remaining.
+    </div>
+
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+
+    <div class="controls-note">
+      Swipe on mobile or use the arrow keys on desktop.
+      Dogs will usually climb down ladders, but not always. Decide whether
+      to take the risky route for more Dreamies or race straight home.
+    </div>
+
+    <div id="message" class="message"></div>
+
+  </div>
+
+  <script src="catkong.js?v=1"></script>
+
+</body>
+</html>

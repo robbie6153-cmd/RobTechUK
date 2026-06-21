@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Cat Quest - RobTechUK</title>
-  <link rel="stylesheet" href="catquest.css?v=1">
+
+  <link rel="stylesheet" href="catquest.css?v=2" />
 </head>
+
 <body>
   <div class="game-page">
     <a href="arcade.html" class="back-button">Back to Arcade</a>
@@ -14,24 +17,24 @@
 
     <div class="hud">
       <div>Time: <span id="time">60</span></div>
-      <div>Score: <span id="score">0</span></div>
+      <div>Dreamies: <span id="score">0</span></div>
       <div>Lives Lost: <span id="livesLost">0</span></div>
     </div>
 
     <div class="instructions">
-      Collect as many Dreamies as you can before time runs out. Avoid the dogs.
-      If a dog catches you, the cat restarts, but the remaining Dreamies stay where they are.
+      Collect as many Dreamies as you can, avoid the dogs, then reach the green exit
+      in the bottom-right corner. Your final score is your Dreamies plus your seconds left.
     </div>
 
     <canvas id="gameCanvas" width="600" height="600"></canvas>
 
-     <div class="controls-note">
+    <div class="controls-note">
       Swipe on mobile or use arrow keys on desktop.
     </div>
 
     <div id="message" class="message"></div>
   </div>
 
-  <script src="catquest.js?v=1"></script>
+  <script src="catquest.js?v=2"></script>
 </body>
 </html>

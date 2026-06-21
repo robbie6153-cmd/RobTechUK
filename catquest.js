@@ -160,6 +160,7 @@ window.addEventListener("load", () => {
   function atTileCenter(entity, tolerance = 1.5) {
     const tile = pixelToTile(entity.x, entity.y);
     const center = tileCenter(tile.row, tile.col);
+
     return (
       Math.abs(entity.x - center.x) <= tolerance &&
       Math.abs(entity.y - center.y) <= tolerance
@@ -177,6 +178,7 @@ window.addEventListener("load", () => {
 
   function makeDog(row, col, img, speed) {
     const pos = tileCenter(row, col);
+
     return {
       x: pos.x,
       y: pos.y,
@@ -210,6 +212,7 @@ window.addEventListener("load", () => {
 
     if (entity.dirX !== 0) {
       const nextTile = pixelToTile(newX, entity.y);
+
       if (isWalkable(nextTile.row, nextTile.col)) {
         entity.x = newX;
       } else {
@@ -220,6 +223,7 @@ window.addEventListener("load", () => {
 
     if (entity.dirY !== 0) {
       const nextTile = pixelToTile(entity.x, newY);
+
       if (isWalkable(nextTile.row, nextTile.col)) {
         entity.y = newY;
       } else {
@@ -238,9 +242,11 @@ window.addEventListener("load", () => {
     if (!allowReverse) {
       const reverseX = -dog.dirX;
       const reverseY = -dog.dirY;
+
       const nonReverse = options.filter(
         o => !(o.dx === reverseX && o.dy === reverseY)
       );
+
       if (nonReverse.length > 0) {
         options = nonReverse;
       }
@@ -289,6 +295,11 @@ window.addEventListener("load", () => {
     }
   }
 
+  function hasReachedExit() {
+    const tile = pixelToTile(cat.x, cat.y);
+    return tile.row === exitTile.row && tile.col === exitTile.col;
+  }
+
   function distance(a, b) {
     return Math.hypot(a.x - b.x, a.y - b.y);
   }
@@ -310,15 +321,11 @@ window.addEventListener("load", () => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = "#f8f8f8";
+
     for (let row = 0; row < ROWS; row++) {
       for (let col = 0; col < COLS; col++) {
         if (maze[row][col] !== WALL) {
-          ctx.fillRect(
-            col * TILE_SIZE,
-            row * TILE_SIZE,
-            TILE_SIZE,
-            TILE_SIZE
-          );
+          ctx.fillRect(col * TILE_SIZE, row * TILE_SIZE, TILE_SIZE, TILE_SIZE);
         }
       }
     }
@@ -339,26 +346,43 @@ window.addEventListener("load", () => {
           const right = col < COLS - 1 && maze[row][col + 1] === WALL;
 
           ctx.beginPath();
+
           if (up) {
             ctx.moveTo(x, y);
             ctx.lineTo(x, y - TILE_SIZE / 2);
           }
+
           if (down) {
             ctx.moveTo(x, y);
             ctx.lineTo(x, y + TILE_SIZE / 2);
           }
+
           if (left) {
             ctx.moveTo(x, y);
             ctx.lineTo(x - TILE_SIZE / 2, y);
           }
+
           if (right) {
             ctx.moveTo(x, y);
             ctx.lineTo(x + TILE_SIZE / 2, y);
           }
+
           ctx.stroke();
         }
       }
     }
+
+    const exitCentre = tileCenter(exitTile.row, exitTile.col);
+    ctx.fillStyle = "#20c997";
+    ctx.beginPath();
+    ctx.arc(exitCentre.x, exitCentre.y, 13, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 16px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("E", exitCentre.x, exitCentre.y);
   }
 
   function drawTreats() {
@@ -425,13 +449,7 @@ window.addEventListener("load", () => {
     }
 
     if (dog.img.complete && dog.img.naturalWidth > 0) {
-      ctx.drawImage(
-        dog.img,
-        -drawSize / 2,
-        -drawSize / 2,
-        drawSize,
-        drawSize
-      );
+      ctx.drawImage(dog.img, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
     } else {
       ctx.fillStyle = "#555";
       ctx.beginPath();
@@ -454,14 +472,125 @@ window.addEventListener("load", () => {
     drawDogs();
   }
 
+  function createCompleteOverlay(dreamiesScore, timeBonus, totalScore) {
+    const canvasParent = canvas.parentElement;
+    canvasParent.style.position = "relative";
+
+    const oldOverlay = document.getElementById("catQuestCompleteOverlay");
+    if (oldOverlay) oldOverlay.remove();
+
+    const overlay = document.createElement("div");
+    overlay.id = "catQuestCompleteOverlay";
+
+    overlay.style.position = "absolute";
+    overlay.style.left = canvas.offsetLeft + "px";
+    overlay.style.top = canvas.offsetTop + "px";
+    overlay.style.width = canvas.width + "px";
+    overlay.style.height = canvas.height + "px";
+    overlay.style.background = "rgba(0, 0, 0, 0.78)";
+    overlay.style.color = "#ffffff";
+    overlay.style.display = "flex";
+    overlay.style.flexDirection = "column";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+    overlay.style.textAlign = "center";
+    overlay.style.zIndex = "999";
+    overlay.style.fontFamily = "Arial, sans-serif";
+    overlay.style.borderRadius = "12px";
+
+    overlay.innerHTML = `
+      <div style="font-size: 46px; font-weight: 900; margin-bottom: 28px;">
+        COMPLETE!
+      </div>
+
+      <div id="scoreBreakdown" style="
+        width: 85%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 24px;
+        font-weight: 800;
+        margin-bottom: 28px;
+      ">
+        <div>
+          <div>Dreamies</div>
+          <div style="font-size: 38px;">${dreamiesScore}</div>
+        </div>
+
+        <div>
+          <div>Time</div>
+          <div style="font-size: 38px;">${timeBonus}</div>
+        </div>
+      </div>
+
+      <div id="totalScoreBox" style="
+        display: none;
+        font-size: 38px;
+        font-weight: 900;
+        margin-bottom: 24px;
+      ">
+        Total Score: ${totalScore}
+      </div>
+
+      <button id="catKongButton" style="
+        display: none;
+        padding: 14px 22px;
+        font-size: 18px;
+        font-weight: 800;
+        border: none;
+        border-radius: 10px;
+        background: #ffd43b;
+        color: #111;
+        cursor: pointer;
+      ">
+        Round 2: Cat Kong
+      </button>
+    `;
+
+    canvasParent.appendChild(overlay);
+
+    const breakdown = document.getElementById("scoreBreakdown");
+    const totalBox = document.getElementById("totalScoreBox");
+    const catKongButton = document.getElementById("catKongButton");
+
+    let flickers = 0;
+
+    const flickerInterval = setInterval(() => {
+      breakdown.style.opacity = breakdown.style.opacity === "0.25" ? "1" : "0.25";
+      flickers++;
+
+      if (flickers >= 8) {
+        clearInterval(flickerInterval);
+        breakdown.style.display = "none";
+        totalBox.style.display = "block";
+
+        setTimeout(() => {
+          catKongButton.style.display = "inline-block";
+        }, 900);
+      }
+    }, 220);
+
+    catKongButton.addEventListener("click", () => {
+      window.location.href = "catkong.html";
+    });
+  }
+
   function endGame(win = false) {
     gameOver = true;
     clearInterval(timerInterval);
     cancelAnimationFrame(animationFrameId);
 
     if (win) {
+      const dreamiesScore = score;
+      const timeBonus = timeLeft;
+      const totalScore = dreamiesScore + timeBonus;
+
+      scoreEl.textContent = totalScore;
+
       messageEl.textContent =
-        `You cleared every Dreamie with ${timeLeft} seconds left. Final score: ${score}`;
+        `Complete! Dreamies: ${dreamiesScore}. Time bonus: ${timeBonus}. Total score: ${totalScore}.`;
+
+      createCompleteOverlay(dreamiesScore, timeBonus, totalScore);
     } else {
       messageEl.textContent = `Time up. Final score: ${score}`;
     }
@@ -471,6 +600,7 @@ window.addEventListener("load", () => {
     if (gameOver) return;
 
     if (!lastTime) lastTime = timestamp;
+
     const dt = Math.min((timestamp - lastTime) / 1000, 0.033);
     lastTime = timestamp;
 
@@ -480,7 +610,7 @@ window.addEventListener("load", () => {
     handleDogCollision();
     draw();
 
-    if (treats.size === 0) {
+    if (hasReachedExit()) {
       endGame(true);
       return;
     }
@@ -490,11 +620,14 @@ window.addEventListener("load", () => {
 
   function startTimer() {
     clearInterval(timerInterval);
+
     timerInterval = setInterval(() => {
       if (gameOver) return;
 
       timeLeft -= 1;
+
       if (timeLeft < 0) timeLeft = 0;
+
       timeEl.textContent = timeLeft;
 
       if (timeLeft <= 0) {
@@ -605,11 +738,15 @@ window.addEventListener("load", () => {
     timeEl.textContent = timeLeft;
     messageEl.textContent = "";
 
+    const oldOverlay = document.getElementById("catQuestCompleteOverlay");
+    if (oldOverlay) oldOverlay.remove();
+
     resetMazeAndTreats();
     resetRoundPositions();
     bindControls();
     draw();
     startTimer();
+
     animationFrameId = requestAnimationFrame(gameLoop);
   }
 

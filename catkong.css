@@ -17,14 +17,14 @@ body {
   display: inline-block;
   margin: 10px 0 20px;
   padding: 10px 18px;
-  background: linear-gradient(145deg, #00c853, #009624);
+  background: linear-gradient(145deg, #ff7a18, #c2410c);
   color: #fff;
   text-decoration: none;
   border-radius: 10px;
   font-size: 15px;
   font-weight: bold;
-  border: 2px solid #00ff88;
-  box-shadow: 0 4px 10px rgba(0, 255, 100, 0.35);
+  border: 2px solid #ffd43b;
+  box-shadow: 0 4px 12px rgba(255, 132, 0, 0.45);
 }
 
 .hud {
@@ -49,9 +49,9 @@ body {
   width: 100%;
   max-width: 760px;
   aspect-ratio: 1 / 1;
-  background: #ffffff;
-  border: 3px solid #00ff88;
-  box-shadow: 0 0 18px rgba(0, 255, 120, 0.35);
+  background: #090909;
+  border: 3px solid #ffd43b;
+  box-shadow: 0 0 18px rgba(255, 212, 59, 0.4);
   display: block;
   margin: 0 auto 16px;
   touch-action: none;
@@ -66,11 +66,11 @@ body {
   line-height: 1.4;
 }
 
-#catQuestCompleteOverlay {
-  animation: overlayPop 0.35s ease-out;
+#catKongCompleteOverlay {
+  animation: kongOverlayPop 0.35s ease-out;
 }
 
-@keyframes overlayPop {
+@keyframes kongOverlayPop {
   from {
     transform: scale(0.88);
     opacity: 0;
@@ -82,7 +82,7 @@ body {
   }
 }
 
-#catKongButton:hover {
+#playAgainButton:hover {
   transform: scale(1.04);
   background: #ffec70 !important;
 }
@@ -106,8 +106,8 @@ body {
     font-size: 16px;
   }
 
-  #catQuestCompleteOverlay div:first-child {
-    font-size: 34px !important;
+  #catKongCompleteOverlay div:first-child {
+    font-size: 32px !important;
   }
 
   #scoreBreakdown {
@@ -122,7 +122,7 @@ body {
     font-size: 30px !important;
   }
 
-  #catKongButton {
+  #playAgainButton {
     font-size: 16px !important;
     padding: 12px 18px !important;
   }
