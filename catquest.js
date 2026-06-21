@@ -482,11 +482,14 @@ window.addEventListener("load", () => {
     const overlay = document.createElement("div");
     overlay.id = "catQuestCompleteOverlay";
 
-    overlay.style.position = "absolute";
-    overlay.style.left = canvas.offsetLeft + "px";
-    overlay.style.top = canvas.offsetTop + "px";
-    overlay.style.width = canvas.width + "px";
-    overlay.style.height = canvas.height + "px";
+  overlay.style.position = "absolute";
+overlay.style.left = "50%";
+overlay.style.top = canvas.offsetTop + "px";
+overlay.style.transform = "translateX(-50%)";
+overlay.style.width = "100%";
+overlay.style.maxWidth = "600px";
+overlay.style.height = canvas.clientHeight + "px";
+overlay.style.boxSizing = "border-box";
     overlay.style.background = "rgba(0, 0, 0, 0.78)";
     overlay.style.color = "#ffffff";
     overlay.style.display = "flex";
@@ -498,55 +501,58 @@ window.addEventListener("load", () => {
     overlay.style.fontFamily = "Arial, sans-serif";
     overlay.style.borderRadius = "12px";
 
-    overlay.innerHTML = `
-      <div style="font-size: 46px; font-weight: 900; margin-bottom: 28px;">
-        COMPLETE!
-      </div>
+  
+overlay.innerHTML = `
+  <div style="font-size: 40px; font-weight: 900; margin-bottom: 22px;">
+    COMPLETE!
+  </div>
 
-    <div id="scoreBreakdown" style="
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 40px;
-  align-items: center;
-  font-size: 24px;
-  font-weight: 800;
-  margin-bottom: 28px;
-  flex-wrap: wrap;
-">
-    <div style="min-width:120px;">
-  <div>Dreamies</div>
-  <div style="font-size:38px;">${dreamiesScore}</div>
-</div>
+  <div id="scoreBreakdown" style="
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    align-items: center;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  ">
+    <div style="width:120px; text-align:center;">
+      <div>Dreamies</div>
+      <div style="font-size:34px;">${dreamiesScore}</div>
+    </div>
 
-<div style="min-width:120px;">
-  <div>Time</div>
-  <div style="font-size:38px;">${timeBonus}</div>
-</div>
+    <div style="width:120px; text-align:center;">
+      <div>Time</div>
+      <div style="font-size:34px;">${timeBonus}</div>
+    </div>
+  </div>
 
-      <div id="totalScoreBox" style="
-        display: none;
-        font-size: 38px;
-        font-weight: 900;
-        margin-bottom: 24px;
-      ">
-        Total Score: ${totalScore}
-      </div>
+  <div id="totalScoreBox" style="
+    display: none;
+    font-size: 34px;
+    font-weight: 900;
+    margin-bottom: 24px;
+  ">
+    Total Score: ${totalScore}
+  </div>
 
-      <button id="catKongButton" style="
-        display: none;
-        padding: 14px 22px;
-        font-size: 18px;
-        font-weight: 800;
-        border: none;
-        border-radius: 10px;
-        background: #ffd43b;
-        color: #111;
-        cursor: pointer;
-      ">
-        Round 2: Cat Kong
-      </button>
-    `;
+  <button id="catKongButton" style="
+    display: none;
+    padding: 14px 22px;
+    font-size: 18px;
+    font-weight: 800;
+    border: none;
+    border-radius: 10px;
+    background: #ffd43b;
+    color: #111;
+    cursor: pointer;
+  ">
+    Play Level 2: Cat Kong
+  </button>
+`;
 
     canvasParent.appendChild(overlay);
 
