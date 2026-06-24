@@ -86,15 +86,18 @@ body {
 
 .home-image {
   width: 100%;
+  max-width: 430px;
   height: auto;
   min-height: auto;
   object-fit: contain;
   display: block;
+  margin: 0 auto;
+  padding-top: 80px;
 }
 
 .start-btn {
   width: 90%;
-  max-width: 650px;
+  max-width: 430px;
   margin: 20px auto 10px;
   display: block;
   padding: 16px 18px;
