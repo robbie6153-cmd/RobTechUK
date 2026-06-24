@@ -1,0 +1,518 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #061b08;
+  color: white;
+}
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 30px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* HEADER */
+
+.top-bar {
+  position: absolute;
+  top: 25px;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 28px;
+}
+
+.logo-text {
+  font-size: 28px;
+  font-weight: bold;
+  color: #ffd21a;
+  text-shadow: 2px 2px 4px #000;
+}
+
+.menu-btn {
+  font-size: 30px;
+  background: rgba(0, 0, 0, 0.25);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  padding: 8px 16px;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 70px;
+  right: 15px;
+  background: #111;
+  border: 2px solid #f4c542;
+  border-radius: 10px;
+  min-width: 230px;
+  z-index: 1000;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 12px;
+  color: white;
+  text-decoration: none;
+  border-bottom: 1px solid #333;
+}
+
+.dropdown-menu a:last-child {
+  border-bottom: none;
+}
+
+.dropdown-menu a:hover {
+  background: #222;
+}
+
+/* HOME PAGE */
+
+.home-page {
+  position: relative;
+  min-height: 100vh;
+  text-align: center;
+  padding-bottom: 30px;
+}
+
+.home-image {
+  width: 100%;
+  height: auto;
+  min-height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.start-btn {
+  width: 90%;
+  max-width: 650px;
+  margin: 20px auto 10px;
+  display: block;
+  padding: 16px 18px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(#ffd34d, #d89400);
+  color: #111;
+  font-size: 22px;
+  font-weight: bold;
+  box-shadow: 0 0 18px rgba(255, 213, 0, 0.8);
+  cursor: pointer;
+}
+
+.countdown-box {
+  margin: 10px auto 15px;
+  padding: 10px;
+  width: 90%;
+  max-width: 650px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid #f4c542;
+  border-radius: 10px;
+  font-size: 1rem;
+  text-align: center;
+  color: #ffd700;
+}
+
+.countdown-box strong {
+  display: block;
+  font-size: 1.2rem;
+  margin-top: 4px;
+}
+
+.how-to-play-box {
+  display: block;
+  width: 90%;
+  max-width: 700px;
+  margin: 15px auto 20px;
+  padding: 12px;
+  text-align: center;
+  background: #ffffff;
+  color: #111;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.home-boxes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  width: 90%;
+  max-width: 900px;
+  margin: 20px auto 0;
+}
+
+.home-card {
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+  text-decoration: none;
+  border-radius: 14px;
+  padding: 18px;
+  border: 2px solid #f4c542;
+  box-shadow: 0 0 14px rgba(0, 0, 0, 0.25);
+}
+
+.home-card h2 {
+  margin: 0 0 14px;
+  font-size: 1.2rem;
+}
+
+.preview-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  background: #f5f5f5;
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.preview-points {
+  color: #0b5d1e;
+}
+
+/* PREDICTIONS */
+
+.predictions-page,
+.leaderboard-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 95px 18px 30px;
+}
+
+h1 {
+  text-align: center;
+  color: #ffd21a;
+  margin-bottom: 8px;
+}
+
+.subheading {
+  text-align: center;
+  color: #e8f6e8;
+  margin-bottom: 25px;
+}
+
+.username-box {
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.username-box label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.username-box input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #bbb;
+  font-size: 16px;
+}
+
+.fixture-card {
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+}
+
+.fixture-teams {
+  display: grid;
+  grid-template-columns: 1fr 60px 40px 60px 1fr;
+  gap: 8px;
+  align-items: center;
+  text-align: center;
+}
+
+.team-name {
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.score-input {
+  width: 60px;
+  padding: 10px;
+  font-size: 18px;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid #aaa;
+}
+
+.vs {
+  font-weight: bold;
+  color: #176c1c;
+}
+
+.fixture-date {
+  margin-top: 10px;
+  text-align: center;
+  color: #555;
+  font-size: 14px;
+}
+
+/* BUTTONS */
+
+.main-btn,
+.secondary-btn {
+  width: 100%;
+  max-width: 500px;
+  display: block;
+  margin: 18px auto 0;
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.main-btn {
+  background: linear-gradient(#ffd34d, #d89400);
+  color: #111;
+  border: none;
+}
+
+.secondary-btn {
+  background: white;
+  color: #124e15;
+  border: 2px solid #124e15;
+}
+
+/* LEADERBOARD */
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 90px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  color: #111;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.leaderboard-points {
+  font-weight: bold;
+  color: #176c1c;
+  text-align: right;
+}
+
+.view-predictions-text {
+  font-size: 0.8rem;
+  color: #d89400;
+  margin-top: 4px;
+  font-weight: bold;
+}
+
+.prediction-view-row {
+  background: #111;
+  border: 1px solid #f4c542;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.prediction-fixture {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.prediction-score {
+  color: #f4c542;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+/* MODAL */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.modal-box {
+  background: white;
+  color: #111;
+  max-width: 420px;
+  width: 100%;
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+}
+
+.modal-box h2 {
+  margin-top: 0;
+  color: #124e15;
+}
+
+.modal-buttons {
+  margin-top: 18px;
+}
+
+/* INFO / NEWS PAGES */
+
+.info-page,
+.news-page {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.info-box,
+.news-card {
+  background: rgba(255,255,255,0.95);
+  color: #111;
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: left;
+  line-height: 1.6;
+}
+
+.info-box a,
+.news-card a {
+  color: #0066cc;
+  font-weight: bold;
+}
+
+.news-hero {
+  background: #ffd400;
+  color: #111;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.news-hero h1 {
+  margin: 0 0 8px;
+  font-size: 2rem;
+  color: #111;
+}
+
+.news-tag {
+  display: inline-block;
+  background: #111;
+  color: #ffd400;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-bottom: 12px;
+}
+
+.news-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.news-links a {
+  display: block;
+  padding: 10px;
+  background: #f5c400;
+  color: #111;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+/* ROUND TABS */
+
+.round-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 15px 0 20px;
+}
+
+.round-tab {
+  background: #2b2b2b;
+  color: white;
+  border: 2px solid #555;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.round-tab.active {
+  background: linear-gradient(#ffd34d, #d89400);
+  border-color: #ffd34d;
+  color: black;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+  .home-boxes {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .logo-text {
+    font-size: 22px;
+  }
+
+  .top-bar {
+    top: 18px;
+    padding: 0 18px;
+  }
+
+  .menu-btn {
+    font-size: 24px;
+    padding: 7px 13px;
+  }
+
+  .start-btn {
+    width: 90%;
+    font-size: 18px;
+    padding: 13px 12px;
+  }
+
+  .fixture-teams {
+    grid-template-columns: 1fr 48px 28px 48px 1fr;
+    gap: 5px;
+  }
+
+  .score-input {
+    width: 48px;
+    font-size: 16px;
+  }
+
+  .team-name {
+    font-size: 14px;
+  }
+
+  .leaderboard-row {
+    grid-template-columns: 40px 1fr 80px;
+    font-size: 15px;
+  }
+}

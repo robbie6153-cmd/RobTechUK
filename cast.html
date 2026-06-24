@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>ScoreCast24 - Premier League Score Prediction Game</title>
+
+  <link rel="stylesheet" href="style.css?v=12">
+
+  <meta name="description" content="Predict Premier League scores and compete on the ScoreCast24 leaderboard.">
+
+  <meta property="og:title" content="ScoreCast24 - Premier League Prediction Game">
+  <meta property="og:description" content="Predict Premier League scores and compete on the leaderboard.">
+  <meta property="og:image" content="https://scorecast24.com/cast.jpg">
+  <meta property="og:url" content="https://scorecast24.com/cast.html">
+  <meta property="og:type" content="website">
+
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7137119315620021"
+    crossorigin="anonymous"></script>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f5c542">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+</head>
+
+<body>
+  <div class="page">
+
+    <header class="top-bar">
+      <div class="logo-text">ScoreCast24</div>
+      <button id="menuToggle" class="menu-btn">☰</button>
+    </header>
+
+    <nav id="dropdownMenu" class="dropdown-menu hidden">
+      <a href="index.html">ScoreCast Home</a>
+      <a href="cast.html">Score Predictor</a>
+      <a href="index2.html">Premier League Table Game</a>
+      <a href="dream.html">Ultimate Dream Team</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="howtoplay.html">How To Play</a>
+      <a href="contact.html">Contact</a>
+      <a href="terms.html">Terms & Conditions</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </nav>
+
+    <main id="homePage" class="home-page">
+      <img src="cast.jpg" alt="ScoreCast24 Premier League prediction game" class="home-image" />
+
+      <button id="startGameBtn" class="start-btn">
+        Predict The Next Round Of Results
+      </button>
+
+      <div id="roundThreeCountdown" class="countdown-box"></div>
+
+      <button id="installBtn" class="start-btn" style="display:none;">
+        📱 Add ScoreCast24 To Home Screen
+      </button>
+
+      <a href="howtoplay.html" class="how-to-play-box">
+        ❓ How To Play & Scoring Rules
+      </a>
+
+      <div class="home-boxes">
+
+        <a href="#" class="home-card" id="leaderboardCard">
+          <h2>Current Leaderboard 🏆</h2>
+
+          <div id="homeLeaderboardPreview">
+            Loading standings...
+          </div>
+        </a>
+
+        <a href="#" class="home-card" id="fixturesCard">
+          <h2>⚽ Next Fixtures</h2>
+
+          <div id="homeFixturesPreview">
+            Loading games...
+          </div>
+        </a>
+
+      </div>
+    </main>
+
+    <section id="predictionsPage" class="predictions-page hidden">
+      <h1>This Week’s ScoreCast</h1>
+      <p class="subheading">Enter your predicted scores below.</p>
+
+      <div id="fixturesContainer"></div>
+
+      <button id="submitPredictionsBtn" class="main-btn">
+        Submit Predictions
+      </button>
+
+      <button id="backHomeBtn" class="secondary-btn">
+        Back to Home
+      </button>
+    </section>
+
+    <section id="leaderboardPage" class="leaderboard-page hidden">
+      <h1>Leaderboard</h1>
+
+      <div id="leaderboardContainer"></div>
+
+      <button id="backToPredictionsBtn" class="secondary-btn">
+        Back to Predictions
+      </button>
+
+      <button id="leaderboardHomeBtn" class="secondary-btn">
+        Back to Home
+      </button>
+    </section>
+
+  </div>
+
+  <script type="module" src="cast.js?v=1"></script>
+</body>
+</html>
