@@ -4,30 +4,47 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ScoreCast24 Leaderboard</title>
-  <link rel="stylesheet" href="style.css?v=13" />
+  <link rel="stylesheet" href="style.css?v=11" />
 </head>
+
 <body>
-<div class="page">
-  <header class="top-bar">
-    <div class="logo-text">ScoreCast24</div>
-<a href="cast.html" class="menu-btn">⌂</a>
-  </header>
-  <main class="leaderboard-page">
-<h1>Premier League Score Predictor Leaderboard</h1>
-<p class="leaderboard-hint">
-  Tap a player to view their predictions.
-</p>
-<div id="leaderboardContainer">
-  Loading leaderboard...
-</div>
-<a href="cast.html" class="secondary-btn">
-  Back to Predictions
-</a>
-<a href="index.html" class="secondary-btn">
-  Back to ScoreCast Home
-</a>
-  </main>
-</div>
-<script type="module" src="leaderboard.js?v=1"></script>
+  <div class="page">
+
+    <header class="top-bar">
+      <div class="logo-text">ScoreCast24</div>
+      <a href="index.html" class="menu-btn">⌂</a>
+    </header>
+
+    <main class="leaderboard-page">
+
+      <h1>Leaderboard</h1>
+
+      <p class="leaderboard-hint">
+        Tap a player to view their predictions.
+      </p>
+
+      <div class="round-tabs">
+        <button id="currentLeaderboardTab" class="round-tab active">
+          Current Leaderboard
+        </button>
+
+        <button id="groupStageTotalTab" class="round-tab">
+          Group Stage Total
+        </button>
+      </div>
+
+      <div id="leaderboardContainer">
+        Loading leaderboard...
+      </div>
+
+      <a href="index.html" class="secondary-btn">
+        Back to Home
+      </a>
+
+    </main>
+
+  </div>
+
+  <script type="module" src="leaderboard.js?v=54"></script>
 </body>
 </html>
