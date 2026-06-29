@@ -410,7 +410,7 @@ function updateDogs(dt) {
         ctx.scale(-1, 1);
       }
 
-     ctx.drawImage(catImg, -45, -45, 90, 90);
+    ctx.drawImage(catImg, -60, -60, 120, 120);
     } else {
       ctx.fillStyle = "#ffffff";
       ctx.fillRect(cat.x, cat.y, cat.w, cat.h);
