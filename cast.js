@@ -126,106 +126,7 @@ const fixtures = [
 ];
 
 const currentRound = "Championship Week One";
-const predictionsDeadline = new Date("2026-08-21T20:00:00+01:00");
 
-function predictionsAreClosed() {
-  return new Date() >= predictionsDeadline;
-}
-
-const fixtures = [
-  {
-    id: "1",
-    date: "Friday, 21 August 2026, 20:00",
-    competition: "Premier League",
-    home: "Arsenal",
-    away: "Coventry City",
-    homeScore: null,
-    awayScore: null
-  },
-  {
-    id: "2",
-    date: "Saturday, 22 August 2026, 12:30",
-    competition: "Premier League",
-    home: "Hull City",
-    away: "Manchester United",
-    homeScore: null,
-    awayScore: null
-  },
-  {
-    id: "3",
-    date: "Saturday, 22 August 2026, 15:00",
-    competition: "Premier League",
-    home: "Everton",
-    away: "Crystal Palace",
-    homeScore: null,
-    awayScore: null
-  },
-  {
-    id: "4",
-    date: "Saturday, 22 August 2026, 15:00",
-    competition: "Premier League",
-    home: "Ipswich Town",
-    away: "Sunderland",
-    homeScore: null,
-    awayScore: null
-  },
-  {
-    id: "5",
-    date: "Saturday, 22 August 2026, 15:00",
-    competition: "Premier League",
-    home: "Nottingham Forest",
-    away: "Leeds United",
-    homeScore: null,
-    awayScore: null
-  },
-  {
-    id: "6",
-    date: "Saturday, 22 August 2026, 17:30",
-    competition: "Premier League",
-    home: "Brentford",
-    away: "Tottenham Hotspur",
-    homeScore: null,
-    awayScore: null
-  },
-  {
-    id: "7",
-    date: "Sunday, 23 August 2026, 14:00",
-    competition: "Premier League",
-    home: "Brighton & Hove Albion",
-    away: "Aston Villa",
-    homeScore: null,
-    awayScore: null
-  },
-  {
-    id: "8",
-    date: "Sunday, 23 August 2026, 14:00",
-    competition: "Premier League",
-    home: "Manchester City",
-    away: "AFC Bournemouth",
-    homeScore: null,
-    awayScore: null
-  },
-  {
-    id: "9",
-    date: "Sunday, 23 August 2026, 16:30",
-    competition: "Premier League",
-    home: "Newcastle United",
-    away: "Liverpool",
-    homeScore: null,
-    awayScore: null
-  },
-  {
-    id: "10",
-    date: "Monday, 24 August 2026, 20:00",
-    competition: "Premier League",
-    home: "Fulham",
-    away: "Chelsea",
-    homeScore: null,
-    awayScore: null
-  }
-];
-
-const currentRound = "Premier League Round One";
 
 /* =========================
    PAGE ELEMENTS
@@ -283,7 +184,6 @@ function showHome() {
 }
 
 function showPredictions() {
-  homePage.classList.add("hidden");
   predictionsPage.classList.remove("hidden");
   leaderboardPage.classList.add("hidden");
 }
