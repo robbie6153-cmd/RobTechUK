@@ -33,7 +33,7 @@ body {
 }
 
 .game-box {
-  min-height: 76px;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
