@@ -841,6 +841,3 @@ if (screen === "predictions") {
 renderHomeLeaderboardPreview();
 renderHomeFixturesPreview();
 updatePredictionsCountdown();
-
-setInterval(renderHomeLeaderboardPreview, 10000);
-setInterval(renderHomeFixturesPreview, 1000);
