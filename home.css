@@ -29,17 +29,23 @@ body {
   width: 82%;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
 }
 
 .game-box {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   background: linear-gradient(#ffd84d, #f4a900);
   color: #111;
   text-decoration: none;
   font-weight: 800;
-  font-size: 20px;
+  font-size: 18px;
+  line-height: 1.2;
   text-align: center;
-  padding: 18px 14px;
+  padding: 10px 14px;
   border-radius: 16px;
   box-shadow: 0 0 18px rgba(255, 220, 0, 0.45);
   border: 2px solid #ffec8a;
