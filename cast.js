@@ -828,9 +828,15 @@ window.addEventListener("beforeinstallprompt", (e) => {
    START
 ========================= */
 
+const urlParams = new URLSearchParams(window.location.search);
+const screen = urlParams.get("screen");
 
-renderFixtures();
-showPredictions();
+if (screen === "predictions") {
+  renderFixtures();
+  showPredictions();
+} else {
+  showHome();
+}
 
 renderHomeLeaderboardPreview();
 renderHomeFixturesPreview();
