@@ -12,7 +12,120 @@ import {
 /* =========================
    SCORECAST FIXTURES
 ========================= */
+const predictionsDeadline = new Date("2026-08-14T20:00:00+01:00");
 
+const fixtures = [
+  {
+    id: "C1",
+    date: "Friday, 14 August 2026, 20:00",
+    competition: "Championship",
+    home: "Wolves",
+    away: "Blackburn",
+    homeScore: null,
+    awayScore: null
+  },
+  {
+    id: "C2",
+    date: "Saturday, 15 August 2026, 12:30",
+    competition: "Championship",
+    home: "Bolton",
+    away: "Preston",
+    homeScore: null,
+    awayScore: null
+  },
+  {
+    id: "C3",
+    date: "Saturday, 15 August 2026, 15:00",
+    competition: "Championship",
+    home: "Bristol City",
+    away: "Millwall",
+    homeScore: null,
+    awayScore: null
+  },
+  {
+    id: "C4",
+    date: "Saturday, 15 August 2026, 15:00",
+    competition: "Championship",
+    home: "Charlton",
+    away: "Derby",
+    homeScore: null,
+    awayScore: null
+  },
+  {
+    id: "C5",
+    date: "Saturday, 15 August 2026, 15:00",
+    competition: "Championship",
+    home: "Middlesbrough",
+    away: "Lincoln",
+    homeScore: null,
+    awayScore: null
+  },
+  {
+    id: "C6",
+    date: "Saturday, 15 August 2026, 15:00",
+    competition: "Championship",
+    home: "Norwich",
+    away: "West Brom",
+    homeScore: null,
+    awayScore: null
+  },
+  {
+    id: "C7",
+    date: "Saturday, 15 August 2026, 15:00",
+    competition: "Championship",
+    home: "Portsmouth",
+    away: "QPR",
+    homeScore: null,
+    awayScore: null
+  },
+  {
+    id: "C8",
+    date: "Saturday, 15 August 2026, 15:00",
+    competition: "Championship",
+    home: "Stoke",
+    away: "Swansea",
+    homeScore: null,
+    awayScore: null
+  },
+  {
+    id: "C9",
+    date: "Saturday, 15 August 2026, 17:30",
+    competition: "Championship",
+    home: "Sheffield United",
+    away: "Birmingham",
+    homeScore: null,
+    awayScore: null
+  },
+  {
+    id: "C10",
+    date: "Sunday, 16 August 2026, 13:30",
+    competition: "Championship",
+    home: "Watford",
+    away: "Southampton",
+    homeScore: null,
+    awayScore: null
+  },
+  {
+    id: "C11",
+    date: "Sunday, 16 August 2026, 16:00",
+    competition: "Championship",
+    home: "Burnley",
+    away: "West Ham",
+    homeScore: null,
+    awayScore: null
+  },
+  {
+    id: "C12",
+    date: "Monday, 17 August 2026, 20:00",
+    competition: "Championship",
+    home: "Cardiff",
+    away: "Wrexham",
+    homeScore: null,
+    awayScore: null
+  }
+];
+
+const currentRound = "Championship Week One";
 const predictionsDeadline = new Date("2026-08-21T20:00:00+01:00");
 
 function predictionsAreClosed() {
@@ -715,7 +828,9 @@ window.addEventListener("beforeinstallprompt", (e) => {
    START
 ========================= */
 
-showHome();
+
+renderFixtures();
+showPredictions();
 
 renderHomeLeaderboardPreview();
 renderHomeFixturesPreview();
