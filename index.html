@@ -33,7 +33,7 @@
   <meta property="og:url" content="https://robtech.uk/">
   <meta property="og:type" content="website">
 
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=15">
 
   <!-- Structured Data -->
   <script type="application/ld+json">
@@ -56,12 +56,30 @@
   </header>
 
   <!-- SMALL INTRO -->
-  <p class="intro-text">
-    UK web developer creating websites for small businesses, web apps, browser games and online tools.
-  </p>
 
-  <!-- BUTTON GRID -->
-  <nav class="menu" aria-label="Main navigation">
+<p class="intro-text">
+  UK web developer creating websites for small businesses,
+  web apps, browser games and online tools.
+</p>
+
+<!-- GET A QUOTE -->
+
+<div class="quote-btn-container">
+
+  <a
+    href="quote.html"
+    class="quote-btn"
+  >
+    Get a Free Quote
+  </a>
+
+</div>
+
+<!-- BUTTON GRID -->
+
+<nav class="menu" aria-label="Main navigation">
+
+...
 
     <a href="wordgames.html" class="menu-btn">Word Games</a>
     <a href="arcade.html" class="menu-btn">Arcade</a>
@@ -281,3 +299,55 @@
   </ul>
 </section>
 </main>
+.quote-btn-container {
+
+  display: flex;
+
+  justify-content: center;
+
+  margin: 22px 0 28px;
+
+}
+
+.quote-btn {
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  width: 320px;
+
+  max-width: 90%;
+
+  height: 64px;
+
+  background: #00e62a;
+
+  color: #fff;
+
+  text-decoration: none;
+
+  font-size: 24px;
+
+  font-weight: bold;
+
+  border-radius: 16px;
+
+  border: 2px solid #7dff96;
+
+  box-shadow:
+    0 0 14px rgba(0,255,0,0.45);
+
+  transition: 0.2s;
+
+}
+
+.quote-btn:hover {
+
+  background: #00ff37;
+
+  transform: scale(1.03);
+
+}
