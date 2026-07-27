@@ -1,0 +1,951 @@
+/* =========================
+   BASIC RESET
+========================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  background:
+    radial-gradient(
+      circle at top,
+      #3e444b 0%,
+      #20252a 45%,
+      #0f1215 100%
+    );
+
+  color: #ffffff;
+
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+
+/* =========================
+   MAIN APP
+========================= */
+
+.app {
+  width: 100%;
+  min-height: 100dvh;
+  position: relative;
+}
+
+.screen {
+  width: 100%;
+  min-height: 100dvh;
+}
+
+.hidden {
+  display: none !important;
+}
+
+
+/* =========================
+   HOME SCREEN
+========================= */
+
+.home-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  text-align: center;
+}
+
+.home-screen h1 {
+  margin-top: 30px;
+
+  font-size: clamp(
+    2.3rem,
+    10vw,
+    4.3rem
+  );
+
+  letter-spacing: 2px;
+
+  text-transform: uppercase;
+
+  text-shadow:
+    0 3px 0 #707780,
+    0 7px 12px rgba(
+      0,
+      0,
+      0,
+      0.7
+    );
+}
+
+.home-description {
+  max-width: 420px;
+
+  margin-top: 14px;
+
+  color: #d7dbe0;
+
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+
+/* =========================
+   HOME MINI MAZE
+========================= */
+
+.home-maze {
+  width: min(
+    76vw,
+    320px
+  );
+
+  aspect-ratio: 1 / 1;
+
+  position: relative;
+
+  overflow: hidden;
+
+  border: 10px solid #737a82;
+  border-radius: 24px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #4b525a,
+      #24292f
+    );
+
+  box-shadow:
+    inset 8px 8px 14px rgba(
+      255,
+      255,
+      255,
+      0.08
+    ),
+    inset -10px -10px 18px rgba(
+      0,
+      0,
+      0,
+      0.65
+    ),
+    0 18px 30px rgba(
+      0,
+      0,
+      0,
+      0.55
+    );
+}
+
+.home-maze::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(
+        255,
+        255,
+        255,
+        0.025
+      ) 0,
+      rgba(
+        255,
+        255,
+        255,
+        0.025
+      ) 1px,
+      transparent 1px,
+      transparent 6px
+    );
+}
+
+
+/* Decorative maze walls */
+
+.home-maze-wall {
+  position: absolute;
+
+  border-radius: 6px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #aab0b6,
+      #555d65
+    );
+
+  box-shadow:
+    inset 2px 2px 3px rgba(
+      255,
+      255,
+      255,
+      0.4
+    ),
+    inset -3px -3px 4px rgba(
+      0,
+      0,
+      0,
+      0.45
+    ),
+    4px 5px 7px rgba(
+      0,
+      0,
+      0,
+      0.55
+    );
+}
+
+.wall-one {
+  width: 60%;
+  height: 14px;
+
+  top: 25%;
+  left: 0;
+}
+
+.wall-two {
+  width: 14px;
+  height: 48%;
+
+  top: 25%;
+  left: 57%;
+}
+
+.wall-three {
+  width: 48%;
+  height: 14px;
+
+  top: 68%;
+  right: 0;
+}
+
+.wall-four {
+  width: 14px;
+  height: 30%;
+
+  bottom: 0;
+  left: 30%;
+}
+
+
+/* Decorative home marble */
+
+.home-marble {
+  width: 34px;
+  height: 34px;
+
+  position: absolute;
+  top: 47%;
+  left: 47%;
+
+  transform: translate(
+    -50%,
+    -50%
+  );
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 32% 28%,
+      #ffffff 0%,
+      #f7f7f7 20%,
+      #cfd3d6 52%,
+      #8d949a 78%,
+      #555b60 100%
+    );
+
+  box-shadow:
+    inset -5px -6px 8px rgba(
+      0,
+      0,
+      0,
+      0.35
+    ),
+    inset 4px 4px 5px rgba(
+      255,
+      255,
+      255,
+      0.9
+    ),
+    5px 7px 8px rgba(
+      0,
+      0,
+      0,
+      0.55
+    );
+}
+
+
+/* Decorative home exit */
+
+.home-exit {
+  width: 46px;
+  height: 46px;
+
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+
+  border: 4px solid #56ef89;
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      #0e311b 0%,
+      #07160c 72%
+    );
+
+  box-shadow:
+    inset 0 0 12px rgba(
+      0,
+      0,
+      0,
+      0.9
+    ),
+    0 0 14px rgba(
+      73,
+      255,
+      135,
+      0.8
+    );
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.primary-button {
+  min-width: 190px;
+
+  margin-top: 28px;
+  padding: 16px 28px;
+
+  border: 1px solid #9ea5ad;
+  border-radius: 14px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #f7f8f9 0%,
+      #c8cdd2 50%,
+      #8d949b 100%
+    );
+
+  color: #15191d;
+
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+
+  cursor: pointer;
+
+  box-shadow:
+    inset 0 2px 2px rgba(
+      255,
+      255,
+      255,
+      0.9
+    ),
+    inset 0 -3px 4px rgba(
+      0,
+      0,
+      0,
+      0.25
+    ),
+    0 8px 14px rgba(
+      0,
+      0,
+      0,
+      0.45
+    );
+
+  transition:
+    transform 0.12s ease,
+    filter 0.12s ease;
+}
+
+.primary-button:active {
+  transform: translateY(3px);
+
+  box-shadow:
+    inset 0 3px 5px rgba(
+      0,
+      0,
+      0,
+      0.35
+    ),
+    0 3px 7px rgba(
+      0,
+      0,
+      0,
+      0.4
+    );
+}
+
+.primary-button:hover {
+  filter: brightness(1.08);
+}
+
+.icon-button {
+  width: 44px;
+  height: 44px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #687078;
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #454c53,
+      #24292e
+    );
+
+  color: #ffffff;
+
+  font-size: 1.1rem;
+  font-weight: bold;
+
+  cursor: pointer;
+
+  box-shadow:
+    inset 2px 2px 3px rgba(
+      255,
+      255,
+      255,
+      0.12
+    ),
+    inset -3px -3px 5px rgba(
+      0,
+      0,
+      0,
+      0.45
+    );
+}
+
+
+/* =========================
+   GAME SCREEN
+========================= */
+
+.game-screen {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  padding:
+    env(safe-area-inset-top)
+    14px
+    env(safe-area-inset-bottom);
+}
+
+
+/* =========================
+   GAME HEADER
+========================= */
+
+.game-header {
+  width: 100%;
+  max-width: 760px;
+
+  display: grid;
+  grid-template-columns:
+    1fr
+    1fr
+    44px;
+
+  gap: 10px;
+
+  align-items: center;
+
+  margin: 0 auto;
+  padding: 12px 0;
+}
+
+.game-stat {
+  min-height: 56px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #626a72;
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #3e454c,
+      #22272c
+    );
+
+  box-shadow:
+    inset 2px 2px 4px rgba(
+      255,
+      255,
+      255,
+      0.08
+    ),
+    inset -3px -3px 5px rgba(
+      0,
+      0,
+      0,
+      0.45
+    );
+}
+
+.stat-label {
+  margin-bottom: 2px;
+
+  color: #b9c0c6;
+
+  font-size: 0.72rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+
+  text-transform: uppercase;
+}
+
+.game-stat span:last-child {
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.timer-stat {
+  border-color: #777f87;
+}
+
+
+/* =========================
+   GAME AREA
+========================= */
+
+.game-area {
+  width: 100%;
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px 0 18px;
+}
+
+.maze {
+  width: min(
+    calc(100vw - 28px),
+    calc(100dvh - 120px),
+    720px
+  );
+
+  aspect-ratio: 1 / 1;
+
+  position: relative;
+
+  overflow: hidden;
+
+  border: 12px solid #747b82;
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #4a5158 0%,
+      #30363c 52%,
+      #22272c 100%
+    );
+
+  box-shadow:
+    inset 10px 10px 18px rgba(
+      255,
+      255,
+      255,
+      0.06
+    ),
+    inset -14px -14px 22px rgba(
+      0,
+      0,
+      0,
+      0.55
+    ),
+    0 14px 28px rgba(
+      0,
+      0,
+      0,
+      0.55
+    );
+}
+
+.maze::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(
+        255,
+        255,
+        255,
+        0.016
+      ) 0,
+      rgba(
+        255,
+        255,
+        255,
+        0.016
+      ) 1px,
+      transparent 1px,
+      transparent 7px
+    );
+}
+
+
+/* =========================
+   MAZE WALLS
+========================= */
+
+.maze-wall {
+  position: absolute;
+
+  border-radius: 1px;
+
+  background:
+    linear-gradient(
+      145deg,
+      #a6adb4 0%,
+      #6c747c 48%,
+      #444b52 100%
+    );
+
+  box-shadow:
+    inset 1px 1px 2px rgba(
+      255,
+      255,
+      255,
+      0.3
+    ),
+    inset -1px -1px 2px rgba(
+      0,
+      0,
+      0,
+      0.35
+    );
+
+  z-index: 3;
+}
+
+
+
+/* =========================
+   MARBLE
+========================= */
+
+.marble {
+  width: 24px;
+  height: 24px;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(
+    -50%,
+    -50%
+  );
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 30% 25%,
+      #ffffff 0%,
+      #ffffff 14%,
+      #eeeeee 34%,
+      #c9cdd0 56%,
+      #8e9499 78%,
+      #50555a 100%
+    );
+
+  box-shadow:
+    inset 4px 4px 5px rgba(
+      255,
+      255,
+      255,
+      0.95
+    ),
+    inset -6px -7px 8px rgba(
+      0,
+      0,
+      0,
+      0.38
+    ),
+    5px 7px 7px rgba(
+      0,
+      0,
+      0,
+      0.55
+    );
+
+  z-index: 5;
+
+  will-change:
+    left,
+    top,
+    transform;
+}
+
+
+/* Small shine on the marble */
+
+.marble::after {
+  content: "";
+
+  width: 8px;
+  height: 6px;
+
+  position: absolute;
+  top: 6px;
+  left: 7px;
+
+  border-radius: 50%;
+
+  background: rgba(
+    255,
+    255,
+    255,
+    0.85
+  );
+
+  transform: rotate(-30deg);
+}
+
+
+/* =========================
+   EXIT
+========================= */
+
+.exit {
+  width: 46px;
+  height: 46px;
+
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+
+  border: 4px solid #59f78d;
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      #12351d 0%,
+      #08150c 66%,
+      #020503 100%
+    );
+
+  box-shadow:
+    inset 0 5px 10px rgba(
+      0,
+      0,
+      0,
+      0.95
+    ),
+    0 0 15px rgba(
+      70,
+      255,
+      132,
+      0.85
+    );
+
+  z-index: 2;
+}
+
+.exit::after {
+  content: "";
+
+  position: absolute;
+  inset: 7px;
+
+  border: 2px solid rgba(
+    91,
+    255,
+    146,
+    0.55
+  );
+
+  border-radius: 50%;
+}
+
+
+/* =========================
+   MESSAGE PANEL
+========================= */
+
+.message-panel {
+  width: min(
+    88%,
+    420px
+  );
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  z-index: 20;
+
+  transform: translate(
+    -50%,
+    -50%
+  );
+
+  padding: 28px 24px;
+
+  border: 1px solid #7b838b;
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(
+        62,
+        69,
+        76,
+        0.98
+      ),
+      rgba(
+        25,
+        29,
+        33,
+        0.98
+      )
+    );
+
+  text-align: center;
+
+  box-shadow:
+    inset 2px 2px 4px rgba(
+      255,
+      255,
+      255,
+      0.1
+    ),
+    inset -4px -4px 7px rgba(
+      0,
+      0,
+      0,
+      0.45
+    ),
+    0 18px 34px rgba(
+      0,
+      0,
+      0,
+      0.7
+    );
+}
+
+.message-panel h2 {
+  font-size: 1.9rem;
+}
+
+.message-panel p {
+  margin-top: 10px;
+
+  color: #d2d7dc;
+
+  line-height: 1.5;
+}
+
+
+/* =========================
+   RESPONSIVE ADJUSTMENTS
+========================= */
+
+@media (max-height: 620px) {
+
+  .game-header {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .game-stat {
+    min-height: 46px;
+  }
+
+  .game-stat span:last-child {
+    font-size: 1.15rem;
+  }
+
+  .maze {
+    width: min(
+      calc(100vw - 24px),
+      calc(100dvh - 90px)
+    );
+  }
+
+}
+
+@media (max-width: 390px) {
+
+  .home-screen {
+    padding: 18px;
+  }
+
+  .home-screen h1 {
+    margin-top: 22px;
+  }
+
+  .primary-button {
+    min-width: 170px;
+  }
+
+  .maze {
+    border-width: 9px;
+    border-radius: 18px;
+  }
+
+  .marble {
+    width: 26px;
+    height: 26px;
+  }
+
+  .exit {
+    width: 40px;
+    height: 40px;
+  }
+
+}

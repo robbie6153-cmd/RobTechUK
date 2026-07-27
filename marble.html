@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
+
+  <meta
+    name="theme-color"
+    content="#181b1f"
+  >
+
+  <title>
+    Marble Escape
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="marble.css"
+  >
+
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- Home screen -->
+
+    <section
+      id="homeScreen"
+      class="screen home-screen"
+    >
+
+      <div class="home-maze">
+
+        <div class="home-maze-wall wall-one"></div>
+        <div class="home-maze-wall wall-two"></div>
+        <div class="home-maze-wall wall-three"></div>
+        <div class="home-maze-wall wall-four"></div>
+
+        <div class="home-marble"></div>
+
+        <div class="home-exit"></div>
+
+      </div>
+
+      <h1>
+        Marble Escape
+      </h1>
+
+      <p class="home-description">
+        Tilt your phone. Guide the marble. Find the exit.
+      </p>
+
+      <button
+        id="playButton"
+        class="primary-button"
+        type="button"
+      >
+        Play Now
+      </button>
+
+    </section>
+
+
+    <!-- Game screen -->
+
+    <section
+      id="gameScreen"
+      class="screen game-screen hidden"
+    >
+
+      <header class="game-header">
+
+        <div class="game-stat">
+
+          <span class="stat-label">
+            Level
+          </span>
+
+          <span id="levelNumber">
+            1
+          </span>
+
+        </div>
+
+        <div class="game-stat timer-stat">
+
+          <span class="stat-label">
+            Time
+          </span>
+
+          <span id="timer">
+            60
+          </span>
+
+        </div>
+
+        <button
+          id="homeButton"
+          class="icon-button"
+          type="button"
+          aria-label="Return to home screen"
+        >
+          ✕
+        </button>
+
+      </header>
+
+
+      <div
+        id="gameArea"
+        class="game-area"
+      >
+
+        <div
+          id="maze"
+          class="maze"
+        >
+
+          <div
+            id="exit"
+            class="exit"
+            aria-label="Maze exit"
+          ></div>
+
+          <div
+            id="marble"
+            class="marble"
+            aria-label="White marble"
+          ></div>
+
+        </div>
+
+      </div>
+
+
+      <div
+        id="messagePanel"
+        class="message-panel hidden"
+      >
+
+        <h2 id="messageTitle">
+          Level Complete
+        </h2>
+
+        <p id="messageText">
+          You escaped the maze.
+        </p>
+
+        <button
+          id="continueButton"
+          class="primary-button"
+          type="button"
+        >
+          Next Level
+        </button>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <script src="levels.js"></script>
+  <script src="marble.js"></script>
+
+</body>
+
+</html>
