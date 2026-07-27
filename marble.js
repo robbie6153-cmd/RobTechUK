@@ -79,11 +79,18 @@ const LEVEL_TIME = 60;
 
 let marbleRadius = 12;
 
-const MAX_SPEED = 6.5;
+/*
+  Lower speed and tilt strength make
+  the marble easier to control.
+*/
 
-const TILT_STRENGTH = 0.018;
+const MAX_SPEED = 3.2;
 
-const FRICTION = 0.985;
+const TILT_STRENGTH = 0.006;
+
+const FRICTION = 0.96;
+
+const KEYBOARD_FORCE = 0.16;
 
 
 /* =========================
@@ -92,7 +99,8 @@ const FRICTION = 0.985;
 
 let currentLevelIndex = 0;
 
-let timeRemaining = LEVEL_TIME;
+let timeRemaining =
+  LEVEL_TIME;
 
 let timerInterval = null;
 
@@ -107,9 +115,11 @@ let mazeHeight = 0;
 let marbleX = 0;
 
 let marbleY = 0;
+
 let exitX = 0;
 
 let exitY = 0;
+
 let velocityX = 0;
 
 let velocityY = 0;
@@ -118,9 +128,13 @@ let tiltX = 0;
 
 let tiltY = 0;
 
+let neutralGamma = null;
+
+let neutralBeta = null;
+
 let walls = [];
 
-let keysPressed = {};
+const keysPressed = {};
 
 
 /* =========================
@@ -160,27 +174,30 @@ function showGameScreen() {
 ========================= */
 
 async function requestMotionPermission() {
-  /*
-    Some Apple devices require motion
-    permission after the user presses
-    a button.
+  if (
+    typeof DeviceOrientationEvent ===
+    "undefined"
+  ) {
+    return false;
+  }
 
-    Android devices normally do not.
+  /*
+    iPhone and iPad require permission
+    after the user presses a button.
   */
 
   if (
-    typeof DeviceOrientationEvent !==
-      "undefined" &&
     typeof DeviceOrientationEvent
       .requestPermission ===
-      "function"
+    "function"
   ) {
     try {
       const permission =
         await DeviceOrientationEvent
           .requestPermission();
 
-      return permission === "granted";
+      return permission ===
+        "granted";
     } catch (error) {
       console.error(
         "Motion permission error:",
@@ -200,15 +217,32 @@ async function requestMotionPermission() {
 ========================= */
 
 async function startNewGame() {
-  await requestMotionPermission();
+  const motionAllowed =
+    await requestMotionPermission();
+
+  /*
+    Keyboard play still works on a
+    computer even without motion data.
+  */
+
+  if (
+    !motionAllowed &&
+    isProbablyMobile()
+  ) {
+    alert(
+      "Motion access was not available. Make sure this game is opened through an HTTPS address and allow Motion & Orientation access."
+    );
+  }
 
   currentLevelIndex = 0;
+
+  resetTiltCalibration();
 
   showGameScreen();
 
   /*
-    Wait until the browser has displayed
-    the game screen before measuring it.
+    Wait until the game screen is visible
+    before measuring the maze.
   */
 
   requestAnimationFrame(() => {
@@ -219,13 +253,27 @@ async function startNewGame() {
 }
 
 
+function resetTiltCalibration() {
+  neutralGamma = null;
+  neutralBeta = null;
+
+  tiltX = 0;
+  tiltY = 0;
+
+  velocityX = 0;
+  velocityY = 0;
+}
+
+
 /* =========================
    LOAD LEVEL
 ========================= */
 
 function loadLevel(levelIndex) {
   if (
-    !Array.isArray(window.LEVELS) ||
+    !Array.isArray(
+      window.LEVELS
+    ) ||
     window.LEVELS.length === 0
   ) {
     showError(
@@ -257,23 +305,39 @@ function loadLevel(levelIndex) {
     levelIndex + 1;
 
   timeRemaining =
-    level.time || LEVEL_TIME;
+    level.time ||
+    LEVEL_TIME;
 
   timerDisplay.textContent =
     timeRemaining;
 
+  timerDisplay.style.color =
+    "";
+
   mazeWidth =
-  maze.clientWidth;
+    maze.clientWidth;
 
-mazeHeight =
-  maze.clientHeight;
+  mazeHeight =
+    maze.clientHeight;
 
-buildGridLevel(
-  level.grid
-);
+  if (
+    mazeWidth <= 0 ||
+    mazeHeight <= 0
+  ) {
+    requestAnimationFrame(() => {
+      loadLevel(
+        levelIndex
+      );
+    });
 
-  velocityX = 0;
-  velocityY = 0;
+    return;
+  }
+
+  buildGridLevel(
+    level.grid
+  );
+
+  resetTiltCalibration();
 
   gameRunning = true;
 
@@ -284,6 +348,7 @@ buildGridLevel(
       updateGame
     );
 }
+
 
 /* =========================
    BUILD GRID LEVEL
@@ -335,19 +400,19 @@ function buildGridLevel(grid) {
     mazeHeight /
     rowCount;
 
-  /*
-    Resize the marble according to the
-    size of one grid square.
-
-    This keeps it usable on both desktop
-    and mobile screens.
-  */
-
-  marbleRadius =
+  const cellSize =
     Math.min(
       cellWidth,
       cellHeight
-    ) * 0.3;
+    );
+
+  /*
+    The marble remains smaller than one
+    open grid square.
+  */
+
+  marbleRadius =
+    cellSize * 0.27;
 
   const marbleDiameter =
     marbleRadius * 2;
@@ -358,16 +423,8 @@ function buildGridLevel(grid) {
   marble.style.height =
     `${marbleDiameter}px`;
 
-  /*
-    Resize the exit so it fits within
-    one open grid square.
-  */
-
   const exitSize =
-    Math.min(
-      cellWidth,
-      cellHeight
-    ) * 0.82;
+    cellSize * 0.82;
 
   exit.style.width =
     `${exitSize}px`;
@@ -376,6 +433,7 @@ function buildGridLevel(grid) {
     `${exitSize}px`;
 
   let startFound = false;
+
   let exitFound = false;
 
   for (
@@ -392,7 +450,8 @@ function buildGridLevel(grid) {
       columnIndex += 1
     ) {
       const symbol =
-        row[columnIndex] || "#";
+        row[columnIndex] ||
+        "#";
 
       const x =
         columnIndex *
@@ -472,23 +531,37 @@ function createGridWall(
     "maze-wall";
 
   /*
-    Slight overlap prevents tiny visible
-    gaps between neighbouring wall cells.
+    A tiny overlap prevents visible gaps
+    between touching grid cells.
   */
 
-  const overlap = 0.5;
+  const overlap = 0.6;
+
+  const wallX =
+    x - overlap;
+
+  const wallY =
+    y - overlap;
+
+  const wallWidth =
+    width +
+    overlap * 2;
+
+  const wallHeight =
+    height +
+    overlap * 2;
 
   wallElement.style.left =
-    `${x - overlap}px`;
+    `${wallX}px`;
 
   wallElement.style.top =
-    `${y - overlap}px`;
+    `${wallY}px`;
 
   wallElement.style.width =
-    `${width + overlap * 2}px`;
+    `${wallWidth}px`;
 
   wallElement.style.height =
-    `${height + overlap * 2}px`;
+    `${wallHeight}px`;
 
   maze.appendChild(
     wallElement
@@ -496,14 +569,10 @@ function createGridWall(
 
   walls.push({
     element: wallElement,
-    x: x - overlap,
-    y: y - overlap,
-    width:
-      width +
-      overlap * 2,
-    height:
-      height +
-      overlap * 2
+    x: wallX,
+    y: wallY,
+    width: wallWidth,
+    height: wallHeight
   });
 }
 
@@ -531,6 +600,7 @@ function positionGridExit(
     "translate(-50%, -50%)";
 }
 
+
 /* =========================
    PHONE TILT
 ========================= */
@@ -538,45 +608,72 @@ function positionGridExit(
 function handleDeviceOrientation(
   event
 ) {
-  /*
-    beta:
-    phone tilting towards and away
-    from the player.
-
-    gamma:
-    phone tilting left and right.
-  */
+  if (!gameRunning) {
+    return;
+  }
 
   const gamma =
-    Number(event.gamma) || 0;
+    Number(event.gamma);
 
   const beta =
-    Number(event.beta) || 0;
+    Number(event.beta);
+
+  if (
+    !Number.isFinite(gamma) ||
+    !Number.isFinite(beta)
+  ) {
+    return;
+  }
 
   /*
-    Limit extreme readings so the
-    marble remains controllable.
+    The position in which the player
+    begins each level becomes neutral.
   */
+
+  if (
+    neutralGamma === null ||
+    neutralBeta === null
+  ) {
+    neutralGamma =
+      gamma;
+
+    neutralBeta =
+      beta;
+
+    tiltX = 0;
+    tiltY = 0;
+
+    return;
+  }
+
+  const gammaDifference =
+    gamma -
+    neutralGamma;
+
+  const betaDifference =
+    beta -
+    neutralBeta;
 
   tiltX =
     clamp(
-      gamma,
-      -35,
-      35
+      gammaDifference,
+      -20,
+      20
     );
 
   tiltY =
     clamp(
-      beta,
-      -35,
-      35
+      betaDifference,
+      -20,
+      20
     );
 }
 
 
 window.addEventListener(
   "deviceorientation",
-  handleDeviceOrientation
+  handleDeviceOrientation,
+  true
 );
 
 
@@ -587,9 +684,11 @@ window.addEventListener(
 window.addEventListener(
   "keydown",
   event => {
-    keysPressed[
-      event.key.toLowerCase()
-    ] = true;
+    const key =
+      event.key.toLowerCase();
+
+    keysPressed[key] =
+      true;
 
     if (
       [
@@ -597,9 +696,7 @@ window.addEventListener(
         "arrowdown",
         "arrowleft",
         "arrowright"
-      ].includes(
-        event.key.toLowerCase()
-      )
+      ].includes(key)
     ) {
       event.preventDefault();
     }
@@ -618,14 +715,12 @@ window.addEventListener(
 
 
 function applyKeyboardControls() {
-  const keyboardForce = 0.22;
-
   if (
     keysPressed.arrowleft ||
     keysPressed.a
   ) {
     velocityX -=
-      keyboardForce;
+      KEYBOARD_FORCE;
   }
 
   if (
@@ -633,7 +728,7 @@ function applyKeyboardControls() {
     keysPressed.d
   ) {
     velocityX +=
-      keyboardForce;
+      KEYBOARD_FORCE;
   }
 
   if (
@@ -641,7 +736,7 @@ function applyKeyboardControls() {
     keysPressed.w
   ) {
     velocityY -=
-      keyboardForce;
+      KEYBOARD_FORCE;
   }
 
   if (
@@ -649,7 +744,7 @@ function applyKeyboardControls() {
     keysPressed.s
   ) {
     velocityY +=
-      keyboardForce;
+      KEYBOARD_FORCE;
   }
 }
 
@@ -664,11 +759,6 @@ function updateGame() {
   }
 
   applyKeyboardControls();
-
-  /*
-    Convert the phone's angle into
-    acceleration.
-  */
 
   velocityX +=
     tiltX *
@@ -698,11 +788,54 @@ function updateGame() {
       MAX_SPEED
     );
 
-  moveMarbleOnXAxis();
+  /*
+    Break each frame into small movement
+    steps so the marble cannot jump
+    through thin walls.
+  */
 
-  moveMarbleOnYAxis();
+  const largestMovement =
+    Math.max(
+      Math.abs(
+        velocityX
+      ),
+      Math.abs(
+        velocityY
+      )
+    );
 
-  keepMarbleInsideMaze();
+  const movementSteps =
+    Math.max(
+      1,
+      Math.ceil(
+        largestMovement /
+        0.75
+      )
+    );
+
+  const stepX =
+    velocityX /
+    movementSteps;
+
+  const stepY =
+    velocityY /
+    movementSteps;
+
+  for (
+    let step = 0;
+    step < movementSteps;
+    step += 1
+  ) {
+    moveMarbleOnXAxis(
+      stepX
+    );
+
+    moveMarbleOnYAxis(
+      stepY
+    );
+
+    keepMarbleInsideMaze();
+  }
 
   renderMarble();
 
@@ -719,11 +852,20 @@ function updateGame() {
    MARBLE MOVEMENT
 ========================= */
 
-function moveMarbleOnXAxis() {
-  marbleX +=
-    velocityX;
+function moveMarbleOnXAxis(
+  movement
+) {
+  if (movement === 0) {
+    return;
+  }
 
-  walls.forEach(wall => {
+  const previousX =
+    marbleX;
+
+  marbleX +=
+    movement;
+
+  for (const wall of walls) {
     if (
       circleIntersectsRectangle(
         marbleX,
@@ -732,30 +874,37 @@ function moveMarbleOnXAxis() {
         wall
       )
     ) {
-      if (velocityX > 0) {
-        marbleX =
-          wall.x -
-          marbleRadius;
-      } else if (
-        velocityX < 0
-      ) {
-        marbleX =
-          wall.x +
-          wall.width +
-          marbleRadius;
-      }
+      /*
+        Return to the last safe position
+        instead of forcing the ball across
+        or through adjoining walls.
+      */
 
-      velocityX *= -0.25;
+      marbleX =
+        previousX;
+
+      velocityX = 0;
+
+      return;
     }
-  });
+  }
 }
 
 
-function moveMarbleOnYAxis() {
-  marbleY +=
-    velocityY;
+function moveMarbleOnYAxis(
+  movement
+) {
+  if (movement === 0) {
+    return;
+  }
 
-  walls.forEach(wall => {
+  const previousY =
+    marbleY;
+
+  marbleY +=
+    movement;
+
+  for (const wall of walls) {
     if (
       circleIntersectsRectangle(
         marbleX,
@@ -764,22 +913,14 @@ function moveMarbleOnYAxis() {
         wall
       )
     ) {
-      if (velocityY > 0) {
-        marbleY =
-          wall.y -
-          marbleRadius;
-      } else if (
-        velocityY < 0
-      ) {
-        marbleY =
-          wall.y +
-          wall.height +
-          marbleRadius;
-      }
+      marbleY =
+        previousY;
 
-      velocityY *= -0.25;
+      velocityY = 0;
+
+      return;
     }
-  });
+  }
 }
 
 
@@ -791,7 +932,7 @@ function keepMarbleInsideMaze() {
     marbleX =
       marbleRadius;
 
-    velocityX *= -0.3;
+    velocityX = 0;
   }
 
   if (
@@ -803,7 +944,7 @@ function keepMarbleInsideMaze() {
       mazeWidth -
       marbleRadius;
 
-    velocityX *= -0.3;
+    velocityX = 0;
   }
 
   if (
@@ -813,7 +954,7 @@ function keepMarbleInsideMaze() {
     marbleY =
       marbleRadius;
 
-    velocityY *= -0.3;
+    velocityY = 0;
   }
 
   if (
@@ -823,9 +964,9 @@ function keepMarbleInsideMaze() {
   ) {
     marbleY =
       mazeHeight -
-     marbleRadius;
+      marbleRadius;
 
-    velocityY *= -0.3;
+    velocityY = 0;
   }
 }
 
@@ -894,22 +1035,19 @@ function circleIntersectsRectangle(
 function checkExit() {
   const distance =
     Math.hypot(
-      marbleX - exitX,
-      marbleY - exitY
+      marbleX -
+        exitX,
+      marbleY -
+        exitY
     );
 
   const exitRadius =
     exit.offsetWidth / 2;
 
-  /*
-    Trigger when most of the marble
-    reaches the green exit.
-  */
-
   const completionDistance =
     Math.max(
-      exitRadius * 0.7,
-      marbleRadius
+      exitRadius * 0.72,
+      marbleRadius * 0.8
     );
 
   if (
@@ -1123,7 +1261,7 @@ function stopGame() {
   timerInterval = null;
 
   if (
-    animationFrameId
+    animationFrameId !== null
   ) {
     cancelAnimationFrame(
       animationFrameId
@@ -1134,31 +1272,14 @@ function stopGame() {
 
   velocityX = 0;
   velocityY = 0;
+
+  tiltX = 0;
+  tiltY = 0;
 }
 
 
 /* =========================
-   RESIZING
-========================= */
-
-window.addEventListener(
-  "resize",
-  () => {
-    if (
-      !gameScreen.classList.contains(
-        "hidden"
-      )
-    ) {
-      loadLevel(
-        currentLevelIndex
-      );
-    }
-  }
-);
-
-
-/* =========================
-   HELPER
+   HELPERS
 ========================= */
 
 function clamp(
@@ -1173,6 +1294,14 @@ function clamp(
     ),
     maximum
   );
+}
+
+
+function isProbablyMobile() {
+  return /iPhone|iPad|iPod|Android/i
+    .test(
+      navigator.userAgent
+    );
 }
 
 
