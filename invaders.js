@@ -179,10 +179,10 @@ const ENEMY_BULLET_SPEED = 320;
 
 const RAPID_FIRE_DELAY = 145;
 
-const ALIEN_WIDTH = 105;
-const ALIEN_HEIGHT = 79;
-const ALIEN_GAP_X = 18;
-const ALIEN_GAP_Y = 28;
+const ALIEN_WIDTH = 88;
+const ALIEN_HEIGHT = 66;
+const ALIEN_GAP_X = 14;
+const ALIEN_GAP_Y = 24;
 
 const TOP_ALIEN_COUNT = 6;
 const MIDDLE_ALIEN_COUNT = 6;
@@ -194,7 +194,7 @@ const BARRIER_COUNT = 3;
 
 const STARTING_LIVES = 3;
 
-const ALIEN_DROP_DISTANCE = 30;
+const ALIEN_DROP_DISTANCE = 18;
 
 
 /* =========================
