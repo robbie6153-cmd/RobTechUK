@@ -214,7 +214,7 @@ let lives = STARTING_LIVES;
 let wave = 1;
 
 let alienDirection = 1;
-let alienSpeed = 48;
+let alienSpeed = 18;
 
 let enemyFireTimer = 0;
 let enemyFireDelay = 900;
@@ -489,7 +489,7 @@ function resetGame() {
   lives = STARTING_LIVES;
   wave = 1;
 
-  alienSpeed = 48;
+  alienSpeed = 18;
   alienDirection = 1;
 
   enemyFireTimer = 0;
@@ -604,8 +604,8 @@ function startNextWave() {
 
   alienSpeed =
     Math.min(
-      145,
-      48 +
+      75,
+      20 +
       (wave - 1) * 13
     );
 
@@ -1220,13 +1220,11 @@ function increaseAlienSpeed() {
 
   alienSpeed =
     Math.min(
-      180,
+      90,
 
-      48 +
-      (wave - 1) *
-        13 +
-      destroyedRatio *
-        80
+      18 +
+      (wave - 1) * 6 +
+      destroyedRatio * 30
     );
 }
 
