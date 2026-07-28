@@ -179,14 +179,14 @@ const ENEMY_BULLET_SPEED = 320;
 
 const RAPID_FIRE_DELAY = 145;
 
-const ALIEN_WIDTH = 72;
-const ALIEN_HEIGHT = 54;
-const ALIEN_GAP_X = 14;
-const ALIEN_GAP_Y = 22;
+const ALIEN_WIDTH = 105;
+const ALIEN_HEIGHT = 79;
+const ALIEN_GAP_X = 18;
+const ALIEN_GAP_Y = 28;
 
-const TOP_ALIEN_COUNT = 8;
-const MIDDLE_ALIEN_COUNT = 8;
-const BOTTOM_ALIEN_COUNT = 10;
+const TOP_ALIEN_COUNT = 6;
+const MIDDLE_ALIEN_COUNT = 6;
+const BOTTOM_ALIEN_COUNT = 8;
 
 const BARRIER_WIDTH = 155;
 const BARRIER_HEIGHT = 92;
@@ -217,7 +217,7 @@ let alienDirection = 1;
 let alienSpeed = 18;
 
 let enemyFireTimer = 0;
-let enemyFireDelay = 900;
+let enemyFireDelay = 750;
 
 let lastPlayerShot = 0;
 
@@ -493,7 +493,7 @@ function resetGame() {
   alienDirection = 1;
 
   enemyFireTimer = 0;
-  enemyFireDelay = 900;
+  enemyFireDelay = 750;
 
   playerBullets = [];
   enemyBullets = [];
@@ -609,12 +609,12 @@ function startNextWave() {
       (wave - 1) * 13
     );
 
-  enemyFireDelay =
-    Math.max(
-      340,
-      900 -
-      (wave - 1) * 80
-    );
+enemyFireDelay =
+  Math.max(
+    380,
+    7500 -
+    (wave - 1) * 55
+  );
 
   alienDirection = 1;
   enemyFireTimer = 0;
