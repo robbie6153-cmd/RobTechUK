@@ -508,6 +508,8 @@ function resetGame() {
 
 
 function startGame() {
+  unlockDeathMusic();
+
   cancelAnimationFrame(
     animationFrameId
   );
@@ -2003,7 +2005,41 @@ function updateLivesDisplay() {
 /* =========================
    AUDIO FUNCTIONS
 ========================= */
+function unlockDeathMusic() {
+  const normalVolume =
+    deathMusic.volume;
 
+  deathMusic.volume = 0;
+  deathMusic.currentTime = 0;
+
+  const playPromise =
+    deathMusic.play();
+
+  if (
+    playPromise !== undefined
+  ) {
+    playPromise
+      .then(
+        () => {
+          deathMusic.pause();
+          deathMusic.currentTime = 0;
+          deathMusic.volume =
+            normalVolume;
+        }
+      )
+      .catch(
+        error => {
+          deathMusic.volume =
+            normalVolume;
+
+          console.error(
+            "Could not unlock death music:",
+            error
+          );
+        }
+      );
+  }
+}
 function startGameMusic() {
   deathMusic.pause();
   deathMusic.currentTime = 0;
@@ -2033,7 +2069,9 @@ function stopGameMusic() {
 
 
 function playDeathMusic() {
+  deathMusic.pause();
   deathMusic.currentTime = 0;
+  deathMusic.volume = 0.75;
 
   const playPromise =
     deathMusic.play();
@@ -2042,14 +2080,15 @@ function playDeathMusic() {
     playPromise !== undefined
   ) {
     playPromise.catch(
-      () => {
-        // Audio may be blocked by
-        // the browser.
+      error => {
+        console.error(
+          "Death music could not play:",
+          error
+        );
       }
     );
   }
 }
-
 
 function stopDeathMusic() {
   deathMusic.pause();
