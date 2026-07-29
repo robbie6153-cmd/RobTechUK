@@ -189,6 +189,11 @@ const MIDDLE_ALIEN_COUNT = 5;
 const BOTTOM_ALIEN_COUNT = 6;
 
 const ALIEN_DROP_DISTANCE = 18;
+const BARRIER_WIDTH = 155;
+const BARRIER_HEIGHT = 92;
+const BARRIER_COUNT = 3;
+
+const STARTING_LIVES = 3;
 
 
 /* =========================
@@ -386,24 +391,6 @@ function createAliens() {
 
     points:
       20
-  });
-}
-
-  createAlienRow({
-    count:
-      BOTTOM_ALIEN_COUNT,
-
-    row:
-      2,
-
-    health:
-      1,
-
-    image:
-      alien3Image,
-
-    points:
-      10
   });
 }
 
@@ -624,7 +611,7 @@ function startNextWave() {
 enemyFireDelay =
   Math.max(
     380,
-    7500 -
+    750 -
     (wave - 1) * 55
   );
 
