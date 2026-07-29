@@ -166,7 +166,7 @@ deathMusic.volume = 0.75;
 const GAME_WIDTH = 900;
 const GAME_HEIGHT = 1100;
 
-const PLAYER_SIZE = 84;
+const PLAYER_SIZE = 104;
 const PLAYER_SPEED = 520;
 
 const PLAYER_BULLET_WIDTH = 8;
@@ -179,10 +179,10 @@ const ENEMY_BULLET_SPEED = 320;
 
 const RAPID_FIRE_DELAY = 145;
 
-const ALIEN_WIDTH = 88;
-const ALIEN_HEIGHT = 66;
-const ALIEN_GAP_X = 14;
-const ALIEN_GAP_Y = 24;
+const ALIEN_WIDTH =105;
+const ALIEN_HEIGHT = 79;
+const ALIEN_GAP_X = 18;
+const ALIEN_GAP_Y = 28;
 
 const TOP_ALIEN_COUNT = 6;
 const MIDDLE_ALIEN_COUNT = 6;
