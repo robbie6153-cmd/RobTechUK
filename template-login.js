@@ -242,8 +242,58 @@ forgotPasswordButton.addEventListener(
     }
   }
 );
+resendVerificationButton.addEventListener(
+  "click",
+  async () => {
+    try {
+      const user =
+        auth.currentUser;
 
+      if (!user) {
+        showMessage(
+          "You must be logged in first."
+        );
 
+        return;
+      }
+
+      if (user.emailVerified) {
+        showMessage(
+          "Your email address is already verified."
+        );
+
+        return;
+      }
+
+      await sendEmailVerification(
+        user
+      );
+
+      showMessage(
+        "A new verification email has been sent. Check your inbox and spam folder."
+      );
+    } catch (error) {
+      console.error(
+        error
+      );
+
+      if (
+        error.code ===
+        "auth/too-many-requests"
+      ) {
+        showMessage(
+          "Too many verification emails have been requested. Wait a few minutes and try again."
+        );
+
+        return;
+      }
+
+      showMessage(
+        "The verification email could not be sent. Please try again."
+      );
+    }
+  }
+);
 logoutButton.addEventListener(
   "click",
   async () => {
@@ -267,7 +317,10 @@ logoutButton.addEventListener(
   }
 );
 
-
+const resendVerificationButton =
+  document.getElementById(
+    "resendVerificationButton"
+  );
 onAuthStateChanged(
   auth,
   user => {
@@ -288,15 +341,27 @@ onAuthStateChanged(
         "hidden"
       );
 
-      if (user.emailVerified) {
-        showMessage(
-          `Logged in as ${user.email}`
-        );
-      } else {
-        showMessage(
-          `Logged in as ${user.email}, but email verification is still required.`
-        );
-      }
+    if (user.emailVerified) {
+
+  resendVerificationButton.classList.add(
+    "hidden"
+  );
+
+  showMessage(
+    `Logged in as ${user.email}`
+  );
+
+} else {
+
+  resendVerificationButton.classList.remove(
+    "hidden"
+  );
+
+  showMessage(
+    `Logged in as ${user.email}, but email verification is still required.`
+  );
+
+}
 
       return;
     }
@@ -317,4 +382,7 @@ onAuthStateChanged(
       "hidden"
     );
   }
+);
+resendVerificationButton.classList.add(
+  "hidden"
 );
