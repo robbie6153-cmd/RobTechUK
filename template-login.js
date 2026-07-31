@@ -136,17 +136,25 @@ loginForm.addEventListener(
       const user =
         userCredential.user;
 
-      if (!user.emailVerified) {
-        showMessage(
-          "You are logged in, but your email address has not yet been verified."
-        );
+    if (!user.emailVerified) {
+  showMessage(
+    "You are logged in, but your email address has not yet been verified."
+  );
 
-        return;
-      }
+  return;
+}
 
-      showMessage(
-        "You are now logged in."
-      );
+showMessage(
+  "Login successful. Taking you back to the website..."
+);
+
+setTimeout(
+  () => {
+    window.location.href =
+      "template.html";
+  },
+  800
+);
     } catch (error) {
       console.error(
         error
