@@ -191,9 +191,13 @@ createAccountButton.addEventListener(
           password
         );
 
-      await sendEmailVerification(
-        userCredential.user
-      );
+  await sendEmailVerification(
+  userCredential.user,
+  {
+    url: "https://robtech.uk/template-username.html",
+    handleCodeInApp: false
+  }
+);
 
       showMessage(
         "Account created. Check your email and click the verification link."
@@ -273,10 +277,13 @@ resendVerificationButton.addEventListener(
         return;
       }
 
-      await sendEmailVerification(
-        user
-      );
-
+    await sendEmailVerification(
+  user,
+  {
+    url: "https://robtech.uk/template-username.html",
+    handleCodeInApp: false
+  }
+);
       showMessage(
         "A new verification email has been sent. Check your inbox and spam folder."
       );
