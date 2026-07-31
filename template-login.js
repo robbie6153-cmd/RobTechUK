@@ -150,8 +150,8 @@ showMessage(
 
 setTimeout(
   () => {
-    window.location.href =
-      "template.html";
+ window.location.href =
+  "template-username.html";
   },
   800
 );
@@ -194,7 +194,7 @@ createAccountButton.addEventListener(
   await sendEmailVerification(
   userCredential.user,
   {
-    url: "https://robtech.uk/template-username.html",
+    url: "https://robtech.uk/template-login.html?verified=true",
     handleCodeInApp: false
   }
 );
