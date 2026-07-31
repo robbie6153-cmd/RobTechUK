@@ -597,3 +597,180 @@ body {
   }
 
 }
+/* =========================
+   TEMPLATE LOGIN PAGE
+========================= */
+
+.login-page {
+  min-height: 100vh;
+
+  margin: 0;
+
+  background:
+    linear-gradient(
+      145deg,
+      #ff00a8 0%,
+      #c00080 45%,
+      #111111 100%
+    );
+
+  color: #ffffff;
+}
+
+.login-wrapper {
+  min-height: 100vh;
+
+  padding: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 460px;
+
+  padding: 32px;
+
+  border: 2px solid #ff47bd;
+  border-radius: 24px;
+
+  background:
+    rgba(
+      10,
+      10,
+      10,
+      0.96
+    );
+
+  box-shadow:
+    0 24px 60px
+    rgba(
+      0,
+      0,
+      0,
+      0.45
+    );
+}
+
+.login-back-link {
+  display: inline-block;
+
+  margin-bottom: 24px;
+
+  color: #ffffff;
+
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-card h1 {
+  margin: 0 0 12px;
+
+  color: #ff39b7;
+
+  font-size: 2rem;
+}
+
+.login-intro {
+  margin: 0 0 24px;
+
+  color: #dddddd;
+
+  line-height: 1.5;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-form label {
+  margin: 16px 0 7px;
+
+  font-weight: bold;
+}
+
+.login-form input {
+  width: 100%;
+
+  padding: 14px;
+
+  border: 1px solid #ff58c3;
+  border-radius: 11px;
+
+  background: #1e1e1e;
+  color: #ffffff;
+
+  font-size: 1rem;
+}
+
+.login-form input:focus {
+  outline: 2px solid #ff149f;
+  outline-offset: 2px;
+}
+
+.login-main-button,
+.login-secondary-button,
+.login-text-button {
+  width: 100%;
+
+  border: none;
+  border-radius: 11px;
+
+  cursor: pointer;
+
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.login-main-button {
+  margin-top: 24px;
+  padding: 14px;
+
+  background: #ff149f;
+  color: #ffffff;
+}
+
+.login-secondary-button {
+  margin-top: 12px;
+  padding: 14px;
+
+  background: #2a2a2a;
+  color: #ffffff;
+
+  border: 1px solid #ff58c3;
+}
+
+.login-text-button {
+  margin-top: 12px;
+
+  padding: 8px;
+
+  background: transparent;
+  color: #ff8fd5;
+
+  text-decoration: underline;
+}
+
+.login-main-button:hover,
+.login-secondary-button:hover,
+.login-text-button:hover {
+  filter: brightness(1.12);
+}
+
+.login-message {
+  min-height: 24px;
+
+  margin: 20px 0 0;
+
+  color: #ff9ddb;
+
+  text-align: center;
+  line-height: 1.4;
+}
+
+.hidden {
+  display: none !important;
+}

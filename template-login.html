@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Member Login - The Smiling Template
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="template.css?v=2"
+  >
+</head>
+
+<body class="login-page">
+
+  <main class="login-wrapper">
+
+    <section class="login-card">
+
+      <a
+        href="template.html"
+        class="login-back-link"
+      >
+        ← Back to website
+      </a>
+
+      <h1>
+        Member Login
+      </h1>
+
+      <p class="login-intro">
+        Log in to access member content or create a new account.
+      </p>
+
+      <form
+        id="loginForm"
+        class="login-form"
+      >
+
+        <label for="loginEmail">
+          Email address
+        </label>
+
+        <input
+          id="loginEmail"
+          type="email"
+          autocomplete="email"
+          placeholder="Enter your email"
+          required
+        >
+
+        <label for="loginPassword">
+          Password
+        </label>
+
+        <input
+          id="loginPassword"
+          type="password"
+          autocomplete="current-password"
+          placeholder="Enter your password"
+          required
+        >
+
+        <button
+          type="submit"
+          class="login-main-button"
+        >
+          Log In
+        </button>
+
+      </form>
+
+      <button
+        id="createAccountButton"
+        type="button"
+        class="login-secondary-button"
+      >
+        Create Account
+      </button>
+
+      <button
+        id="forgotPasswordButton"
+        type="button"
+        class="login-text-button"
+      >
+        Forgotten your password?
+      </button>
+
+      <button
+        id="logoutButton"
+        type="button"
+        class="login-secondary-button hidden"
+      >
+        Log Out
+      </button>
+
+      <p
+        id="loginMessage"
+        class="login-message"
+        aria-live="polite"
+      ></p>
+
+    </section>
+
+  </main>
+
+  <script
+    type="module"
+    src="template-login.js?v=1"
+  ></script>
+
+</body>
+
+</html>
