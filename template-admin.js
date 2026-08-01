@@ -395,13 +395,46 @@ function uploadFileWithProgress({
 
         },
 
-        (error) => {
+     (error) => {
 
-          reject(
-            error
-          );
+  console.error(
+    "Firebase Storage upload error:",
+    error
+  );
 
-        },
+  console.error(
+    "Storage error code:",
+    error.code
+  );
+
+  console.error(
+    "Storage error message:",
+    error.message
+  );
+
+  console.error(
+    "Storage server response:",
+    error.serverResponse
+  );
+
+  const detailedError =
+    new Error(
+      error.serverResponse ||
+      error.message ||
+      "Unknown Firebase Storage error."
+    );
+
+  detailedError.code =
+    error.code;
+
+  detailedError.serverResponse =
+    error.serverResponse;
+
+  reject(
+    detailedError
+  );
+
+},
 
         async () => {
 
@@ -767,12 +800,18 @@ photoUploadForm
 
         }
 
-        showMessage(
-          photoUploadMessage,
-          error.message ||
-          "The photo could not be uploaded.",
-          "error"
-        );
+      showMessage(
+  photoUploadMessage,
+  [
+    error.code,
+    error.serverResponse,
+    error.message
+  ]
+    .filter(Boolean)
+    .join(" — ") ||
+  "The photo could not be uploaded.",
+  "error"
+);
 
       } finally {
 
