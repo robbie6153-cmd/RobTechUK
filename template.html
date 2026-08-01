@@ -21,12 +21,49 @@
 
   <link
     rel="stylesheet"
-    href="template.css?v=3"
+    href="template.css?v=4"
   >
 
 </head>
 
 <body>
+
+
+  <!-- =========================
+       ACCOUNT STATUS BAR
+  ========================== -->
+
+  <section
+    id="accountStatusBar"
+    class="account-status-bar"
+  >
+
+    <p id="accountStatusText">
+      Checking login...
+    </p>
+
+    <div class="account-status-actions">
+
+      <a
+        id="adminPanelLink"
+        class="account-admin-link hidden"
+        href="template-admin.html"
+      >
+        Admin Panel
+      </a>
+
+      <button
+        id="mainLogoutButton"
+        class="account-logout-button hidden"
+        type="button"
+      >
+        Log Out
+      </button>
+
+    </div>
+
+  </section>
+
 
   <div class="site-wrapper">
 
@@ -54,18 +91,23 @@
           <p>
             Photos, videos and exclusive merchandise.
           </p>
-<a
-  href="template-login.html"
-  class="login-box"
->
-  <span class="login-title">
-    👤 Member Login
-  </span>
 
-  <span class="login-subtitle">
-    Create Account
-  </span>
-</a>
+          <a
+            id="memberLoginBox"
+            href="template-login.html"
+            class="login-box"
+          >
+
+            <span class="login-title">
+              👤 Member Login
+            </span>
+
+            <span class="login-subtitle">
+              Create Account
+            </span>
+
+          </a>
+
         </div>
 
       </div>
@@ -164,12 +206,12 @@
             </div>
 
             <h3>
-              Free Photo Gallery
+              Photo Gallery
             </h3>
 
             <p>
-              Browse photographs, updates and behind-the-scenes
-              images uploaded to the gallery.
+              Browse free photographs and subscriber-only
+              exclusive uploads.
             </p>
 
             <button
@@ -252,91 +294,55 @@
         class="content-section hidden-section"
       >
 
-        <div class="section-heading">
+        <div class="section-heading gallery-heading">
 
-          <p class="section-label">
-            Free Gallery
-          </p>
+          <div>
 
-          <h2>
-            Photo Gallery
-          </h2>
+            <p class="section-label">
+              Latest Uploads
+            </p>
 
-          <p>
-            Uploaded photographs will appear in this section.
+            <h2>
+              Photo Gallery
+            </h2>
+
+          </div>
+
+          <p class="gallery-description">
+            Browse free and subscriber-exclusive photographs.
           </p>
 
         </div>
 
 
-        <div class="gallery-grid photo-gallery">
-
-          <article class="gallery-placeholder">
-
-            <div class="placeholder-image">
-              <span>Photo</span>
-            </div>
-
-            <div class="gallery-information">
-
-              <h3>
-                Gallery Photograph
-              </h3>
-
-              <p>
-                A photograph title or short description
-                can appear here.
-              </p>
-
-            </div>
-
-          </article>
-
-
-          <article class="gallery-placeholder">
-
-            <div class="placeholder-image">
-              <span>Photo</span>
-            </div>
-
-            <div class="gallery-information">
-
-              <h3>
-                Latest Photograph
-              </h3>
-
-              <p>
-                New gallery uploads can automatically
-                appear in this space.
-              </p>
-
-            </div>
-
-          </article>
-
-
-          <article class="gallery-placeholder">
-
-            <div class="placeholder-image">
-              <span>Photo</span>
-            </div>
-
-            <div class="gallery-information">
-
-              <h3>
-                Behind The Scenes
-              </h3>
-
-              <p>
-                This space could contain free photographs
-                for all visitors.
-              </p>
-
-            </div>
-
-          </article>
-
+        <div
+          id="photoGalleryLoading"
+          class="gallery-message"
+        >
+          Loading photos...
         </div>
+
+
+        <div
+          id="photoGalleryEmpty"
+          class="gallery-message hidden"
+        >
+          No photographs have been uploaded yet.
+        </div>
+
+
+        <div
+          id="photoGalleryError"
+          class="gallery-message gallery-error hidden"
+        >
+          The photo gallery could not be loaded.
+        </div>
+
+
+        <div
+          id="photoGallery"
+          class="gallery-grid photo-gallery"
+        ></div>
 
       </section>
 
@@ -390,38 +396,8 @@
               </h3>
 
               <p>
-                Add a title, description, upload date
-                and video information here.
-              </p>
-
-            </div>
-
-          </article>
-
-
-          <article class="video-card">
-
-            <div class="video-placeholder">
-
-              <button
-                type="button"
-                class="play-button"
-                aria-label="Play example video"
-              >
-                ▶
-              </button>
-
-            </div>
-
-            <div class="gallery-information">
-
-              <h3>
-                Latest Upload
-              </h3>
-
-              <p>
-                Your newest video could automatically
-                appear near the top of the gallery.
+                Uploaded videos will be connected to this
+                section next.
               </p>
 
             </div>
@@ -453,7 +429,8 @@
           </h2>
 
           <p>
-            Products and purchase links can be added later.
+            Products uploaded through the admin panel
+            will appear here later.
           </p>
 
         </div>
@@ -461,7 +438,6 @@
 
         <div class="merchandise-grid">
 
-
           <article class="product-card">
 
             <div class="product-image-placeholder">
@@ -471,81 +447,12 @@
             <div class="product-information">
 
               <h3>
-                Branded T-Shirt
+                Merchandise Coming Soon
               </h3>
 
-              <p class="product-price">
-                £19.99
-              </p>
-
               <p>
-                Add a short product description here.
-              </p>
-
-              <button
-                type="button"
-                class="primary-button"
-                disabled
-              >
-                Coming Soon
-              </button>
-
-            </div>
-
-          </article>
-
-
-          <article class="product-card">
-
-            <div class="product-image-placeholder">
-              Product Image
-            </div>
-
-            <div class="product-information">
-
-              <h3>
-                Branded Mug
-              </h3>
-
-              <p class="product-price">
-                £9.99
-              </p>
-
-              <p>
-                Product payments can be connected later.
-              </p>
-
-              <button
-                type="button"
-                class="primary-button"
-                disabled
-              >
-                Coming Soon
-              </button>
-
-            </div>
-
-          </article>
-
-
-          <article class="product-card">
-
-            <div class="product-image-placeholder">
-              Product Image
-            </div>
-
-            <div class="product-information">
-
-              <h3>
-                Exclusive Item
-              </h3>
-
-              <p class="product-price">
-                £14.99
-              </p>
-
-              <p>
-                Add limited edition merchandise here.
+                Products and payment links will be
+                connected later.
               </p>
 
               <button
@@ -574,7 +481,8 @@
     <footer class="site-footer">
 
       <p>
-        © <span id="currentYear"></span>
+        ©
+        <span id="currentYear"></span>
         The Smiling Template
       </p>
 
@@ -587,7 +495,68 @@
   </div>
 
 
-  <script src="template.js?v=1"></script>
+  <!-- =========================
+       LARGE PHOTO VIEWER
+  ========================== -->
+
+  <div
+    id="photoViewer"
+    class="photo-viewer hidden"
+    aria-hidden="true"
+  >
+
+    <button
+      id="closePhotoViewer"
+      class="photo-viewer-close"
+      type="button"
+      aria-label="Close photo viewer"
+    >
+      ×
+    </button>
+
+
+    <div class="photo-viewer-content">
+
+      <div class="photo-viewer-image-wrap">
+
+        <img
+          id="photoViewerImage"
+          src=""
+          alt=""
+        >
+
+        <span
+          id="photoViewerWatermark"
+          class="photo-viewer-watermark"
+        ></span>
+
+      </div>
+
+
+      <div class="photo-viewer-information">
+
+        <p
+          id="photoViewerAccess"
+          class="photo-access-badge"
+        ></p>
+
+        <h2 id="photoViewerTitle">
+          Photo
+        </h2>
+
+        <p id="photoViewerDescription"></p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <script
+    type="module"
+    src="template.js?v=4"
+  ></script>
 
 </body>
 
