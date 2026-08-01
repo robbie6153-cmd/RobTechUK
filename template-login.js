@@ -332,10 +332,7 @@ logoutButton.addEventListener(
   }
 );
 
-const resendVerificationButton =
-  document.getElementById(
-    "resendVerificationButton"
-  );
+
 onAuthStateChanged(
   auth,
   user => {
@@ -357,7 +354,10 @@ onAuthStateChanged(
       );
 
     if (user.emailVerified) {
-
+const resendVerificationButton =
+  document.getElementById(
+    "resendVerificationButton"
+  );
   resendVerificationButton.classList.add(
     "hidden"
   );
