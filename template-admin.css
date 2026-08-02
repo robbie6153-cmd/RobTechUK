@@ -462,3 +462,53 @@ padding:15px;
   color: #111111;
   cursor: pointer;
 }
+/* =========================
+   EXISTING CONTENT
+========================= */
+
+#adminContentList {
+  width: 100%;
+  min-width: 0;
+}
+
+.admin-content-item {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+
+  padding: 12px;
+  margin-bottom: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+
+  background: #181818;
+}
+
+.admin-content-preview {
+  display: block;
+
+  width: 100%;
+  max-width: 100%;
+  height: 180px;
+
+  object-fit: cover;
+  object-position: center;
+
+  border-radius: 9px;
+  background: #000;
+}
+
+video.admin-content-preview {
+  object-fit: contain;
+}
+
+.admin-content-details {
+  min-width: 0;
+  padding-top: 10px;
+}
+
+.admin-content-details h3 {
+  overflow-wrap: anywhere;
+}
