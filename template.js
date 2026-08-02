@@ -572,8 +572,7 @@ async function loadPhotoGallery() {
     return;
   }
 
-  photoGallery.innerHTML =
-    "";
+  photoGallery.innerHTML = "";
 
   showElement(
     photoGalleryLoading
@@ -595,11 +594,6 @@ async function loadPhotoGallery() {
           db,
           "creator_content"
         ),
-        where(
-          "type",
-          "==",
-          "photo"
-        ),
         orderBy(
           "createdAt",
           "desc"
@@ -614,13 +608,23 @@ async function loadPhotoGallery() {
     const photos = [];
 
     photosSnapshot.forEach(
-      (photoDocument) => {
+      (documentSnapshot) => {
+
+        const data =
+          documentSnapshot.data();
+
+        if (
+          data.type !== "photo" ||
+          data.active === false
+        ) {
+          return;
+        }
 
         photos.push({
           id:
-            photoDocument.id,
+            documentSnapshot.id,
 
-          ...photoDocument.data()
+          ...data
         });
 
       }
@@ -662,8 +666,7 @@ async function loadPhotoGallery() {
   }
 
 }
-
-
+ 
 /* =========================
    RENDER PHOTO GALLERY
 ========================= */

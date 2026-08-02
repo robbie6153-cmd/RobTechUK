@@ -9,7 +9,7 @@ import {
   auth,
   db,
   storage
-} from "./template-firebase.js?v=2";
+} from "./template-firebase.js?v=3";
 
 
 import {
