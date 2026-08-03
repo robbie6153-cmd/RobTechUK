@@ -385,3 +385,9 @@ body {
   background: #00ff37;
   transform: scale(1.03);
 }
+.arcade-logo {
+    display: block;
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto 25px;
+}
