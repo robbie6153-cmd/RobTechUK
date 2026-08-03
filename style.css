@@ -348,3 +348,40 @@ body {
   color: #FF0000;
 
 }
+.quote-btn-container {
+  display: flex;
+  justify-content: center;
+  margin: 22px 0 28px;
+}
+
+.quote-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 320px;
+  max-width: 90%;
+  height: 64px;
+
+  background: #00e62a;
+  color: #ffffff;
+
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: bold;
+
+  border-radius: 16px;
+  border: 2px solid #7dff96;
+
+  box-shadow:
+    0 0 14px rgba(0, 255, 0, 0.45);
+
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.quote-btn:hover {
+  background: #00ff37;
+  transform: scale(1.03);
+}
