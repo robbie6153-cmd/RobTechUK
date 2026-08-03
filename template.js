@@ -98,6 +98,27 @@ const photoGalleryError =
   );
 
 
+const videoGallery =
+  document.getElementById(
+    "videoGallery"
+  );
+
+const videoGalleryLoading =
+  document.getElementById(
+    "videoGalleryLoading"
+  );
+
+const videoGalleryEmpty =
+  document.getElementById(
+    "videoGalleryEmpty"
+  );
+
+const videoGalleryError =
+  document.getElementById(
+    "videoGalleryError"
+  );
+
+
 const photoViewer =
   document.getElementById(
     "photoViewer"
@@ -443,15 +464,18 @@ onAuthStateChanged(
   auth,
   async (user) => {
 
-    if (!user) {
+  if (!user) {
 
-      showLoggedOutStatus();
+  showLoggedOutStatus();
 
-      await loadPhotoGallery();
+  await Promise.all([
+    loadPhotoGallery(),
+    loadVideoGallery()
+  ]);
 
-      return;
+  return;
 
-    }
+}
 
     try {
 
@@ -478,9 +502,12 @@ onAuthStateChanged(
           true
       };
 
-      showLoggedInStatus();
+     showLoggedInStatus();
 
-      await loadPhotoGallery();
+await Promise.all([
+  loadPhotoGallery(),
+  loadVideoGallery()
+]);
 
     } catch (error) {
 
@@ -496,7 +523,10 @@ onAuthStateChanged(
 
       }
 
-      await loadPhotoGallery();
+      await Promise.all([
+  loadPhotoGallery(),
+  loadVideoGallery()
+]);
 
     }
 
@@ -560,7 +590,23 @@ function canViewPhoto(photo) {
   );
 
 }
+function canViewVideo(video) {
 
+  if (
+    video.access ===
+    "free"
+  ) {
+
+    return true;
+
+  }
+
+  return (
+    currentViewer.isAdmin ||
+    currentViewer.isSubscriber
+  );
+
+}
 
 /* =========================
    LOAD PHOTO GALLERY
@@ -825,7 +871,233 @@ function renderPhotoGallery(photos) {
 
 }
 
+/* =========================
+   LOAD VIDEO GALLERY
+========================= */
 
+async function loadVideoGallery() {
+
+  if (!videoGallery) {
+    return;
+  }
+
+  videoGallery.innerHTML = "";
+
+  showElement(
+    videoGalleryLoading
+  );
+
+  hideElement(
+    videoGalleryEmpty
+  );
+
+  hideElement(
+    videoGalleryError
+  );
+
+  try {
+
+    const videosQuery =
+      query(
+        collection(
+          db,
+          "creator_content"
+        ),
+        orderBy(
+          "createdAt",
+          "desc"
+        )
+      );
+
+    const videosSnapshot =
+      await getDocs(
+        videosQuery
+      );
+
+    const videos = [];
+
+    videosSnapshot.forEach(
+      (documentSnapshot) => {
+
+        const data =
+          documentSnapshot.data();
+
+        if (
+          data.type !== "video" ||
+          data.active === false
+        ) {
+          return;
+        }
+
+        videos.push({
+          id:
+            documentSnapshot.id,
+
+          ...data
+        });
+
+      }
+    );
+
+    hideElement(
+      videoGalleryLoading
+    );
+
+    if (!videos.length) {
+
+      showElement(
+        videoGalleryEmpty
+      );
+
+      return;
+
+    }
+
+    renderVideoGallery(
+      videos
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Unable to load video gallery:",
+      error
+    );
+
+    hideElement(
+      videoGalleryLoading
+    );
+
+    showElement(
+      videoGalleryError
+    );
+
+  }
+
+}
+
+
+/* =========================
+   RENDER VIDEO GALLERY
+========================= */
+
+function renderVideoGallery(videos) {
+
+  if (!videoGallery) {
+    return;
+  }
+
+  videoGallery.innerHTML =
+    videos
+      .map(
+        (video) => {
+
+          const allowed =
+            canViewVideo(
+              video
+            );
+
+          const accessLabel =
+            video.access ===
+            "subscription"
+              ? "Subscribers Only"
+              : "Free";
+
+          if (!allowed) {
+
+            return `
+              <article
+                class="video-card locked-video-card"
+              >
+
+                <div class="video-locked">
+
+                  <span class="gallery-lock-icon">
+                    🔒
+                  </span>
+
+                  <strong>
+                    Subscribers Only
+                  </strong>
+
+                  <p>
+                    Log in with an active subscription
+                    to watch this video.
+                  </p>
+
+                </div>
+
+                <div class="gallery-information">
+
+                  <span class="photo-access-badge">
+                    ${escapeHtml(accessLabel)}
+                  </span>
+
+                  <h3>
+                    ${escapeHtml(video.title || "Exclusive Video")}
+                  </h3>
+
+                  <p>
+                    ${escapeHtml(video.description || "")}
+                  </p>
+
+                </div>
+
+              </article>
+            `;
+
+          }
+
+          return `
+            <article class="video-card">
+
+              <div class="gallery-video-wrap">
+
+                <video
+                  class="gallery-video-player"
+                  controls
+                  preload="metadata"
+                  playsinline
+                >
+                  <source
+                    src="${escapeHtml(video.downloadURL || "")}"
+                    type="${escapeHtml(video.contentType || "video/mp4")}"
+                  >
+
+                  Your browser does not support video playback.
+
+                </video>
+
+                <span class="gallery-video-watermark">
+                  ${escapeHtml(currentViewer.username || "")}
+                </span>
+
+              </div>
+
+              <div class="gallery-information">
+
+                <span class="photo-access-badge">
+                  ${escapeHtml(accessLabel)}
+                </span>
+
+                <h3>
+                  ${escapeHtml(video.title || "Gallery Video")}
+                </h3>
+
+                <p>
+                  ${escapeHtml(video.description || "")}
+                </p>
+
+              </div>
+
+            </article>
+          `;
+
+        }
+      )
+      .join("");
+
+}
 /* =========================
    PHOTO VIEWER
 ========================= */

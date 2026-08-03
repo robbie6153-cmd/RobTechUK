@@ -21,7 +21,7 @@
 
   <link
     rel="stylesheet"
-    href="template.css?v=5"
+    href="template.css?v=6"
   >
 
 </head>
@@ -348,66 +348,65 @@
 
 
       <!-- =========================
-           VIDEO GALLERY
-      ========================== -->
+     VIDEO GALLERY
+========================== -->
 
-      <section
-        id="videoSection"
-        class="content-section hidden-section"
-      >
+<section
+  id="videoSection"
+  class="content-section hidden-section"
+>
 
-        <div class="section-heading">
+  <div class="section-heading gallery-heading">
 
-          <p class="section-label">
-            Watch
-          </p>
+    <div>
 
-          <h2>
-            Video Gallery
-          </h2>
+      <p class="section-label">
+        Watch
+      </p>
 
-          <p>
-            Uploaded videos will appear in this section.
-          </p>
+      <h2>
+        Video Gallery
+      </h2>
 
-        </div>
+    </div>
+
+    <p class="gallery-description">
+      Watch free and subscriber-exclusive videos.
+    </p>
+
+  </div>
 
 
-        <div class="gallery-grid video-gallery">
+  <div
+    id="videoGalleryLoading"
+    class="gallery-message"
+  >
+    Loading videos...
+  </div>
 
-          <article class="video-card">
 
-            <div class="video-placeholder">
+  <div
+    id="videoGalleryEmpty"
+    class="gallery-message hidden"
+  >
+    No videos have been uploaded yet.
+  </div>
 
-              <button
-                type="button"
-                class="play-button"
-                aria-label="Play example video"
-              >
-                ▶
-              </button>
 
-            </div>
+  <div
+    id="videoGalleryError"
+    class="gallery-message gallery-error hidden"
+  >
+    The video gallery could not be loaded.
+  </div>
 
-            <div class="gallery-information">
 
-              <h3>
-                Featured Video
-              </h3>
+  <div
+    id="videoGallery"
+    class="gallery-grid video-gallery"
+  ></div>
 
-              <p>
-                Uploaded videos will be connected to this
-                section next.
-              </p>
-
-            </div>
-
-          </article>
-
-        </div>
-
-      </section>
-
+</section>
 
       <!-- =========================
            MERCHANDISE
@@ -555,7 +554,7 @@
 
   <script
     type="module"
-    src="template.js?v=8"
+    src="template.js?v=9"
   ></script>
 
 </body>
