@@ -944,3 +944,63 @@ body {
 .locked-video-card {
   overflow: hidden;
 }
+.gallery-video-player:fullscreen {
+  border: none;
+  border-radius: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.gallery-video-player:-webkit-full-screen {
+  border: none;
+  border-radius: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+/* =========================
+   MERCHANDISE GALLERY
+========================= */
+
+.merchandise-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(240px, 1fr)
+  );
+  gap: 24px;
+}
+
+.merchandise-card {
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.merchandise-image-wrap {
+  width: 100%;
+  height: 260px;
+  overflow: hidden;
+}
+
+.merchandise-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.merchandise-information {
+  padding: 18px;
+}
+
+.merchandise-price {
+  display: block;
+  margin-top: 12px;
+  font-size: 1.25rem;
+}
+
+.merchandise-buy-button {
+  display: inline-block;
+  margin-top: 16px;
+}
