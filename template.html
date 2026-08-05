@@ -413,63 +413,61 @@
       ========================== -->
 
       <section
-        id="merchandiseSection"
-        class="content-section hidden-section"
-      >
+  id="merchandiseSection"
+  class="content-section hidden-section"
+>
 
-        <div class="section-heading">
+  <div class="section-heading gallery-heading">
 
-          <p class="section-label">
-            Shop
-          </p>
+    <div>
 
-          <h2>
-            Merchandise For Sale
-          </h2>
+      <p class="section-label">
+        Shop
+      </p>
 
-          <p>
-            Products uploaded through the admin panel
-            will appear here later.
-          </p>
+      <h2>
+        Merchandise For Sale
+      </h2>
 
-        </div>
+    </div>
+
+    <p class="gallery-description">
+      Browse clothing, accessories and other exclusive merchandise.
+    </p>
+
+  </div>
 
 
-        <div class="merchandise-grid">
+  <div
+    id="merchandiseLoading"
+    class="gallery-message"
+  >
+    Loading merchandise...
+  </div>
 
-          <article class="product-card">
 
-            <div class="product-image-placeholder">
-              Product Image
-            </div>
+  <div
+    id="merchandiseEmpty"
+    class="gallery-message hidden"
+  >
+    No merchandise has been uploaded yet.
+  </div>
 
-            <div class="product-information">
 
-              <h3>
-                Merchandise Coming Soon
-              </h3>
+  <div
+    id="merchandiseError"
+    class="gallery-message gallery-error hidden"
+  >
+    The merchandise could not be loaded.
+  </div>
 
-              <p>
-                Products and payment links will be
-                connected later.
-              </p>
 
-              <button
-                type="button"
-                class="primary-button"
-                disabled
-              >
-                Coming Soon
-              </button>
+  <div
+    id="merchandiseGallery"
+    class="merchandise-grid"
+  ></div>
 
-            </div>
-
-          </article>
-
-        </div>
-
-      </section>
-
+</section>
     </main>
 
 
