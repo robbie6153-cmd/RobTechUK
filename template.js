@@ -154,7 +154,25 @@ const photoViewerDescription =
     "photoViewerDescription"
   );
 
+const merchandiseGallery =
+  document.getElementById(
+    "merchandiseGallery"
+  );
 
+const merchandiseLoading =
+  document.getElementById(
+    "merchandiseLoading"
+  );
+
+const merchandiseEmpty =
+  document.getElementById(
+    "merchandiseEmpty"
+  );
+
+const merchandiseError =
+  document.getElementById(
+    "merchandiseError"
+  );
 /* =========================
    CURRENT VIEWER
 ========================= */
@@ -468,10 +486,11 @@ onAuthStateChanged(
 
   showLoggedOutStatus();
 
-  await Promise.all([
-    loadPhotoGallery(),
-    loadVideoGallery()
-  ]);
+await Promise.all([
+  loadPhotoGallery(),
+  loadVideoGallery(),
+  loadMerchandise()
+]);
 
   return;
 
@@ -506,7 +525,8 @@ onAuthStateChanged(
 
 await Promise.all([
   loadPhotoGallery(),
-  loadVideoGallery()
+  loadVideoGallery(),
+  loadMerchandise()
 ]);
 
     } catch (error) {
@@ -523,9 +543,10 @@ await Promise.all([
 
       }
 
-      await Promise.all([
+await Promise.all([
   loadPhotoGallery(),
-  loadVideoGallery()
+  loadVideoGallery(),
+  loadMerchandise()
 ]);
 
     }
@@ -785,9 +806,7 @@ function renderPhotoGallery(photos) {
           }
 
           return `
-            <article
-              class="gallery-photo-card"
-            >
+            <article class="gallery-photo-card">
 
               <button
                 type="button"
@@ -805,7 +824,7 @@ function renderPhotoGallery(photos) {
                   >
 
                   <span class="gallery-photo-watermark">
-                    ${escapeHtml(currentViewer.username)}
+                    ${escapeHtml(currentViewer.username || "")}
                   </span>
 
                 </div>
@@ -834,7 +853,6 @@ function renderPhotoGallery(photos) {
         }
       )
       .join("");
-
 
   const photoButtons =
     photoGallery.querySelectorAll(
@@ -870,6 +888,9 @@ function renderPhotoGallery(photos) {
   );
 
 }
+  
+
+   
 
 /* =========================
    LOAD VIDEO GALLERY
@@ -1217,3 +1238,201 @@ document.addEventListener(
 
   }
 );
+/* =========================
+   LOAD MERCHANDISE
+========================= */
+
+async function loadMerchandise() {
+
+  if (!merchandiseGallery) {
+    return;
+  }
+
+  merchandiseGallery.innerHTML = "";
+
+  showElement(
+    merchandiseLoading
+  );
+
+  hideElement(
+    merchandiseEmpty
+  );
+
+  hideElement(
+    merchandiseError
+  );
+
+  try {
+
+    const merchandiseQuery =
+      query(
+        collection(
+          db,
+          "merchandise"
+        ),
+        orderBy(
+          "createdAt",
+          "desc"
+        )
+      );
+
+    const merchandiseSnapshot =
+      await getDocs(
+        merchandiseQuery
+      );
+
+    const merchandiseItems = [];
+
+    merchandiseSnapshot.forEach(
+      (documentSnapshot) => {
+
+        const data =
+          documentSnapshot.data();
+
+        if (data.active === false) {
+          return;
+        }
+
+        merchandiseItems.push({
+          id:
+            documentSnapshot.id,
+
+          ...data
+        });
+
+      }
+    );
+
+    hideElement(
+      merchandiseLoading
+    );
+
+    if (!merchandiseItems.length) {
+
+      showElement(
+        merchandiseEmpty
+      );
+
+      return;
+
+    }
+
+    renderMerchandise(
+      merchandiseItems
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Unable to load merchandise:",
+      error
+    );
+
+    hideElement(
+      merchandiseLoading
+    );
+
+    showElement(
+      merchandiseError
+    );
+
+  }
+
+}
+/* =========================
+   RENDER MERCHANDISE
+========================= */
+
+function renderMerchandise(items) {
+
+  if (!merchandiseGallery) {
+    return;
+  }
+
+  merchandiseGallery.innerHTML =
+    items
+      .map(
+        (item) => {
+
+          const rawPrice =
+            Number(
+              item.price
+            );
+
+          const priceText =
+            Number.isFinite(rawPrice)
+              ? `£${rawPrice.toFixed(2)}`
+              : escapeHtml(
+                  item.price || ""
+                );
+
+          const imageURL =
+            item.downloadURL ||
+            item.imageURL ||
+            "";
+
+          const purchaseURL =
+            item.purchaseURL ||
+            item.productURL ||
+            item.checkoutURL ||
+            "";
+
+          return `
+            <article class="merchandise-card">
+
+              <div class="merchandise-image-wrap">
+
+                <img
+                  src="${escapeHtml(imageURL)}"
+                  alt="${escapeHtml(item.title || "Merchandise item")}"
+                  class="merchandise-image"
+                  loading="lazy"
+                >
+
+              </div>
+
+              <div class="merchandise-information">
+
+                <h3>
+                  ${escapeHtml(item.title || "Merchandise")}
+                </h3>
+
+                <p>
+                  ${escapeHtml(item.description || "")}
+                </p>
+
+                ${
+                  priceText
+                    ? `
+                      <strong class="merchandise-price">
+                        ${priceText}
+                      </strong>
+                    `
+                    : ""
+                }
+
+                ${
+                  purchaseURL
+                    ? `
+                      <a
+                        href="${escapeHtml(purchaseURL)}"
+                        class="merchandise-buy-button"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        Buy Now
+                      </a>
+                    `
+                    : ""
+                }
+
+              </div>
+
+            </article>
+          `;
+
+        }
+      )
+      .join("");
+
+}
